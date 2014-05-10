@@ -16,6 +16,7 @@ import time
 import numpy as np
 
 import fx
+from osc import OSCServer
 
 N = 420
 FRAMERATE = 26
@@ -134,57 +135,6 @@ def meter_test():
         meter.set(val)
         time.sleep(.020)
 
-def osc():
-
-    ip = "0.0.0.0"
-    port = 37337
-
-    def metronome(args, bpm, beat):
-        print(bpm)
-        scanner.metronome(bpm, beat)
-
-    def color(name, channel, r,g,b):
-        background.red(r)
-        background.green(g)
-        background.blue(b)
-
-    def envelope(args, ychannel ):
-        y,channel = ychannel.split() 
-        y = float(y)
-        channel = int(channel)
-        if channel == 1:
-            peak_meter.set(float(y))
-        elif channel == 2:
-            peak_meter2.set(float(y))
-
-    def default():
-        print("default!")
-
-    def fader_green(v):
-        background.green(v)
-
-    def fader_blue(v):
-        background.blue(v)
-
-    def fader_red(v):
-        background.red(v)
-
-    from pythonosc import dispatcher
-    from pythonosc import osc_server
-
-    dispatcher = dispatcher.Dispatcher()
-    dispatcher.map("/metronome", metronome)
-    dispatcher.map("/color/sky", color)
-    dispatcher.map("/audio/envelope", envelope)
-    # dispatcher.map("/*", default)
-    dispatcher.map("/1/fader1", fader_red)
-    dispatcher.map("/1/fader2", fader_green)
-    dispatcher.map("/1/fader3", fader_blue)
-
-    server = osc_server.ThreadingOSCUDPServer((ip, port), dispatcher)
-    print("Serving on {}".format(server.server_address))
-    server.serve_forever()
-
 def demo():
     meter_test()
     strobe()
@@ -204,4 +154,11 @@ if __name__=="__main__":
     if args.demo:
         demo()
     else:
-        osc()
+    
+        osc_server = OSCServer(
+            background=background,
+            peak_meter=peak_meter,
+            peak_meter2=peak_meter2,
+            scanner=scanner
+        )
+        osc_server.serve()
