@@ -40,6 +40,7 @@ def open_serial():
             return s
         except (serial.SerialException, OSError):
             print(dev + " didn't open")
+    raise Exception("couldn't open any serial port, failing")
 
 
 class VideoBuffer(object):
@@ -107,12 +108,7 @@ video_buffer = VideoBuffer(serial=open_serial())
 
 stop_event = threading.Event()
 
-scanner = fx.LarsonScanner(video_buffer)
-peak_meter = fx.PeakMeter(video_buffer, n1=220,n2=334,reverse=True)
-peak_meter2 = fx.PeakMeter(video_buffer, n1=0,n2=120, reverse=False)
-background = fx.BackGround(video_buffer)
-
-layered_effects = []
+layered_effects = [] # define later
 
 def update_buffer():
     for effect in layered_effects:
@@ -153,11 +149,18 @@ if __name__=="__main__":
     if args.demo:
         demo()
     else:
+        wave = fx.Wave(video_buffer)
+        scanner = fx.LarsonScanner(video_buffer)
+        peak_meter = fx.PeakMeter(video_buffer, n1=220,n2=334,reverse=True)
+        peak_meter2 = fx.PeakMeter(video_buffer, n1=0,n2=120, reverse=False)
+        background = fx.BackGround(video_buffer)
+
         layered_effects = [
-            background,
-            scanner,
-            peak_meter,
-            peak_meter2
+            wave, scanner
+            # background,
+            # scanner,
+            # peak_meter,
+            # peak_meter2
         ]
     
         osc_server = OSCServer(

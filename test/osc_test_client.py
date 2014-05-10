@@ -21,6 +21,12 @@ def metronome():
     msg = msg.build()
     client.send(msg)
 
+def bass_nuke():
+    msg = osc_message_builder.OscMessageBuilder(address = "/bassnuke")
+    msg.add_arg('wtf')
+    msg = msg.build()
+    client.send(msg)
+
 def color_ramp():
     r = 0
     g = 0
@@ -39,6 +45,7 @@ def color_ramp():
                 r=g=0 
                 b=j
             msg = osc_message_builder.OscMessageBuilder(address = "/color/sky")
+            msg.add_arg('wtf')
             msg.add_arg('color')
             msg.add_arg(r)
             msg.add_arg(g)
@@ -48,6 +55,7 @@ def color_ramp():
             time.sleep(.02)
 
 
-color_ramp()
-time.sleep(.5)
-metronome()
+bass_nuke()
+# .color_ramp()
+# time.sleep(.5)
+# metronome()
