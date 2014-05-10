@@ -1,5 +1,9 @@
 #!/usr/bin/env python3
 
+"""Runs an event loop, pushing the one dimensional RGB data from VideoBuffer.buffer over a serial
+line to an Arduino waiting to map those values to a NeoPixel strip.
+A thread also listens for incoming OSC messages to control the buffer"""
+
 import argparse
 from datetime import datetime
 import itertools
@@ -11,34 +15,40 @@ import time
 
 import numpy as np
 
-baud = 460800
-# baud = 230400
-# baud = 115200
+import fx
 
-devs = (
+N = 420
+FRAMERATE = 26
+BAUDRATE = 460800
+# BAUDRATE = 230400
+# BAUDRATE = 115200
+
+# try these in order until one opens
+SERIAL_DEVS = (
     '/dev/tty.usbmodemfd141', 
     '/dev/tty.usbmodemfd131',
     '/dev/tty.usbmodemfa141', 
 )
 
-for dev in devs:
-    try:
-        s = serial.Serial(port=dev, baudrate=baud, timeout=20)
-        print(dev + " worked")
-        break
-    except (serial.SerialException, OSError):
-        print(dev + " didn't work")
-    
-x = s.readline()
-print("read %s" % x)
+def open_serial():
+    for dev in SERIAL_DEVS:
+        try:
+            s = serial.Serial(port=dev, baudrate=BAUDRATE, timeout=20)
+            x = s.readline()
+            print("opened %s, read: %s" % (dev,x))
+            return s
+        except (serial.SerialException, OSError):
+            print(dev + " didn't open")
 
-N = 420
-FRAMERATE = 26
 
 class VideoBuffer(object):
     buffer = np.zeros(N*3, dtype=np.uint8)
     lock = threading.Lock()
     dirty = True
+    
+    def __init__(self, serial=None, N=N):
+        self.serial = serial
+        self.N=N
     
     def set(self, n, c):
         """ set pixel n to color c (r,g,b)"""
@@ -49,150 +59,56 @@ class VideoBuffer(object):
         
     def write(self):
         self.lock.acquire()
-        s.write(self.buffer)
+        self.serial.write(self.buffer)
         self.dirty = False
         self.lock.release()
 
-video_buffer = VideoBuffer()
+    def white_mask():
+        self.video_buffer.buffer[0:N*3] = 255
+        self.video_buffer.dirty = True
 
-def white_mask():
-    video_buffer.buffer[0:N*3] = 255
-    video_buffer.dirty = True
+    def red_mask():
+        self.black_mask()
+        self.video_buffer.buffer[0:N*3:3] = 55
+        self.video_buffer.dirty = True
 
-def red_mask():
-    black_mask()
-    video_buffer.buffer[0:N*3:3] = 55
-    video_buffer.dirty = True
+    def blue_mask():
+        self.black_mask()
+        self.video_buffer.buffer[2:(N*3):3] = 55
+        self.video_buffer.dirty = True
 
-def blue_mask():
-    black_mask()
-    video_buffer.buffer[2:(N*3):3] = 55
-    video_buffer.dirty = True
+    def black_mask():
+        self.video_buffer.buffer[0:N*3] = 0
+        self.video_buffer.dirty = True
 
-def black_mask():
-    video_buffer.buffer[0:N*3] = 0
-    video_buffer.dirty = True
+    def strobe(self):
+        """preempts other f/x running, to get a sweet strobe"""
+        self.white_mask()
+        self.write()
+        time.sleep(0.20)
+        self.black_mask()
+        self.write()
+
+
+video_buffer = VideoBuffer(serial=open_serial())
 
 stop_event = threading.Event()
 
-class LarsonScanner(object):
-    def __init__(self):
-        self.n1 = 360
-        self.n2 = 410
-        self.pos = 380
-        self.bpm = 120
-        self.count = 1
-        self.timestamp = datetime(2000,1,1)
-        self.velocity = 2
+scanner = fx.LarsonScanner(video_buffer)
+peak_meter = fx.PeakMeter(video_buffer, n1=220,n2=334,reverse=True)
+peak_meter2 = fx.PeakMeter(video_buffer, n1=0,n2=120, reverse=False)
+background = fx.BackGround(video_buffer)
 
-    def metronome(self, bpm, count):
-        self.timestamp = datetime.now()
-        self.bpm = int(bpm)
-        self.count = int(count)
-
-    def update(self):
-        
-        if (datetime.now() - self.timestamp).seconds > 2:
-            if self.pos >= self.n2-2:
-                self.velocity = -2
-
-            if self.pos <= self.n1+2:
-                self.velocity = 2
-
-            self.pos += self.velocity 
-        else:
-
-            secs = (datetime.now() - self.timestamp).total_seconds()
-            delta_beat = secs / (60/self.bpm)
-            if self.count in (1,3):
-                self.pos = int(self.n1 + (self.n2 - self.n1) * delta_beat)
-            else:
-                self.pos = int(self.n2 - (self.n2 - self.n1) * delta_beat)
-
-        if self.pos > self.n2:
-            self.pos = self.n2-2
-        if self.pos < self.n1:
-            self.pos = self.n1
-
-        video_buffer.buffer[self.pos*3:self.pos*3+3] = (255,0,0)
-        video_buffer.buffer[(self.pos-1)*3:(self.pos-1)*3+3] = (35,0,0)
-        video_buffer.buffer[(self.pos+1)*3:(self.pos+1)*3+3] = (35,0,0)
-        video_buffer.dirty = True
-
-scanner = LarsonScanner()
-
-class BackGround(object):
-    
-    bgbuffer = np.zeros(N*3, dtype=np.uint8)
-
-    def red(self, x):
-        print(x)
-        self.bgbuffer[0:N*3:3] = int(x*255)
-    
-    def green(self, x):
-        self.bgbuffer[1:N*3:3] = int(x*255)
-
-    def blue(self, x):
-        self.bgbuffer[2:N*3:3] = int(x*255)
-
-    def update(self):
-        video_buffer.buffer = self.bgbuffer.copy()
-        video_buffer.dirty = True
-
-class Wave(object):
-    
-    pointer = itertools.cycle(range(N))
-    
-    # buff = np.zeros(N*3, dtype=np.uint8)
-    buff = np.array( 255*np.sin(np.arange(0,420*N, dtype=np.uint8)) , dtype=np.uint8)
-
-    def __init__(self, w=1, f=1):
-        self.w=w
-        self.f=f
-
-    def update(self):
-        i = next(self.pointer)
-        video_buffer.buffer = self.buff# .copy()
-        video_buffer.dirty = True
-
-class PeakMeter(object):
-    def __init__(self,n1=280, n2=320,reverse=False):
-        self.n1 = n1
-        self.n2 = n2
-        self.reverse = reverse
-        self.set(0)
-        self.level = 0.0
-    
-    def set(self, level):
-        """level 0 -> 1"""
-        self.level = level
-
-    def update(self):
-        
-        lev = int((self.n2 - self.n1) *.8 )
-        y = int(self.level * (self.n2 - self.n1))
-    
-        if not self.reverse:
-            video_buffer.buffer[self.n1*3:(self.n1+y)*3] = (0,155,0)*y
-            # if (self.level > .8):
-                # video_buffer.buffer[(self.n1+lev)*3:(self.n1+y)*3] = (255,0,0)*(y-lev)
-        else:
-            video_buffer.buffer[self.n2*3-1:(self.n2-y)*3-1:-1] = (0,155,0)*y
-            # if (self.level > .8):
-                # video_buffer.buffer[(self.n2+lev)*3:(self.n2+y)*3:-1] = (255,0,0)*(y-lev)
-
-        video_buffer.dirty = True
-
-peak_meter = PeakMeter(n1=220,n2=334,reverse=True)
-peak_meter2 = PeakMeter(n1=0,n2=120, reverse=False)
-background = BackGround()
-
+layered_effects = [
+    background,
+    scanner,
+    peak_meter,
+    peak_meter2
+]
 
 def update_buffer():
-    background.update()
-    scanner.update()
-    peak_meter.update()
-    peak_meter2.update()
+    for effect in layered_effects:
+        effect.update()
 
 def write_video_buffer():
     while True:
@@ -204,13 +120,6 @@ def write_video_buffer():
         if video_buffer.dirty:
             video_buffer.write()
         time.sleep(1.0 / FRAMERATE )
-
-
-def strobe():
-    print("strobe")
-    white_mask()
-    time.sleep(0.20)
-    black_mask()
 
 def meter_test():
     print("meter test")
@@ -230,17 +139,17 @@ def osc():
     ip = "0.0.0.0"
     port = 37337
 
-    def metronome(bpm, beat):
+    def metronome(args, bpm, beat):
         print(bpm)
         scanner.metronome(bpm, beat)
 
-    def color(args,r,g,b):
+    def color(name, channel, r,g,b):
         background.red(r)
         background.green(g)
         background.blue(b)
 
-    def envelope(args ):
-        y,channel = args.split() 
+    def envelope(args, ychannel ):
+        y,channel = ychannel.split() 
         y = float(y)
         channel = int(channel)
         if channel == 1:

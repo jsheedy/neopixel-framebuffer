@@ -20,7 +20,6 @@ def metronome():
     msg.add_arg(1)
     msg = msg.build()
     client.send(msg)
-    time.sleep(0.15)
 
 def color_ramp():
     r = 0
