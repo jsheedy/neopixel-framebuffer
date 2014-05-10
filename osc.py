@@ -6,11 +6,13 @@ class OSCServer():
 
     def __init__(
         self,
+        video_buffer=None,
         background=None,
         peak_meter=None,
         peak_meter2=None,
         scanner=None):
 
+        self.video_buffer=video_buffer
         self.background=background
         self.peak_meter=peak_meter
         self.peak_meter2=peak_meter2
@@ -25,6 +27,9 @@ class OSCServer():
         self.background.green(g)
         self.background.blue(b)
 
+    def bassnuke(self, arg):
+        self.video_buffer.strobe()
+ 
     def envelope(self, args, ychannel ):
         y,channel = ychannel.split()
         y = float(y)
@@ -51,6 +56,7 @@ class OSCServer():
         dispatcher.map("/metronome", self.metronome)
         dispatcher.map("/color/sky", self.color)
         dispatcher.map("/audio/envelope", self.envelope)
+        dispatcher.map("/bassnuke", self.bassnuke)
         dispatcher.map("/1/fader1", self.fader_red)
         dispatcher.map("/1/fader2", self.fader_green)
         dispatcher.map("/1/fader3", self.fader_blue)

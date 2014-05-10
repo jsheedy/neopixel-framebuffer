@@ -64,31 +64,43 @@ class VideoBuffer(object):
         self.dirty = False
         self.lock.release()
 
-    def white_mask():
-        self.video_buffer.buffer[0:N*3] = 255
-        self.video_buffer.dirty = True
+    def white_mask(self):
+        self.buffer[0:N*3] = 255
+        self.dirty = True
 
-    def red_mask():
+    def red_mask(self):
         self.black_mask()
-        self.video_buffer.buffer[0:N*3:3] = 55
-        self.video_buffer.dirty = True
+        self.buffer[0:N*3:3] = 155
+        self.dirty = True
 
-    def blue_mask():
+    def green_mask(self):
         self.black_mask()
-        self.video_buffer.buffer[2:(N*3):3] = 55
-        self.video_buffer.dirty = True
+        self.buffer[1:N*3:3] = 155
+        self.dirty = True
 
-    def black_mask():
-        self.video_buffer.buffer[0:N*3] = 0
-        self.video_buffer.dirty = True
+    def blue_mask(self):
+        self.black_mask()
+        self.buffer[2:(N*3):3] = 55
+        self.dirty = True
+
+    def black_mask(self):
+        self.buffer[0:N*3] = 0
+        self.dirty = True
 
     def strobe(self):
         """preempts other f/x running, to get a sweet strobe"""
+        self.lock.acquire()
         self.white_mask()
-        self.write()
-        time.sleep(0.20)
-        self.black_mask()
-        self.write()
+        self.serial.write(self.buffer)
+        # time.sleep(0.50)
+        for delay in (.4,.2,.1,.05,.05):
+            self.white_mask()
+            self.serial.write(self.buffer)
+            time.sleep(.05)
+            self.black_mask()
+            self.serial.write(self.buffer)
+            time.sleep(delay)
+        self.lock.release() 
 
 
 video_buffer = VideoBuffer(serial=open_serial())
@@ -100,12 +112,7 @@ peak_meter = fx.PeakMeter(video_buffer, n1=220,n2=334,reverse=True)
 peak_meter2 = fx.PeakMeter(video_buffer, n1=0,n2=120, reverse=False)
 background = fx.BackGround(video_buffer)
 
-layered_effects = [
-    background,
-    scanner,
-    peak_meter,
-    peak_meter2
-]
+layered_effects = []
 
 def update_buffer():
     for effect in layered_effects:
@@ -122,31 +129,23 @@ def write_video_buffer():
             video_buffer.write()
         time.sleep(1.0 / FRAMERATE )
 
-def meter_test():
-    print("meter test")
-    meter = PeakMeter() 
-
-    level = 0
-    A = .4
-    t = 0  
-    f = 0.195
-    for t in range(30):
-        val = A*math.sin(f*t) + .4
-        meter.set(val)
-        time.sleep(.020)
-
 def demo():
-    meter_test()
-    strobe()
+    print("red")
+    video_buffer.red_mask()
     time.sleep(.5)
-    blue_mask()
+    print("green")
+    video_buffer.green_mask()
     time.sleep(.5)
+    print("blue")
+    video_buffer.blue_mask()
+    time.sleep(.5)
+    video_buffer.strobe()
     stop_event.set()
 
 if __name__=="__main__":
     thread = threading.Thread(target=write_video_buffer)
     thread.start()
-        
+
     parser = argparse.ArgumentParser(description='desc')
     parser.add_argument('--demo', action='store_true')
     args = parser.parse_args()
@@ -154,8 +153,15 @@ if __name__=="__main__":
     if args.demo:
         demo()
     else:
+        layered_effects = [
+            background,
+            scanner,
+            peak_meter,
+            peak_meter2
+        ]
     
         osc_server = OSCServer(
+            video_buffer=video_buffer,
             background=background,
             peak_meter=peak_meter,
             peak_meter2=peak_meter2,
