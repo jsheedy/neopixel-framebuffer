@@ -156,11 +156,11 @@ if __name__=="__main__":
         background = fx.BackGround(video_buffer)
 
         layered_effects = [
-            wave, scanner
-            # background,
-            # scanner,
-            # peak_meter,
-            # peak_meter2
+            background,
+            wave,
+            scanner,
+            peak_meter,
+            peak_meter2
         ]
     
         osc_server = OSCServer(

@@ -19,18 +19,18 @@ class OSCServer():
         self.scanner=scanner
 
 
-    def metronome(self, args, bpm, beat):
+    def metronome(self,  bpm, beat):
         self.scanner.metronome(bpm, beat)
 
-    def color(self, name, channel, r,g,b):
+    def color(self, channel, r,g,b):
         self.background.red(r)
         self.background.green(g)
         self.background.blue(b)
 
-    def bassnuke(self, arg):
+    def bassnuke(self):
         self.video_buffer.strobe()
  
-    def envelope(self, args, ychannel ):
+    def envelope(self, ychannel ):
         y,channel = ychannel.split()
         y = float(y)
         channel = int(channel)
