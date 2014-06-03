@@ -1,6 +1,8 @@
 import numpy as np
 
-class BackGround(object):
+from .fx import Fx
+
+class BackGround(Fx):
 
 
     def __init__(self, video_buffer):
@@ -20,5 +22,9 @@ class BackGround(object):
         self.bgbuffer[2:N*3:3] = int(x*255)
 
     def update(self):
+        super(BackGround, self).update()
+        if not self.enabled:
+            return
+        
         self.video_buffer.buffer = self.bgbuffer.copy()
         self.video_buffer.dirty = True

@@ -1,4 +1,6 @@
-class PeakMeter(object):
+from .fx import Fx
+
+class PeakMeter(Fx):
     def __init__(self, video_buffer, n1=280, n2=320,reverse=False):
         self.video_buffer = video_buffer
         self.n1 = n1
@@ -13,7 +15,10 @@ class PeakMeter(object):
         self.level = level
 
     def update(self):
-
+        super(PeakMeter, self).update()
+        if not self.enabled:
+            return
+        
         y = int(self.level * (self.n2 - self.n1))
 
         if not self.reverse:

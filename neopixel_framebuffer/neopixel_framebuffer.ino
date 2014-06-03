@@ -28,6 +28,9 @@ int ramp(int x) {
   return x;
 }
 
+int p=0;
+int q=0;
+
 char rgb[3];
 int t=0;
 void loop() {
@@ -37,6 +40,9 @@ void loop() {
         strip.setPixelColor(i,rgb[0],rgb[1],rgb[2]);
       }
       strip.show();
+    } 
+    else {
+     pulse2(); 
     }
 }
 
@@ -53,7 +59,35 @@ void strobe() {
   delay(10);
   allBlack();
 }
-
+void pulse2() {
+  int r = 0;
+  int g = 0;
+  
+  int b = q;
+  strip.setPixelColor(p, r,g,b);
+  strip.show();
+  p++;
+  if (p>NLEDS){
+    p=0;
+  }
+  if (q > random(0,10000)){
+     q=0;
+  } else { q++; }
+}
+void pulse() {
+  int r = int(.1*random(0,256));
+  int g = int(.1*random(0,256));
+  
+  for(uint16_t i=0; i<strip.numPixels(); i++) {
+    int b = random(0,256);
+    strip.setPixelColor(p, r,g,b);
+  }
+  strip.show();
+  p++;
+  if (p>NLEDS){
+    p=0;
+  }
+}
 void allWhite() {
   for(uint16_t i=0; i<strip.numPixels(); i++) {
       strip.setPixelColor(i, 255,255,255);

@@ -7,31 +7,30 @@ class OSCServer():
     def __init__(
         self,
         video_buffer=None,
-        background=None,
-        peak_meter=None,
-        peak_meter2=None,
-        scanner=None):
+        effects=None):
 
         self.video_buffer=video_buffer
-        self.background=background
-        self.peak_meter=peak_meter
-        self.peak_meter2=peak_meter2
-        self.scanner=scanner
+        self.effects = effects
+        self.background=effects['background']
+        self.peak_meter=effects['peak_meter']
+        self.peak_meter2=effects['peak_meter2']
+        self.scanner=effects['scanner']
 
-
-    def metronome(self,  bpm, beat):
+    def metronome(self, x,  bpm, beat):
         self.scanner.metronome(bpm, beat)
 
-    def color(self, channel, r,g,b):
+    def color(self, name, channel, r,g,b):
         self.background.red(r)
         self.background.green(g)
         self.background.blue(b)
 
-    def bassnuke(self):
-        self.video_buffer.strobe()
+    def bassnuke(self, arg):
+        print("NUKE")
+        self.video_buffer.keyframes()
  
-    def envelope(self, ychannel ):
+    def envelope(self, name, ychannel ):
         y,channel = ychannel.split()
+
         y = float(y)
         channel = int(channel)
         if channel == 1:

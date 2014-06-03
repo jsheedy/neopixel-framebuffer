@@ -1,6 +1,8 @@
 from datetime import datetime
 
-class LarsonScanner(object):
+from .fx import Fx
+
+class LarsonScanner(Fx):
     def __init__(self, video_buffer, n1=360, n2=410):
         self.video_buffer = video_buffer
         self.n1 = n1
@@ -17,7 +19,10 @@ class LarsonScanner(object):
         self.count = int(count)
 
     def update(self):
-
+        super(LarsonScanner, self).update()
+        if not self.enabled:
+            return
+        
         if (datetime.now() - self.timestamp).seconds > 2:
             if self.pos >= self.n2-2:
                 self.velocity = -2

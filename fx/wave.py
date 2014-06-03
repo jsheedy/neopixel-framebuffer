@@ -2,7 +2,9 @@ import itertools
 
 import numpy as np
 
-class Wave(object):
+from .fx import Fx
+
+class Wave(Fx):
 
     def __init__(self, video_buffer, w=1):
         self.video_buffer = video_buffer
@@ -19,6 +21,10 @@ class Wave(object):
             return i
         
     def update(self):
+        super(Wave, self).update()
+        if not self.enabled:
+            return
+        self.video_buffer.lock.acquire()
         i = next(self.pointer)
 
         r_intensity = self.triangle(i%256)
@@ -42,3 +48,5 @@ class Wave(object):
         self.video_buffer.buffer[2:len(self.video_buffer.buffer):3] = get_buffer(b_phase, b_intensity, 3)
 
         self.video_buffer.dirty = True
+        self.video_buffer.lock.release()
+
