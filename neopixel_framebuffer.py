@@ -19,6 +19,7 @@ import numpy as np
 import fx
 import keyframes as kf
 from osc import OSCServer
+import midi
 
 N = 420
 FRAMERATE = 26
@@ -144,7 +145,8 @@ class WebSocket(object):
         pass
 websocket = WebSocket()
 
-video_buffer = VideoBuffer(outputs=[open_serial(), websocket])
+video_buffer = VideoBuffer(outputs=[open_serial()])
+# video_buffer = VideoBuffer(outputs=[open_serial(), websocket])
 
 stop_event = threading.Event()
 
@@ -167,14 +169,17 @@ def demo():
     video_buffer.keyframes(kf.rgb)
     stop_event.set()
 
+
 if __name__ == "__main__":
     thread = threading.Thread(target=write_video_buffer)
     thread.start()
 
+    midi_thread = threading.Thread(target=midi.main)
+    midi_thread.start()
+
     parser = argparse.ArgumentParser(description='desc')
     parser.add_argument('--demo', action='store_true')
     args = parser.parse_args()
-
     if args.demo:
         demo()
     else:
