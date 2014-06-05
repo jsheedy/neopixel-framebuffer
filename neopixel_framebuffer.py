@@ -9,6 +9,7 @@ from collections import OrderedDict
 from datetime import datetime
 import itertools
 import math
+from queue import Queue
 import random
 import serial
 import threading
@@ -151,12 +152,16 @@ video_buffer = VideoBuffer(outputs=[open_serial()])
 stop_event = threading.Event()
 
 layered_effects = OrderedDict()  # define later
-
+queue = Queue()
+x=None
 def write_video_buffer():
     while True:
+        x = not queue.empty() and queue.get(False)
         for key, effect in layered_effects.items():
-#             effect.enabled = random.random() > .5
-            effect.update()
+            if x and x.get('key')==key:
+                layered_effects[key].enabled=x.get('value')
+            if effect.enabled:
+                effect.update()
 
         if stop_event.isSet():
             print("exiting")
@@ -174,9 +179,6 @@ if __name__ == "__main__":
     thread = threading.Thread(target=write_video_buffer)
     thread.start()
 
-    midi_thread = threading.Thread(target=midi.main)
-    midi_thread.start()
-
     parser = argparse.ArgumentParser(description='desc')
     parser.add_argument('--demo', action='store_true')
     args = parser.parse_args()
@@ -188,6 +190,9 @@ if __name__ == "__main__":
         layered_effects['scanner'] = fx.LarsonScanner(video_buffer)
         layered_effects['peak_meter'] = fx.PeakMeter(video_buffer, n1=220, n2=334, reverse=True)
         layered_effects['peak_meter2'] = fx.PeakMeter(video_buffer, n1=0, n2=120, reverse=False)
+
+        midi_thread = threading.Thread(target=midi.main,kwargs={'q':queue})
+        midi_thread.start()
 
         osc_server = OSCServer(
             video_buffer=video_buffer,
