@@ -29,10 +29,11 @@ int ramp(int x) {
 }
 
 int p=0;
-int q=0;
+int q=127;
+int t=0;
 
 char rgb[3];
-int t=0;
+
 void loop() {
     if (Serial.available() > 0) {
       for(uint16_t i=0; i<NLEDS; i++) {
@@ -60,8 +61,9 @@ void strobe() {
   allBlack();
 }
 void pulse2() {
-  int r = 0;
-  int g = 0;
+  int r = t;
+  int g = 255-t;
+  t++;
   
   int b = q;
   strip.setPixelColor(p, r,g,b);
@@ -70,9 +72,13 @@ void pulse2() {
   if (p>NLEDS){
     p=0;
   }
-  if (q > random(0,10000)){
+  if (q > 255){
      q=0;
   } else { q++; }
+  
+  if (t > 255 ){
+     t=0;
+  }
 }
 void pulse() {
   int r = int(.1*random(0,256));

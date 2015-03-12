@@ -4,7 +4,6 @@ from .fx import Fx
 
 class BackGround(Fx):
 
-
     def __init__(self, video_buffer):
         self.video_buffer = video_buffer
         self.bgbuffer = np.zeros(self.video_buffer.N*3, dtype=np.uint8)

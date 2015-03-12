@@ -1,4 +1,3 @@
-
 class OSCServer():
 
     ip = "0.0.0.0"
@@ -14,20 +13,26 @@ class OSCServer():
         self.background=effects['background']
         self.peak_meter=effects['peak_meter']
         self.peak_meter2=effects['peak_meter2']
-        self.scanner=effects['scanner']
+        self.scanner=effects.get('scanner')
+        self.midi_note=effects['midi_note']
 
     def metronome(self, x,  bpm, beat):
-        self.scanner.metronome(bpm, beat)
+        if self.scanner:
+            self.scanner.metronome(bpm, beat)
 
     def color(self, name, channel, r,g,b):
         self.background.red(r)
         self.background.green(g)
         self.background.blue(b)
 
+    def midinote(self, k, note, velocity, channel):
+        print("%d %d" % (note,velocity))
+        self.midi_note.set(note, velocity)
+
     def bassnuke(self, arg):
         print("NUKE")
         self.video_buffer.keyframes()
- 
+
     def envelope(self, name, ychannel ):
         y,channel = ychannel.split()
 
@@ -56,6 +61,7 @@ class OSCServer():
         dispatcher.map("/color/sky", self.color)
         dispatcher.map("/audio/envelope", self.envelope)
         dispatcher.map("/bassnuke", self.bassnuke)
+        dispatcher.map("/midi/note", self.midinote)
         dispatcher.map("/1/fader1", self.fader_red)
         dispatcher.map("/1/fader2", self.fader_green)
         dispatcher.map("/1/fader3", self.fader_blue)

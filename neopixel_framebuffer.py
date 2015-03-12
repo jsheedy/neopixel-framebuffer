@@ -5,12 +5,9 @@ line to an Arduino waiting to map those values to a NeoPixel strip.
 A thread also listens for incoming OSC messages to control the buffer"""
 
 import argparse
+import asyncio
 from collections import OrderedDict
-from datetime import datetime
-import itertools
-import math
 from queue import Queue
-import random
 import serial
 import threading
 import time
@@ -20,6 +17,7 @@ import numpy as np
 import fx
 import keyframes as kf
 from osc import OSCServer
+import websocket_server
 import midi
 
 N = 420
@@ -51,18 +49,18 @@ class VideoBuffer(object):
     buffer = np.zeros(N * 3, dtype=np.uint8)
     lock = threading.Lock()
     dirty = True
-    
+
     def __init__(self, outputs=None, N=N):
         self.outputs = outputs
         self.N = N
-    
+
     def set(self, n, c):
         """ set pixel n to color c (r,g,b)"""
         # self.lock.acquire()
         self.buffer[n * 3:(n + 1) * 3] = c
         self.dirty = True
         # self.lock.release()
-        
+
     def write(self):
 #         self.lock.acquire()
         for output in self.outputs:
@@ -73,7 +71,7 @@ class VideoBuffer(object):
     def mask(self, mask):
         self.buffer[0:N * 3] = np.tile(mask, N)
         self.dirty = True
-        
+
     def white_mask(self):
         self.buffer[0:N * 3] = 255
         self.dirty = True
@@ -101,7 +99,7 @@ class VideoBuffer(object):
         """preempts other f/x running, plays back keyframes"""
         self.lock.acquire()
         keyframes = keyframes or kf.bass_nuke
-        
+
         sleep_latency_factor = .5  # our framerate isn't actual framerate due to arduino latency et all.  should calculate it!
         def dither_color(c1, c2, t):
             if t < 1 / FRAMERATE:
@@ -113,7 +111,7 @@ class VideoBuffer(object):
                 print(c1)
                 yield c1
                 time.sleep(1 / FRAMERATE + .02)
-        
+
         i = iter(keyframes)
         frame = next(i)
         for next_frame in i:
@@ -123,8 +121,8 @@ class VideoBuffer(object):
                 self.mask(color)
                 self.write()
             frame = next_frame
-        self.lock.release() 
-        
+        self.lock.release()
+
     def strobe(self):
         """preempts other f/x running, to get a sweet strobe"""
         self.lock.acquire()
@@ -139,14 +137,17 @@ class VideoBuffer(object):
             self.black_mask()
             self.write()
             time.sleep(delay)
-        self.lock.release() 
+        self.lock.release()
 
 class WebSocket(object):
     def write(self, bytes):
-        pass
+        print("websocket")
+        print(bytes)
+
 websocket = WebSocket()
 
-video_buffer = VideoBuffer(outputs=[open_serial()])
+# video_buffer = VideoBuffer(outputs=[open_serial()])
+video_buffer = VideoBuffer(outputs=[websocket])
 # video_buffer = VideoBuffer(outputs=[open_serial(), websocket])
 
 stop_event = threading.Event()
@@ -174,10 +175,10 @@ def demo():
     video_buffer.keyframes(kf.rgb)
     stop_event.set()
 
-
 if __name__ == "__main__":
-    thread = threading.Thread(target=write_video_buffer)
-    thread.start()
+    video_buffer_thread = threading.Thread(target=write_video_buffer)
+    video_buffer_thread.daemon = True
+    # video_buffer_thread.start()
 
     parser = argparse.ArgumentParser(description='desc')
     parser.add_argument('--demo', action='store_true')
@@ -187,12 +188,19 @@ if __name__ == "__main__":
     else:
         layered_effects['background'] = fx.BackGround(video_buffer)
         layered_effects['wave'] = fx.Wave(video_buffer)
+        layered_effects['midi_note'] = fx.MidiNote(video_buffer)
         layered_effects['scanner'] = fx.LarsonScanner(video_buffer)
         layered_effects['peak_meter'] = fx.PeakMeter(video_buffer, n1=220, n2=334, reverse=True)
         layered_effects['peak_meter2'] = fx.PeakMeter(video_buffer, n1=0, n2=120, reverse=False)
 
         midi_thread = threading.Thread(target=midi.main,kwargs={'q':queue})
+        midi_thread.daemon = True
         midi_thread.start()
+
+        loop = asyncio.get_event_loop()
+        websocket_thread = threading.Thread(target=websocket_server.serve, args=(loop,))
+        websocket_thread.daemon = True
+        websocket_thread.start()
 
         osc_server = OSCServer(
             video_buffer=video_buffer,
