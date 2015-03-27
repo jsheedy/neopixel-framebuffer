@@ -1,6 +1,7 @@
 astroid==1.1.1
 asyncio==3.4.3
-# gevent-socketio==0.3.6
+gnureadline==6.3.3
+ipython==3.0.0
 logilab-common==0.61.0
 numpy==1.8.1
 pylint==1.2.1
@@ -10,6 +11,6 @@ python-rtmidi==0.4.3b1
 requests==2.3.0
 rtmidi-python==0.2.2
 six==1.6.1
-# socketIO-client==0.5.3
-# websocket-client-py3==0.14.0
+socketIO-client==0.5.3
+websocket-client-py3==0.14.0
 websockets==2.4

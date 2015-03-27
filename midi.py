@@ -21,7 +21,11 @@ class MidiInputHandler(object):
 
 def main(q=None):
     port = 0
-    midiin, port_name = open_midiport(port)
+    try:
+        midiin, port_name = open_midiport(port)
+    except:
+        print("no MIDI device")
+        return
 
     print("Attaching MIDI input callback handler.")
     midiin.set_callback(MidiInputHandler(port_name, q=q))
@@ -37,4 +41,4 @@ def main(q=None):
         print("Exit.")
         midiin.close_port()
         del midiin
-    
+

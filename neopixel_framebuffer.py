@@ -7,6 +7,7 @@ A thread also listens for incoming OSC messages to control the buffer"""
 import argparse
 import asyncio
 from collections import OrderedDict
+import json
 from queue import Queue
 import serial
 import threading
@@ -21,7 +22,8 @@ import websocket_server
 import midi
 
 N = 420
-FRAMERATE = 26
+# N = 256
+FRAMERATE = 20 # 26
 BAUDRATE = 460800
 # BAUDRATE = 230400
 # BAUDRATE = 115200
@@ -63,8 +65,8 @@ class VideoBuffer(object):
 
     def write(self):
 #         self.lock.acquire()
-        for output in self.outputs:
-            output.write(self.buffer)
+        # for output in self.outputs:
+        #     output.write(self.buffer)
         self.dirty = False
 #         self.lock.release()
 
@@ -126,10 +128,6 @@ class VideoBuffer(object):
     def strobe(self):
         """preempts other f/x running, to get a sweet strobe"""
         self.lock.acquire()
-
-#         self.white_mask()
-#         self.write()
-        # time.sleep(0.50)
         for delay in (.4, .2, .1, .05, .05):
             self.white_mask()
             self.write()
@@ -139,25 +137,31 @@ class VideoBuffer(object):
             time.sleep(delay)
         self.lock.release()
 
-class WebSocket(object):
+class ConsoleLogger():
     def write(self, bytes):
-        print("websocket")
         print(bytes)
 
-websocket = WebSocket()
+logger = ConsoleLogger()
+try:
+    serial_f = open_serial()
+except:
+    print("no serial")
+    serial_f = None
 
-# video_buffer = VideoBuffer(outputs=[open_serial()])
-video_buffer = VideoBuffer(outputs=[websocket])
+video_buffer = VideoBuffer(outputs=[])
+# video_buffer = VideoBuffer(outputs=[])
+# video_buffer = VideoBuffer(outputs=[logger])
 # video_buffer = VideoBuffer(outputs=[open_serial(), websocket])
 
 stop_event = threading.Event()
 
 layered_effects = OrderedDict()  # define later
-queue = Queue()
-x=None
+midi_queue = Queue()
+ws_event = threading.Event()
+
 def write_video_buffer():
     while True:
-        x = not queue.empty() and queue.get(False)
+        x = not midi_queue.empty() and midi_queue.get(False)
         for key, effect in layered_effects.items():
             if x and x.get('key')==key:
                 layered_effects[key].enabled=x.get('value')
@@ -167,8 +171,11 @@ def write_video_buffer():
         if stop_event.isSet():
             print("exiting")
             break
-        if video_buffer.dirty:
-            video_buffer.write()
+        # if video_buffer.dirty:
+        if serial_f:
+            serial_f.write(video_buffer.buffer)
+        ws_event.set()
+        # ws_queue.put(json.dumps(video_buffer.buffer.tolist()))
         time.sleep(1.0 / FRAMERATE)
 
 def demo():
@@ -178,7 +185,7 @@ def demo():
 if __name__ == "__main__":
     video_buffer_thread = threading.Thread(target=write_video_buffer)
     video_buffer_thread.daemon = True
-    # video_buffer_thread.start()
+    video_buffer_thread.start()
 
     parser = argparse.ArgumentParser(description='desc')
     parser.add_argument('--demo', action='store_true')
@@ -186,19 +193,18 @@ if __name__ == "__main__":
     if args.demo:
         demo()
     else:
-        layered_effects['background'] = fx.BackGround(video_buffer)
+        # layered_effects['background'] = fx.BackGround(video_buffer)
         layered_effects['wave'] = fx.Wave(video_buffer)
-        layered_effects['midi_note'] = fx.MidiNote(video_buffer)
-        layered_effects['scanner'] = fx.LarsonScanner(video_buffer)
-        layered_effects['peak_meter'] = fx.PeakMeter(video_buffer, n1=220, n2=334, reverse=True)
-        layered_effects['peak_meter2'] = fx.PeakMeter(video_buffer, n1=0, n2=120, reverse=False)
+        # layered_effects['midi_note'] = fx.MidiNote(video_buffer)
+        # layered_effects['scanner'] = fx.LarsonScanner(video_buffer, n1=0, n2=255)
+        # layered_effects['peak_meter'] = fx.PeakMeter(video_buffer, n1=100, n2=120, reverse=False)
+        # layered_effects['peak_meter2'] = fx.PeakMeter(video_buffer, n1=200, n2=220, reverse=False)
 
-        midi_thread = threading.Thread(target=midi.main,kwargs={'q':queue})
+        midi_thread = threading.Thread(target=midi.main,kwargs={'q':midi_queue})
         midi_thread.daemon = True
         midi_thread.start()
-
         loop = asyncio.get_event_loop()
-        websocket_thread = threading.Thread(target=websocket_server.serve, args=(loop,))
+        websocket_thread = threading.Thread(target=websocket_server.serve, args=(loop, ws_event, video_buffer.buffer))
         websocket_thread.daemon = True
         websocket_thread.start()
 

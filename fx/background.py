@@ -24,6 +24,5 @@ class BackGround(Fx):
         super(BackGround, self).update()
         if not self.enabled:
             return
-        
-        self.video_buffer.buffer = self.bgbuffer.copy()
-        self.video_buffer.dirty = True
+
+        # self.video_buffer.buffer = self.bgbuffer.copy()

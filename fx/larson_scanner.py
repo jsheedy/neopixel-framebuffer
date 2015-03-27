@@ -22,7 +22,9 @@ class LarsonScanner(Fx):
         super(LarsonScanner, self).update()
         if not self.enabled:
             return
-        
+
+        # if we haven't seen a metronome() call in 2 seconds,
+        # revert to autoscan
         if (datetime.now() - self.timestamp).seconds > 2:
             if self.pos >= self.n2-2:
                 self.velocity = -2
@@ -34,7 +36,7 @@ class LarsonScanner(Fx):
         else:
 
             secs = (datetime.now() - self.timestamp).total_seconds()
-            delta_beat = secs / (60/self.bpm)
+            delta_beat = secs / (60.0/self.bpm)
             if self.count in (1,3):
                 self.pos = int(self.n1 + (self.n2 - self.n1) * delta_beat)
             else:
@@ -45,7 +47,8 @@ class LarsonScanner(Fx):
         if self.pos < self.n1:
             self.pos = self.n1
 
+        self.video_buffer.lock.acquire()
         self.video_buffer.buffer[self.pos*3:self.pos*3+3] = (255,0,0)
         self.video_buffer.buffer[(self.pos-1)*3:(self.pos-1)*3+3] = (35,0,0)
         self.video_buffer.buffer[(self.pos+1)*3:(self.pos+1)*3+3] = (35,0,0)
-        self.video_buffer.dirty = True
+        self.video_buffer.lock.release()
