@@ -8,24 +8,21 @@ import websockets
 def serve(loop, event, video_buffer):
 
     @asyncio.coroutine
+    def producer():
+        # yield from video_buffer.tostring()
+        yield from asyncio.sleep(.1)
+
+    @asyncio.coroutine
     def firehose(websocket, path, timeout=1):
         while True:
-            event.wait()
+            x = yield from producer()
+            data = video_buffer.tostring()
             if not websocket.open:
                 print("BREAK")
                 break
-            # data = json.dumps(video_buffer.tolist())
-
-            data = video_buffer.tostring()
-            try:
-                msg = yield from websocket.send(data)
-            except:
-                print("BROKEN")
-                break
-            event.clear()
-
+            msg = yield from websocket.send(data)
 
     asyncio.set_event_loop(loop)
-    firehose_server = websockets.serve(firehose, 'localhost', 8766)
+    firehose_server = websockets.serve(firehose, '0.0.0.0', 8766)
     asyncio.get_event_loop().run_until_complete(firehose_server)
     asyncio.get_event_loop().run_forever()
