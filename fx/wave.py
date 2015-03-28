@@ -4,22 +4,29 @@ import numpy as np
 
 from .fx import Fx
 
+class ChannelArray():
+    def __init__(self, N, phase, velocity):
+        self.N = N
+        self.buff = np.clip(np.sin(np.arange(N)*(8*np.pi/self.N)),0,1)
+        self.phase = phase
+        self.velocity = velocity
+        self.intensity = 255
+
+    def update(self, i):
+        return (self.intensity * np.roll(self.buff, (self.phase+i*self.velocity)%self.N)) \
+            .astype(np.uint8)
+
 class Wave(Fx):
 
     def __init__(self, video_buffer, w=1):
         self.video_buffer = video_buffer
         self.N = self.video_buffer.N
-        self.array = np.arange(self.N)
-        self.w=w
-        self.v = 1;
+        self.rgb_arrays = {
+            'r': ChannelArray(self.N, 0, 1),
+            'g': ChannelArray(self.N, 120, 2),
+            'b': ChannelArray(self.N, 240, 3)
+        }
         self.pointer = itertools.count(0)
-
-    def triangle(self, i):
-        """convert int 0->255 to 0->255->0 triangle wave"""
-        if i > 127:
-            return abs(128-((i-128)%128))
-        else:
-            return i
 
     def update(self):
         super(Wave, self).update()
@@ -27,24 +34,7 @@ class Wave(Fx):
             return
         i = next(self.pointer)
 
-        r_intensity = self.triangle(i%256)
-        r_phase = 0
-        g_intensity = self.triangle((i+80)%256)
-        g_phase = 100
-        b_intensity = self.triangle((i+160)%256)
-        b_phase = 200
-
-        def get_buffer(phase, intensity, velocity=1):
-            buff = np.arange(self.N)
-            buff = np.roll(buff, (phase+i*velocity)%self.N)
-            buff = np.clip(np.sin(buff*(8*np.pi/self.N)),0,1)
-            buff = (buff * intensity ).astype(np.uint8)
-            return buff
-
-        velocity=2
-        self.video_buffer.lock.acquire()
-        self.video_buffer.buffer[0:len(self.video_buffer.buffer):3] = get_buffer(r_phase, r_intensity, 1)
-        self.video_buffer.buffer[1:len(self.video_buffer.buffer):3] = get_buffer(g_phase, g_intensity, 2)
-        self.video_buffer.buffer[2:len(self.video_buffer.buffer):3] = get_buffer(b_phase, b_intensity, 3)
-        self.video_buffer.lock.release()
+        self.video_buffer.buffer[0:len(self.video_buffer.buffer):3] = self.rgb_arrays['r'].update(i)
+        self.video_buffer.buffer[1:len(self.video_buffer.buffer):3] = self.rgb_arrays['g'].update(i)
+        self.video_buffer.buffer[2:len(self.video_buffer.buffer):3] = self.rgb_arrays['b'].update(i)
 
