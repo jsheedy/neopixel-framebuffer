@@ -10,19 +10,17 @@ class OSCServer():
     def __init__(
         self,
         video_buffer=None,
-        effects=None):
+        effects=None,
+        maps=None):
 
         self.video_buffer=video_buffer
         self.effects = effects
+        self.maps = maps or []
         self.background=effects.get('background')
         self.peak_meter=effects.get('peak_meter')
         self.peak_meter2=effects.get('peak_meter2')
-        self.scanner=effects.get('scanner')
+        self.scanners=effects.get('scanners')
         self.midi_note=effects.get('midi_note')
-
-    def metronome(self, x,  bpm, beat):
-        if self.scanner:
-            self.scanner.metronome(bpm, beat)
 
     def color(self, name, channel, r,g,b):
         self.background.red(r)
@@ -65,7 +63,10 @@ class OSCServer():
         from pythonosc import osc_server
 
         dispatcher = dispatcher.Dispatcher()
-        dispatcher.map("/metronome", self.metronome)
+
+        for map in self.maps:
+            dispatcher.map(map[0], map[1])
+
         dispatcher.map("/color/sky", self.color)
         dispatcher.map("/audio/envelope", self.envelope or logger.debug)
         dispatcher.map("/bassnuke", self.bassnuke)

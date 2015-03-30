@@ -1,19 +1,47 @@
 from datetime import datetime
+import functools
+import math
+
+import numpy as np
 
 from .fx import Fx
 
+def gaussian(x, a=1, b=1, c=2):
+    y = a * math.exp(- ((x-b)**2) / (2*c**2) )
+    return y
+
+v_gaussian = np.vectorize(gaussian)
+
+class Point():
+    """ represent a point as a gaussian distribution that can
+    be placed anywhere on the line of N units.  position is
+    in the normalized range (0.0, 1.0)
+    """
+
+    def __init__(self, pos, N):
+        self.N = N
+        self.pos = pos
+
+    def get_points(self):
+        """ pos is in range (0,1) """
+
+        relativePos = self.pos * self.N
+        f = functools.partial(gaussian, a=255, b=relativePos, c=1.5)
+        points = np.array(list(map(f, range(self.N))))
+        return points
+
 class LarsonScanner(Fx):
-    def __init__(self, video_buffer, n1=360, n2=410):
+    def __init__(self, video_buffer, scanners):
         self.video_buffer = video_buffer
-        self.n1 = n1
-        self.n2 = n2
-        self.pos = n1 + abs(n2 - n1)
+        self.scanners = scanners
+        self.pos = 0.0 # n1 + abs(n2 - n1)
         self.bpm = 120
         self.count = 1
         self.timestamp = datetime(2000,1,1)
-        self.velocity = 2
+        self.velocity = .02
+        self.delta_beat = 0.0
 
-    def metronome(self, bpm, count):
+    def metronome(self, endpoint, bpm, count):
         self.timestamp = datetime.now()
         self.bpm = int(bpm)
         self.count = int(count)
@@ -23,32 +51,35 @@ class LarsonScanner(Fx):
         if not self.enabled:
             return
 
+        N = self.video_buffer.N
+
+        secs = (datetime.now() - self.timestamp).total_seconds()
+
         # if we haven't seen a metronome() call in 2 seconds,
         # revert to autoscan
-        if (datetime.now() - self.timestamp).seconds > 2:
-            if self.pos >= self.n2-2:
-                self.velocity = -2
-
-            if self.pos <= self.n1+2:
-                self.velocity = 2
-
+        if self.delta_beat > 1.1 or self.delta_beat < -.1 or secs > 4:
+            self.delta_beat = 0
             self.pos += self.velocity
+            if self.pos > 1:
+                self.pos = 1
+                self.velocity *= -1
+            elif self.pos < 0:
+                self.pos = 0
+                self.velocity *= -1
+
         else:
-
-            secs = (datetime.now() - self.timestamp).total_seconds()
-            delta_beat = secs / (60.0/self.bpm)
+        # if True:
+            self.delta_beat = secs / (60.0/self.bpm)
+            self.velocity = (self.bpm/60.0)/26
             if self.count in (1,3):
-                self.pos = int(self.n1 + (self.n2 - self.n1) * delta_beat)
+                self.pos = self.delta_beat
             else:
-                self.pos = int(self.n2 - (self.n2 - self.n1) * delta_beat)
+                self.pos =  1-self.delta_beat
 
-        if self.pos > self.n2:
-            self.pos = self.n2-2
-        if self.pos < self.n1:
-            self.pos = self.n1
+        for scanner in self.scanners:
 
-        self.video_buffer.lock.acquire()
-        self.video_buffer.buffer[self.pos*3:self.pos*3+3] = (255,0,0)
-        self.video_buffer.buffer[(self.pos-1)*3:(self.pos-1)*3+3] = (35,0,0)
-        self.video_buffer.buffer[(self.pos+1)*3:(self.pos+1)*3+3] = (35,0,0)
-        self.video_buffer.lock.release()
+            n1,n2 = scanner['n1'], scanner['n2']
+            point = Point(self.pos, n2 - n1)
+            points = point.get_points()
+            self.video_buffer.buffer[0+n1*3:n2*3:3] = [x*gaussian(i, a=1, b=(len(points)*self.pos), c=2) for i,x in enumerate(points)]
+            self.video_buffer.buffer[2+n1*3:n2*3:3] = points*.4

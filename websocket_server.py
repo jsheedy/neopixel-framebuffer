@@ -5,12 +5,12 @@ import time
 
 import websockets
 
-def serve(loop, event, video_buffer):
+def serve(loop, video_buffer):
 
     @asyncio.coroutine
     def producer():
         # yield from video_buffer.tostring()
-        yield from asyncio.sleep(.1)
+        yield from asyncio.sleep(.05)
 
     @asyncio.coroutine
     def firehose(websocket, path, timeout=1):

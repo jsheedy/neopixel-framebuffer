@@ -21,17 +21,12 @@ class PeakMeter(Fx):
 
         y = int(self.level * (self.n2 - self.n1))
 
-        self.video_buffer.lock.acquire()
         if not self.reverse:
-            # self.video_buffer.buffer[self.n1*3:(self.n1+self.last_y)*3] = (100,62,0)*(self.last_y)
-            print(y, self.n2, self.n1)
-            # self.video_buffer.buffer[self.n1*3:(self.n1+y)*3] = (0,155,0)*y
+            self.video_buffer.buffer[self.n1*3:(self.n1+self.last_y)*3] = (100,62,0)*(self.last_y)
+            self.video_buffer.buffer[self.n1*3:(self.n1+y)*3] = (0,155,0)*y
         else:
-            pass
-            # self.video_buffer.buffer[self.n2*3-1:(self.n2-self.last_y)*3-1:-1] = (100,65,0)*self.last_y
-            # self.video_buffer.buffer[(self.n2*3)-1:((self.n2-y)*3):-1] = (0,155,0)*y
-
-        self.video_buffer.lock.release()
+            self.video_buffer.buffer[self.n2*3-1:(self.n2-self.last_y)*3-1:-1] = (100,65,0)*self.last_y
+            self.video_buffer.buffer[(self.n2*3)-1:((self.n2-y)*3):-1] = (0,155,0)*y
 
         # self.last_y = y
         self.video_buffer.dirty = True

@@ -23,7 +23,7 @@ import midi
 
 N = 420
 # N = 256
-FRAMERATE = 24 # 26
+FRAMERATE = 26 # 26
 BAUDRATE = 460800
 # BAUDRATE = 230400
 # BAUDRATE = 115200
@@ -38,9 +38,7 @@ SERIAL_DEVS = (
 def open_serial():
     for dev in SERIAL_DEVS:
         try:
-            s = serial.Serial(port=dev, baudrate=BAUDRATE, timeout=20)
-            x = s.readline()
-            print("opened %s, read: %s" % (dev, x))
+            s = serial.Serial(port=dev, baudrate=BAUDRATE, timeout=2)
             return s
         except (serial.SerialException, OSError):
             print(dev + " didn't open")
@@ -151,13 +149,11 @@ except:
 video_buffer = VideoBuffer(outputs=[])
 # video_buffer = VideoBuffer(outputs=[])
 # video_buffer = VideoBuffer(outputs=[logger])
-# video_buffer = VideoBuffer(outputs=[open_serial(), websocket])
 
 stop_event = threading.Event()
 
 layered_effects = OrderedDict()  # define later
 midi_queue = Queue()
-ws_event = threading.Event()
 
 def write_video_buffer():
     while True:
@@ -165,17 +161,15 @@ def write_video_buffer():
         for key, effect in layered_effects.items():
             if x and x.get('key')==key:
                 layered_effects[key].enabled=x.get('value')
+
             if effect.enabled:
                 effect.update()
 
         if stop_event.isSet():
             print("exiting")
             break
-        # if video_buffer.dirty:
         if serial_f:
             serial_f.write(video_buffer.buffer)
-        ws_event.set()
-        # ws_queue.put(json.dumps(video_buffer.buffer.tolist()))
         time.sleep(1.0 / FRAMERATE)
 
 def demo():
@@ -193,23 +187,32 @@ if __name__ == "__main__":
     if args.demo:
         demo()
     else:
-        # layered_effects['background'] = fx.BackGround(video_buffer)
-        layered_effects['wave'] = fx.Wave(video_buffer)
+        layered_effects['background'] = fx.BackGround(video_buffer)
+        # layered_effects['wave'] = fx.Wave(video_buffer)
         # layered_effects['midi_note'] = fx.MidiNote(video_buffer)
-        # layered_effects['scanner'] = fx.LarsonScanner(video_buffer, n1=0, n2=255)
+        layered_effects['scanner'] = fx.LarsonScanner(video_buffer, scanners=(
+            {'n1':20,'n2':45},
+            {'n1':150,'n2':170},
+            {'n1':250,'n2':290},
+            {'n1':360, 'n2':400},
+        ) )
         # layered_effects['peak_meter'] = fx.PeakMeter(video_buffer, n1=100, n2=120, reverse=False)
         # layered_effects['peak_meter2'] = fx.PeakMeter(video_buffer, n1=200, n2=220, reverse=False)
 
         midi_thread = threading.Thread(target=midi.main,kwargs={'q':midi_queue})
         midi_thread.daemon = True
         midi_thread.start()
+
         loop = asyncio.get_event_loop()
-        websocket_thread = threading.Thread(target=websocket_server.serve, args=(loop, ws_event, video_buffer.buffer))
+        websocket_thread = threading.Thread(target=websocket_server.serve, args=(loop, video_buffer.buffer))
         websocket_thread.daemon = True
         websocket_thread.start()
 
         osc_server = OSCServer(
             video_buffer=video_buffer,
-            effects=layered_effects
+            effects=layered_effects,
+            maps = (
+                ('/metronome', layered_effects['scanner'].metronome),
+            )
         )
         osc_server.serve()
