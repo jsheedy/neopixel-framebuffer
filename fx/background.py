@@ -4,9 +4,10 @@ from .fx import Fx
 
 class BackGround(Fx):
 
-    def __init__(self, video_buffer, color=None):
+    def __init__(self, video_buffer, color=None, intensity=50):
         self.video_buffer = video_buffer
         self.color = color
+        self.intensity = intensity
 
     # def red(self, x):
     #     N = self.video_buffer.N
@@ -19,7 +20,7 @@ class BackGround(Fx):
     def blue(self, x):
         N = self.video_buffer.N
         self.video_buffer.buffer[:] = 0
-        self.video_buffer.buffer[2:N*3:3] = int(x*255)
+        self.video_buffer.buffer[2:N*3:3] = int(self.intensity*x*255)
 
     def clear(self, x):
         N = self.video_buffer.N

@@ -2,33 +2,9 @@ from datetime import datetime
 import functools
 import math
 
-import numpy as np
-
 from .fx import Fx
+from point import Point, gaussian
 
-def gaussian(x, a=1, b=1, c=2):
-    y = a * math.exp(- ((x-b)**2) / (2*c**2) )
-    return y
-
-v_gaussian = np.vectorize(gaussian)
-
-class Point():
-    """ represent a point as a gaussian distribution that can
-    be placed anywhere on the line of N units.  position is
-    in the normalized range (0.0, 1.0)
-    """
-
-    def __init__(self, pos, N):
-        self.N = N
-        self.pos = pos
-
-    def get_points(self):
-        """ pos is in range (0,1) """
-
-        relativePos = self.pos * self.N
-        f = functools.partial(gaussian, a=255, b=relativePos, c=1.5)
-        points = np.array(list(map(f, range(self.N))))
-        return points
 
 class LarsonScanner(Fx):
     def __init__(self, video_buffer, scanners):
@@ -81,5 +57,5 @@ class LarsonScanner(Fx):
             n1,n2 = scanner['n1'], scanner['n2']
             point = Point(self.pos, n2 - n1)
             points = point.get_points()
-            self.video_buffer.buffer[0+n1*3:n2*3:3] = [x*gaussian(i, a=1, b=(len(points)*self.pos), c=2) for i,x in enumerate(points)]
-            self.video_buffer.buffer[2+n1*3:n2*3:3] = points*.4
+            self.video_buffer.buffer[0+n1*3:n2*3:3] += [x*gaussian(i, a=1, b=(len(points)*self.pos), c=2) for i,x in enumerate(points)]
+            self.video_buffer.buffer[2+n1*3:n2*3:3] += points*.4

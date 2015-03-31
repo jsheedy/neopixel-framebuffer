@@ -156,6 +156,7 @@ layered_effects = OrderedDict()  # define later
 midi_queue = Queue()
 
 def write_video_buffer():
+    from fx import Wave
     while True:
         x = not midi_queue.empty() and midi_queue.get(False)
         for key, effect in layered_effects.items():
@@ -176,7 +177,7 @@ def demo():
     video_buffer.keyframes(kf.rgb)
     stop_event.set()
 
-if __name__ == "__main__":
+def main():
     video_buffer_thread = threading.Thread(target=write_video_buffer)
     video_buffer_thread.daemon = True
     video_buffer_thread.start()
@@ -187,8 +188,8 @@ if __name__ == "__main__":
     if args.demo:
         demo()
     else:
-        layered_effects['background'] = fx.BackGround(video_buffer)
-        # layered_effects['wave'] = fx.Wave(video_buffer)
+        layered_effects['background'] = fx.BackGround(video_buffer, color='')
+        layered_effects['wave'] = fx.Wave(video_buffer)
         # layered_effects['midi_note'] = fx.MidiNote(video_buffer)
         layered_effects['scanner'] = fx.LarsonScanner(video_buffer, scanners=(
             {'n1':20,'n2':45},
@@ -216,3 +217,6 @@ if __name__ == "__main__":
             )
         )
         osc_server.serve()
+
+if __name__ == "__main__":
+    main()
