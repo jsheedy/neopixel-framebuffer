@@ -55,4 +55,8 @@ coverage.xml
 # Sphinx documentation
 docs/_build/
 
-.sublime-workspace
+*.sublime-workspace
+client/bower_components
+client/node_modules
+client/.tmp
+client/.sass-cache
