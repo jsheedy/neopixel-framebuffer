@@ -52,7 +52,7 @@ class Wave(Fx):
             return
         i = next(self.pointer)
 
-        self.video_buffer.buffer[0:len(self.video_buffer.buffer):3] += self.rgb_arrays['r'].update(i)
-        self.video_buffer.buffer[1:len(self.video_buffer.buffer):3] += self.rgb_arrays['g'].update(i)
-        self.video_buffer.buffer[2:len(self.video_buffer.buffer):3] += self.rgb_arrays['b'].update(i)
+        self.video_buffer.buffer[::3] += self.rgb_arrays['r'].update(i)
+        self.video_buffer.buffer[1::3] += self.rgb_arrays['g'].update(i)
+        self.video_buffer.buffer[2::3] += self.rgb_arrays['b'].update(i)
 

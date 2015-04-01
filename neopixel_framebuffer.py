@@ -174,7 +174,14 @@ def write_video_buffer():
         time.sleep(1.0 / FRAMERATE)
 
 def demo():
-    video_buffer.keyframes(kf.rgb)
+    meter = fx.PeakMeter(video_buffer, meters=(
+                {'n1': 342, 'n2': 400, 'reverse': False},
+            ))
+    for f in range(1000):
+        meter.meters[0].set(f/1000.0)
+        meter.update()
+        time.sleep(.02)
+    # video_buffer.keyframes(kf.rgb)
     stop_event.set()
 
 def main():
@@ -189,15 +196,20 @@ def main():
         demo()
     else:
         layered_effects['background'] = fx.BackGround(video_buffer, color='')
-        layered_effects['wave'] = fx.Wave(video_buffer)
+        # layered_effects['wave'] = fx.Wave(video_buffer)
         # layered_effects['midi_note'] = fx.MidiNote(video_buffer)
         layered_effects['scanner'] = fx.LarsonScanner(video_buffer, scanners=(
-            {'n1':20,'n2':45},
+            {'n1':20, 'n2':45},
             {'n1':150,'n2':170},
             {'n1':250,'n2':290},
-            {'n1':360, 'n2':400},
+            # {'n1':360,'n2':400},
         ) )
-        # layered_effects['peak_meter'] = fx.PeakMeter(video_buffer, n1=100, n2=120, reverse=False)
+
+        layered_effects['peak_meter'] = fx.PeakMeter(video_buffer, meters=(
+            # {'n1': 10, 'n2': 100, 'reverse': False},
+            # {'n1': 180, 'n2': 280, 'reverse': False},
+            {'n1': 342, 'n2': 400, 'reverse': False},
+        ))
         # layered_effects['peak_meter2'] = fx.PeakMeter(video_buffer, n1=200, n2=220, reverse=False)
 
         midi_thread = threading.Thread(target=midi.main,kwargs={'q':midi_queue})
@@ -214,6 +226,7 @@ def main():
             effects=layered_effects,
             maps = (
                 ('/metronome', layered_effects['scanner'].metronome),
+                ('/audio/envelope', layered_effects['peak_meter'].envelope),
             )
         )
         osc_server.serve()

@@ -4,6 +4,14 @@
 		"selected_items":
 		[
 			[
+				"Web",
+				"WebSocketServer"
+			],
+			[
+				"We",
+				"WebSocket"
+			],
+			[
 				"d",
 				"div"
 			]
@@ -12,45 +20,48 @@
 	"buffers":
 	[
 		{
-			"file": "neopixel_framebuffer.py",
+			"file": "fx/wave.py",
 			"settings":
 			{
-				"buffer_size": 5815,
+				"buffer_size": 1872,
 				"line_ending": "Unix"
 			}
 		},
 		{
-			"contents": "Searching 29 files for \"socket\"\n\n/Users/velotron/project/arduino/neopixel-framebuffer/.idea/workspace.xml:\n   71          </entry>\n   72        </file>\n   73:       <file leaf-file-name=\"socketserver.py\" pinned=\"false\" current=\"false\" current-in-tab=\"false\">\n   74:         <entry file=\"file:///usr/local/Cellar/python3/3.3.2/Frameworks/Python.framework/Versions/3.3/lib/python3.3/socketserver.py\">\n   75            <provider selected=\"true\" editor-type-id=\"text-editor\">\n   76              <state vertical-scroll-proportion=\"0.0\" vertical-offset=\"6825\" max-vertical-offset=\"11265\">\n   ..\n  451        </provider>\n  452      </entry>\n  453:     <entry file=\"file:///usr/local/Cellar/python3/3.3.2/Frameworks/Python.framework/Versions/3.3/lib/python3.3/socketserver.py\">\n  454        <provider selected=\"true\" editor-type-id=\"text-editor\">\n  455          <state vertical-scroll-proportion=\"0.0\" vertical-offset=\"6825\" max-vertical-offset=\"11265\">\n  ...\n  499        </provider>\n  500      </entry>\n  501:     <entry file=\"file:///usr/local/Cellar/python3/3.3.2/Frameworks/Python.framework/Versions/3.3/lib/python3.3/socketserver.py\">\n  502        <provider selected=\"true\" editor-type-id=\"text-editor\">\n  503          <state vertical-scroll-proportion=\"0.0\" vertical-offset=\"2310\" max-vertical-offset=\"11265\">\n  ...\n  547        </provider>\n  548      </entry>\n  549:     <entry file=\"file:///usr/local/Cellar/python3/3.3.2/Frameworks/Python.framework/Versions/3.3/lib/python3.3/socketserver.py\">\n  550        <provider selected=\"true\" editor-type-id=\"text-editor\">\n  551          <state vertical-scroll-proportion=\"0.0\" vertical-offset=\"2310\" max-vertical-offset=\"11265\">\n  ...\n  595        </provider>\n  596      </entry>\n  597:     <entry file=\"file:///usr/local/Cellar/python3/3.3.2/Frameworks/Python.framework/Versions/3.3/lib/python3.3/socketserver.py\">\n  598        <provider selected=\"true\" editor-type-id=\"text-editor\">\n  599          <state vertical-scroll-proportion=\"0.0\" vertical-offset=\"6392\" max-vertical-offset=\"11205\">\n  ...\n  642        </provider>\n  643      </entry>\n  644:     <entry file=\"file:///usr/local/Cellar/python3/3.3.2/Frameworks/Python.framework/Versions/3.3/lib/python3.3/socketserver.py\">\n  645        <provider selected=\"true\" editor-type-id=\"text-editor\">\n  646          <state vertical-scroll-proportion=\"0.0\" vertical-offset=\"9287\" max-vertical-offset=\"11205\">\n\n/Users/velotron/project/arduino/neopixel-framebuffer/neopixel_framebuffer.py:\n  138          self.lock.release()\n  139  \n  140: class WebSocket(object):\n  141      def write(self, bytes):\n  142          pass\n  143  \n  144: websocket = WebSocket()\n  145  \n  146  # video_buffer = VideoBuffer(outputs=[open_serial()])\n  147: video_buffer = VideoBuffer(outputs=[open_serial(), websocket])\n  148  \n  149  stop_event = threading.Event()\n\n11 matches across 2 files\n",
+			"file": "neopixel_framebuffer.py",
 			"settings":
 			{
-				"buffer_size": 2858,
-				"line_ending": "Unix",
-				"name": "Find Results",
-				"scratch": true
+				"buffer_size": 6310,
+				"line_ending": "Unix"
 			}
 		},
 		{
 			"file": "osc.py",
 			"settings":
 			{
-				"buffer_size": 2117,
+				"buffer_size": 2247,
 				"line_ending": "Unix"
 			}
 		}
 	],
 	"build_system": "",
+	"build_system_choices":
+	[
+	],
+	"build_varint": "",
 	"command_palette":
 	{
-		"height": 247.0,
+		"height": 392.0,
+		"last_filter": "",
 		"selected_items":
 		[
 			[
-				"toggl",
-				"SublimeLinter: Toggle Linter"
-			],
-			[
 				"i",
 				"Package Control: Install Package"
+			],
+			[
+				"toggl",
+				"SublimeLinter: Toggle Linter"
 			],
 			[
 				"p",
@@ -85,7 +96,7 @@
 				"View: Toggle Status Bar"
 			]
 		],
-		"width": 476.0
+		"width": 406.0
 	},
 	"console":
 	{
@@ -106,10 +117,23 @@
 	},
 	"expanded_folders":
 	[
-		"/Users/velotron/project/arduino/neopixel-framebuffer"
+		"/Users/velotron/project/arduino/neopixel-framebuffer",
+		"/Users/velotron/project/arduino/neopixel-framebuffer/neopixel_framebuffer"
 	],
 	"file_history":
 	[
+		"/Users/velotron/project/arduino/neopixel-framebuffer/point.py",
+		"/Users/velotron/project/arduino/neopixel-framebuffer/fx/larson_scanner.py",
+		"/Users/velotron/project/arduino/neopixel-framebuffer/fx/peak_meter.py",
+		"/Users/velotron/project/arduino/neopixel-framebuffer/osc.py",
+		"/Users/velotron/project/arduino/neopixel-framebuffer/fx/wave.py",
+		"/Users/velotron/project/arduino/neopixel-framebuffer/fx/background.py",
+		"/Users/velotron/project/arduino/neopixel-framebuffer/neopixel_framebuffer.py",
+		"/Users/velotron/project/arduino/neopixel-framebuffer/websocket_server.py",
+		"/Users/velotron/project/arduino/neopixel-framebuffer/neopixel_framebuffer/neopixel_framebuffer.ino",
+		"/Users/velotron/project/arduino/neopixel-framebuffer/fx/fx.py",
+		"/Users/velotron/project/arduino/neopixel-framebuffer/midi.py",
+		"/Users/velotron/project/arduino/neopixel-framebuffer/fx/midi_note.py",
 		"/Users/velotron/project/arise/git/arise/js/create_graph_from_local_file.js",
 		"/Users/velotron/project/arise/git/arise/js/arise.js",
 		"/Users/velotron/project/arise/2010-10-30_protoglitch/Unity 2010-10-30 00-18-04-61.bmp",
@@ -209,6 +233,35 @@
 		"case_sensitive": false,
 		"find_history":
 		[
+			"phase",
+			"threading",
+			"phase",
+			"np.",
+			"delta_be",
+			"delta_",
+			"FRAMERATE",
+			"FRAME",
+			"effects",
+			"effect",
+			"scanner",
+			"gauss",
+			"width",
+			"stop_event",
+			"ws_q",
+			"ws_event",
+			"event",
+			"FRAMERATE",
+			"self.w",
+			"event",
+			"update",
+			"]",
+			"[",
+			"video_buffer.buffer",
+			"video_buffer",
+			"queue",
+			"print",
+			"FRAME",
+			"thremulading",
 			"outputs",
 			"socket",
 			"def",
@@ -304,19 +357,19 @@
 			[
 				{
 					"buffer": 0,
-					"file": "neopixel_framebuffer.py",
+					"file": "fx/wave.py",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 5815,
+						"buffer_size": 1872,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								3988,
-								3988
+								403,
+								403
 							]
 						],
 						"settings":
@@ -326,7 +379,7 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 1678.0,
+						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
 					"stack_index": 0,
@@ -334,111 +387,49 @@
 				},
 				{
 					"buffer": 1,
+					"file": "neopixel_framebuffer.py",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 2858,
+						"buffer_size": 6310,
 						"regions":
 						{
-							"match":
-							{
-								"flags": 112,
-								"regions":
-								[
-									[
-										187,
-										193
-									],
-									[
-										381,
-										387
-									],
-									[
-										752,
-										758
-									],
-									[
-										1115,
-										1121
-									],
-									[
-										1478,
-										1484
-									],
-									[
-										1841,
-										1847
-									],
-									[
-										2204,
-										2210
-									],
-									[
-										2536,
-										2542
-									],
-									[
-										2625,
-										2631
-									],
-									[
-										2637,
-										2643
-									],
-									[
-										2776,
-										2782
-									]
-								],
-								"scope": ""
-							}
 						},
 						"selection":
 						[
 							[
-								2538,
-								2538
+								5145,
+								5145
 							]
 						],
 						"settings":
 						{
-							"detect_indentation": false,
-							"line_numbers": false,
-							"output_tag": 1,
-							"result_base_dir": "",
-							"result_file_regex": "^([A-Za-z\\\\/<].*):$",
-							"result_line_regex": "^ +([0-9]+):",
-							"scroll_past_end": true,
-							"syntax": "Packages/Default/Find Results.hidden-tmLanguage"
+							"syntax": "Packages/Python/Python.tmLanguage",
+							"tab_size": 4,
+							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 355.0,
+						"translation.y": 1570.0,
 						"zoom_level": 1.0
 					},
 					"stack_index": 1,
 					"type": "text"
-				}
-			]
-		},
-		{
-			"selected": 0,
-			"sheets":
-			[
+				},
 				{
 					"buffer": 2,
 					"file": "osc.py",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 2117,
+						"buffer_size": 2247,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								955,
-								955
+								2070,
+								2070
 							]
 						],
 						"settings":
@@ -474,18 +465,11 @@
 				0,
 				1,
 				1
-			],
-			[
-				1,
-				0,
-				2,
-				1
 			]
 		],
 		"cols":
 		[
 			0.0,
-			0.5,
 			1.0
 		],
 		"rows":
@@ -503,6 +487,7 @@
 	{
 		"height": 0.0
 	},
+	"pinned_build_system": "",
 	"project": "neopixel-framebuffer.sublime-project",
 	"replace":
 	{
@@ -512,8 +497,37 @@
 	"select_file":
 	{
 		"height": 0.0,
+		"last_filter": "",
 		"selected_items":
 		[
+			[
+				"point",
+				"point.py"
+			],
+			[
+				"back",
+				"fx/background.py"
+			],
+			[
+				"wave",
+				"fx/wave.py"
+			],
+			[
+				"wav",
+				"fx/wave.py"
+			],
+			[
+				"larson",
+				"fx/larson_scanner.py"
+			],
+			[
+				"peak",
+				"fx/peak_meter.py"
+			],
+			[
+				"osc.",
+				"osc.py"
+			],
 			[
 				"",
 				"tubaluba.github.io/css/tubalubaband.css"
@@ -524,6 +538,7 @@
 	"select_project":
 	{
 		"height": 500.0,
+		"last_filter": "",
 		"selected_items":
 		[
 			[
@@ -536,6 +551,7 @@
 	"select_symbol":
 	{
 		"height": 392.0,
+		"last_filter": "",
 		"selected_items":
 		[
 		],
@@ -549,7 +565,7 @@
 	"show_open_files": true,
 	"show_tabs": true,
 	"side_bar_visible": true,
-	"side_bar_width": 318.0,
+	"side_bar_width": 338.0,
 	"status_bar_visible": true,
 	"template_settings":
 	{
