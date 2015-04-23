@@ -45,25 +45,37 @@ angular
   })
 
   .directive('neopixel', function() {
-      // constants
-      var margin = 20,
-        width = 600,
-        height = 600,
-        radius = ~~(width/105.0), // convert to int
-        color = d3.interpolateRgb("#f77", "#77f"),
-        // N=420
-        x1 = 105,
-        y1 = 105,
-        x2 = 105,
-        y2 = 105;
-
       return {
         restrict: 'E',
+        template: '<div class="neopixel"></div>',
         scope: {
           data: '=',
         },
         link: function (scope, element, attrs) {
-          console.log(element);
+          var div = element.select('div');
+          scope.getElementDimensions = function () {
+             return { 'h': div.offsetHeight, 'w': div.offsetWidth };
+           };
+
+           scope.$watch(scope.getElementDimensions, function (newValue, oldValue) {
+              console.log('resize', div, scope.getElementDimensions())
+           }, true);
+
+           element.bind('resize', function () {
+             scope.$apply();
+           });
+
+          // constants
+          var width = 400,
+            height = 400,
+            radius = ~~(width/105.0), // convert to int
+            color = d3.interpolateRgb("#f77", "#77f"),
+            // N=420
+            x1 = 105,
+            y1 = 105,
+            x2 = 105,
+            y2 = 105;
+
           var iToXY = function(i) {
             var ret = null;
             if (i < y1) {
@@ -78,7 +90,7 @@ angular
             return ret;
           };
 
-          var container = d3.select(element[0]);
+          var container = d3.select(element[0]).select('.neopixel');
           var svg = container.append("svg")
               .attr("width", width)
               .attr("height", height);

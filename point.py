@@ -14,14 +14,14 @@ class Point():
     """
 
     def __init__(self, pos, N, width=1.5):
+        """ pos is in range (0,1) """
         self.N = N
         self.pos = pos
         self.width = width
 
-    def get_points(self):
-        """ pos is in range (0,1) """
-
-        relativePos = .2*self.N + self.pos * (0.6*self.N)
+    def get_points(self, margin=0.2):
+        """returns numpy array of N points"""
+        relativePos = margin*self.N + self.pos * ((1-margin)*self.N)
         f = functools.partial(gaussian, a=255, b=relativePos, c=self.width)
         points = np.array(list(map(f, range(self.N))))
         return points

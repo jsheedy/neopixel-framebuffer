@@ -29,7 +29,7 @@ int ramp(int x) {
 
 int p = 0;
 int q = 127;
-int t = 0;
+float t = 0;
 
 byte rgb[3];
 
@@ -59,27 +59,23 @@ void strobe() {
   delay(10);
   allBlack();
 }
+  int r = 0; //127* (1+sin(t/10.0));
+  int g=0;
+//  int g = 255 - r;
+  int b = 0;
+  uint16_t i;
 void pulse2() {
-  int r = t;
-  int g = 255 - t;
-  t++;
 
-  int b = q;
-  strip.setPixelColor(p, r, g, b);
+  t+= .1;
+//    i+=1;
+    for (i=0; i < NLEDS; i++) {
+      g = 127* (1+sin((8*3.14159)*i/NLEDS + t));
+      r = int(float(i)/NLEDS*100);
+      strip.setPixelColor(i, g, r, b);
+    }
+//  strip.setPixelColor(p, g, r, b);
   strip.show();
-  p++;
-  if (p > NLEDS) {
-    p = 0;
-  }
-  if (q > 255) {
-    q = 0;
-  } else {
-    q++;
-  }
 
-  if (t > 255 ) {
-    t = 0;
-  }
 }
 void pulse() {
   int r = int(.1 * random(0, 256));

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 import itertools
-import time 
+import time
 
 from pythonosc import dispatcher
 from pythonosc import osc_server
@@ -23,7 +23,6 @@ def metronome():
 
 def bass_nuke():
     msg = osc_message_builder.OscMessageBuilder(address = "/bassnuke")
-    msg.add_arg('wtf')
     msg = msg.build()
     client.send(msg)
 
@@ -32,17 +31,17 @@ def color_ramp():
     g = 0
     b = 0
 
-    for i in range(1,4): 
-        for j in itertools.chain(range(0, 255, 4),range(255,0,-4)): 
+    for i in range(1,4):
+        for j in itertools.chain(range(0, 255, 4),range(255,0,-4)):
 
             if i==1:
-                g=b=0 
+                g=b=0
                 r=j
             elif i==2:
-                r=b=0 
+                r=b=0
                 g=j
             elif i==3:
-                r=g=0 
+                r=g=0
                 b=j
             msg = osc_message_builder.OscMessageBuilder(address = "/color/sky")
             msg.add_arg('wtf')
@@ -56,6 +55,12 @@ def color_ramp():
 
 
 bass_nuke()
+
+
+for i in range(0,10000):
+    msg = osc_message_builder.OscMessageBuilder(address = "/audio/envelope/{}/1".format(i/10000.0))
+    msg = msg.build()
+    client.send(msg)
 # .color_ramp()
 # time.sleep(.5)
 # metronome()

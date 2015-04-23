@@ -1,5 +1,6 @@
 from datetime import datetime
 import functools
+import logging
 import math
 
 from .fx import Fx
@@ -18,6 +19,7 @@ class LarsonScanner(Fx):
         self.delta_beat = 0.0
 
     def metronome(self, endpoint, bpm, count):
+        logging.info(bpm)
         self.timestamp = datetime.now()
         self.bpm = int(bpm)
         self.count = int(count)
@@ -58,4 +60,5 @@ class LarsonScanner(Fx):
             point = Point(self.pos, n2 - n1)
             points = point.get_points()
             self.video_buffer.buffer[0+n1*3:n2*3:3] += [x*gaussian(i, a=1, b=(len(points)*self.pos), c=2) for i,x in enumerate(points)]
+            self.video_buffer.buffer[2+n1*3:n2*3:3] *= .1 # bring down other fx first
             self.video_buffer.buffer[2+n1*3:n2*3:3] += points*.4

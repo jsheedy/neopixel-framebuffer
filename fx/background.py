@@ -9,13 +9,13 @@ class BackGround(Fx):
         self.color = color
         self.intensity = intensity
 
-    # def red(self, x):
-    #     N = self.video_buffer.N
-    #     self.bgbuffer[0:N*3:3] = int(x*255)
+    def red(self, x):
+        N = self.video_buffer.N
+        self.bgbuffer[0:N*3:3] = int(x*255)
 
-    # def green(self, x):
-    #     N = self.video_buffer.N
-    #     self.bgbuffer[1:N*3:3] = int(x*255)
+    def green(self, x):
+        N = self.video_buffer.N
+        self.bgbuffer[1:N*3:3] = int(x*255)
 
     def blue(self, x):
         N = self.video_buffer.N
