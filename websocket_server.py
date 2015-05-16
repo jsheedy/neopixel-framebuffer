@@ -22,7 +22,8 @@ def serve(loop, video_buffer):
                 break
             msg = yield from websocket.send(data)
 
-    asyncio.set_event_loop(loop)
+    # asyncio.set_event_loop(loop)
     firehose_server = websockets.serve(firehose, '0.0.0.0', 8766)
-    asyncio.get_event_loop().run_until_complete(firehose_server)
-    asyncio.get_event_loop().run_forever()
+    # asyncio.get_event_loop().run_until_complete(firehose_server)
+    loop.run_until_complete(firehose_server)
+    # asyncio.get_event_loop().run_forever()

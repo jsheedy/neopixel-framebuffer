@@ -22,6 +22,8 @@ from osc import OSCServer
 import websocket_server
 import midi
 
+logging.basicConfig(level=logging.INFO)
+
 N = 420
 # N = 256
 FRAMERATE = 26.8 # 26.8 is on the edge of glitching the neopixels on my 2010 MBP.  Just enough glitch to be tasty.
@@ -148,23 +150,23 @@ stop_event = threading.Event()
 layered_effects = OrderedDict()  # define later
 midi_queue = Queue()
 
+@asyncio.coroutine
 def write_video_buffer():
-    from fx import Wave
     while True:
-        x = not midi_queue.empty() and midi_queue.get(False)
-        for key, effect in layered_effects.items():
-            if x and x.get('key')==key:
-                layered_effects[key].enabled=x.get('value')
+        # x = not midi_queue.empty() and midi_queue.get(False)
+        # for key, effect in layered_effects.items():
+        #     if x and x.get('key')==key:
+        #         layered_effects[key].enabled=x.get('value')
 
-            if effect.enabled:
-                effect.update()
+        #     if effect.enabled:
+        #         effect.update()
 
-        if stop_event.isSet():
-            print("exiting")
-            break
+        # if stop_event.isSet():
+        #     print("exiting")
+        #     break
         if serial_f:
             serial_f.write(video_buffer.buffer)
-        time.sleep(1.0 / FRAMERATE)
+        yield from asyncio.sleep(1.0 / FRAMERATE)
 
 def demo():
     meter = fx.PeakMeter(video_buffer, meters=(
@@ -178,9 +180,9 @@ def demo():
     stop_event.set()
 
 def main():
-    video_buffer_thread = threading.Thread(target=write_video_buffer)
-    video_buffer_thread.daemon = True
-    video_buffer_thread.start()
+    # video_buffer_thread = threading.Thread(target=write_video_buffer)
+    # video_buffer_thread.daemon = True
+    # video_buffer_thread.start()
 
     parser = argparse.ArgumentParser(description='desc')
     parser.add_argument('--demo', action='store_true')
@@ -190,20 +192,20 @@ def main():
     else:
         layered_effects['background'] = fx.BackGround(video_buffer, color='')
         # layered_effects['wave'] = fx.Wave(video_buffer)
-        layered_effects['midi_note'] = fx.MidiNote(video_buffer)
+        # layered_effects['midi_note'] = fx.MidiNote(video_buffer)
         layered_effects['pointX'] = fx.PointFx(video_buffer, axis=0)
         layered_effects['pointY'] = fx.PointFx(video_buffer, axis=1)
         layered_effects['pointZ'] = fx.PointFx(video_buffer, axis=2)
-        # layered_effects['scanner'] = fx.LarsonScanner(video_buffer, scanners=(
-        #     {'n1':20, 'n2':45},
-        #     {'n1':150,'n2':170},
-        #     {'n1':250,'n2':290},
-        #     # {'n1':360,'n2':400},
-        # ) )
+        layered_effects['scanner'] = fx.LarsonScanner(video_buffer, scanners=(
+            {'n1':20, 'n2':45},
+            {'n1':150,'n2':170},
+            {'n1':250,'n2':290},
+            # {'n1':360,'n2':400},
+        ) )
 
         layered_effects['peak_meter'] = fx.PeakMeter(video_buffer, meters=(
-            # {'n1': 10, 'n2': 100, 'reverse': False},
-            # {'n1': 180, 'n2': 280, 'reverse': False},
+            {'n1': 10, 'n2': 100, 'reverse': False},
+            {'n1': 180, 'n2': 280, 'reverse': False},
             {'n1': 342, 'n2': 400, 'reverse': False},
         ))
 
@@ -212,15 +214,14 @@ def main():
         midi_thread.start()
 
         loop = asyncio.get_event_loop()
-        websocket_thread = threading.Thread(target=websocket_server.serve, args=(loop, video_buffer.buffer))
-        websocket_thread.daemon = True
-        websocket_thread.start()
+        asyncio.Task(write_video_buffer())
+        websocket_server.serve(loop, video_buffer.buffer)
 
         osc_queue = Queue()
 
-        def osc_queuer(*args):
-            print(args,)
-            # logging.info(msg)
+        def osc_logger(*args):
+            # print(args,)
+            logging.info(args)
             # osc_queue.put(msg)
 
         def color_sky(self, name, channel, r,g,b):
@@ -229,22 +230,30 @@ def main():
             layered_effects['background'].blue(b)
 
         osc_server = OSCServer(
+            loop = loop,
             maps = (
-                # ('/metronome', layered_effects['scanner'].metronome),
-                # ('/audio/envelope', layered_effects['peak_meter'].envelope),
-                ('/color/sky', color_sky),
-                ('/bassnuke', video_buffer.keyframes),
-                ('/midi/note', layered_effects['midi_note'].set),
+                ('/metronome', layered_effects['scanner'].metronome),
+                ('/audio/envelope', layered_effects['peak_meter'].envelope),
+                # ('/color/sky', color_sky),
+                # ('/bassnuke', video_buffer.keyframes),
+                # ('/midi/note', layered_effects['midi_note'].set),
                 ('/accxyz', layered_effects['pointX'].xyz),
-                ('/accxyz', layered_effects['pointY'].xyz),
-                ('/accxyz', layered_effects['pointZ'].xyz),
+                # ('/accxyz', layered_effects['pointY'].xyz),
+                # ('/accxyz', layered_effects['pointZ'].xyz),
                 # ('/1/fader1', layered_effects['background'].red),
                 # ('/1/fader2',  layered_effects['background'].green),
                 # ('/1/fader3',  layered_effects['background'].blue),
-                # ('/*', osc_queuer),
+                # ('/*', osc_logger),
             )
         )
         osc_server.serve()
+
+        try:
+            loop.run_forever()
+        except KeyboardInterrupt:
+            pass
+        finally:
+            loop.close()
 
 if __name__ == "__main__":
     main()
