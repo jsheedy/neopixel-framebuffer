@@ -1,11 +1,12 @@
 import asyncio
 import json
+import logging
 import random
 import time
 
 import websockets
 
-def serve(loop, video_buffer):
+def serve(loop, video_buffer, server_address=('0.0.0.0', 8766)):
 
     @asyncio.coroutine
     def producer():
@@ -22,8 +23,6 @@ def serve(loop, video_buffer):
                 break
             msg = yield from websocket.send(data)
 
-    # asyncio.set_event_loop(loop)
-    firehose_server = websockets.serve(firehose, '0.0.0.0', 8766)
-    # asyncio.get_event_loop().run_until_complete(firehose_server)
+    logging.info("websockets serving on {}".format(server_address))
+    firehose_server = websockets.serve(firehose, *server_address)
     loop.run_until_complete(firehose_server)
-    # asyncio.get_event_loop().run_forever()

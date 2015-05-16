@@ -7,6 +7,7 @@ A thread also listens for incoming OSC messages to control the buffer"""
 import argparse
 import asyncio
 from collections import OrderedDict
+from datetime import datetime
 import json
 import logging
 from queue import Queue
@@ -26,7 +27,7 @@ logging.basicConfig(level=logging.INFO)
 
 N = 420
 # N = 256
-FRAMERATE = 26.8 # 26.8 is on the edge of glitching the neopixels on my 2010 MBP.  Just enough glitch to be tasty.
+FRAMERATE = 30 # 26.8 is on the edge of glitching the neopixels on my 2010 MBP.  Just enough glitch to be tasty.
 BAUDRATE = 460800
 # BAUDRATE = 230400
 # BAUDRATE = 115200
@@ -42,54 +43,22 @@ def open_serial():
     for dev in SERIAL_DEVS:
         try:
             s = serial.Serial(port=dev, baudrate=BAUDRATE, timeout=2)
+            logging.info("Opened serial port {}".format(dev))
             return s
         except (serial.SerialException, OSError):
-            print(dev + " didn't open")
+            logging.debug("Couldn't open serial port {}".format(dev))
     raise Exception("couldn't open any serial port, failing")
 
 
 class VideoBuffer(object):
     buffer = np.zeros(N * 3, dtype=np.uint8)
-    lock = threading.Lock()
-    dirty = True
 
-    def __init__(self, outputs=None, N=N):
-        self.outputs = outputs
+    def __init__(self, N=N):
         self.N = N
 
     def set(self, n, c):
         """ set pixel n to color c (r,g,b)"""
         self.buffer[n * 3:(n + 1) * 3] = c
-        self.dirty = True
-
-    def write(self):
-        self.dirty = False
-
-    def mask(self, mask):
-        self.buffer[0:N * 3] = np.tile(mask, N)
-        self.dirty = True
-
-    def white_mask(self):
-        self.buffer[0:N * 3] = 255
-        self.dirty = True
-
-    def red_mask(self):
-        self.black_mask()
-        self.buffer[0:N * 3:3] = 155
-        self.dirty = True
-
-    def green_mask(self):
-        self.black_mask()
-        self.buffer[1:N * 3:3] = 155
-        self.dirty = True
-
-    def blue_mask(self):
-        self.black_mask()
-        self.buffer[2:(N * 3):3] = 55
-        self.dirty = True
-
-    def black_mask(self):
-        self.buffer[0:N * 3] = 0
         self.dirty = True
 
     def keyframes(self, keyframes=None):
@@ -118,142 +87,93 @@ class VideoBuffer(object):
             frame = next_frame
         self.lock.release()
 
-    def strobe(self):
-        """preempts other f/x running, to get a sweet strobe"""
-        self.lock.acquire()
-        for delay in (.4, .2, .1, .05, .05):
-            self.white_mask()
-            self.write()
-            time.sleep(.05)
-            self.black_mask()
-            self.write()
-            time.sleep(delay)
-        self.lock.release()
 
-# class ConsoleLogger():
-#     def write(self, bytes):
-#         print(bytes)
-
-# logger = ConsoleLogger()
 try:
     serial_f = open_serial()
 except:
-    print("no serial")
+    logging.warn("no serial")
     serial_f = None
 
-video_buffer = VideoBuffer(outputs=[])
-# video_buffer = VideoBuffer(outputs=[])
-# video_buffer = VideoBuffer(outputs=[logger])
-
-stop_event = threading.Event()
+video_buffer = VideoBuffer()
 
 layered_effects = OrderedDict()  # define later
 midi_queue = Queue()
 
+
+def osc_logger(*args):
+    logging.debug(args)
+
 @asyncio.coroutine
 def write_video_buffer():
     while True:
-        # x = not midi_queue.empty() and midi_queue.get(False)
-        # for key, effect in layered_effects.items():
-        #     if x and x.get('key')==key:
-        #         layered_effects[key].enabled=x.get('value')
+        logging.debug("write_video_buffer cb")
+        for key, effect in layered_effects.items():
+            if effect.enabled:
+                effect.update()
 
-        #     if effect.enabled:
-        #         effect.update()
-
-        # if stop_event.isSet():
-        #     print("exiting")
-        #     break
-        if serial_f:
-            serial_f.write(video_buffer.buffer)
+        serial_f.write(video_buffer.buffer)
         yield from asyncio.sleep(1.0 / FRAMERATE)
 
-def demo():
-    meter = fx.PeakMeter(video_buffer, meters=(
-                {'n1': 342, 'n2': 400, 'reverse': False},
-            ))
-    for f in range(1000):
-        meter.meters[0].set(f/1000.0)
-        meter.update()
-        time.sleep(.02)
-    # video_buffer.keyframes(kf.rgb)
-    stop_event.set()
-
 def main():
-    # video_buffer_thread = threading.Thread(target=write_video_buffer)
-    # video_buffer_thread.daemon = True
-    # video_buffer_thread.start()
+    layered_effects['background'] = fx.BackGround(video_buffer, color='')
+    # layered_effects['wave'] = fx.Wave(video_buffer)
+    # layered_effects['midi_note'] = fx.MidiNote(video_buffer)
+    layered_effects['pointX'] = fx.PointFx(video_buffer, axis=0)
+    layered_effects['pointY'] = fx.PointFx(video_buffer, axis=1)
+    layered_effects['pointZ'] = fx.PointFx(video_buffer, axis=2)
+    layered_effects['scanner'] = fx.LarsonScanner(video_buffer, scanners=(
+        {'n1':20, 'n2':45},
+        {'n1':150,'n2':170},
+        {'n1':250,'n2':290},
+        {'n1':360,'n2':400},
+    ) )
 
-    parser = argparse.ArgumentParser(description='desc')
-    parser.add_argument('--demo', action='store_true')
-    args = parser.parse_args()
-    if args.demo:
-        demo()
-    else:
-        layered_effects['background'] = fx.BackGround(video_buffer, color='')
-        # layered_effects['wave'] = fx.Wave(video_buffer)
-        # layered_effects['midi_note'] = fx.MidiNote(video_buffer)
-        layered_effects['pointX'] = fx.PointFx(video_buffer, axis=0)
-        layered_effects['pointY'] = fx.PointFx(video_buffer, axis=1)
-        layered_effects['pointZ'] = fx.PointFx(video_buffer, axis=2)
-        layered_effects['scanner'] = fx.LarsonScanner(video_buffer, scanners=(
-            {'n1':20, 'n2':45},
-            {'n1':150,'n2':170},
-            {'n1':250,'n2':290},
-            # {'n1':360,'n2':400},
-        ) )
+    layered_effects['peak_meter'] = fx.PeakMeter(video_buffer, meters=(
+        {'n1': 10, 'n2': 100, 'reverse': False},
+        {'n1': 180, 'n2': 280, 'reverse': False},
+        {'n1': 342, 'n2': 400, 'reverse': False},
+    ))
 
-        layered_effects['peak_meter'] = fx.PeakMeter(video_buffer, meters=(
-            {'n1': 10, 'n2': 100, 'reverse': False},
-            {'n1': 180, 'n2': 280, 'reverse': False},
-            {'n1': 342, 'n2': 400, 'reverse': False},
-        ))
+    midi_thread = threading.Thread(target=midi.main,kwargs={'q':midi_queue})
+    midi_thread.daemon = True
+    midi_thread.start()
 
-        midi_thread = threading.Thread(target=midi.main,kwargs={'q':midi_queue})
-        midi_thread.daemon = True
-        midi_thread.start()
+    # https://docs.python.org/3/library/asyncio-eventloops.html#mac-os-x
+    import selectors
 
-        loop = asyncio.get_event_loop()
-        asyncio.Task(write_video_buffer())
-        websocket_server.serve(loop, video_buffer.buffer)
+    # selector = selectors.SelectSelector()
+    # loop = asyncio.SelectorEventLoop(selector)
+    # asyncio.set_event_loop(loop)
+    loop = asyncio.get_event_loop()
+    websocket_server.serve(loop, video_buffer.buffer)
 
-        osc_queue = Queue()
-
-        def osc_logger(*args):
-            # print(args,)
-            logging.info(args)
-            # osc_queue.put(msg)
-
-        def color_sky(self, name, channel, r,g,b):
-            layered_effects['background'].red(r)
-            layered_effects['background'].green(g)
-            layered_effects['background'].blue(b)
-
-        osc_server = OSCServer(
-            loop = loop,
-            maps = (
-                ('/metronome', layered_effects['scanner'].metronome),
-                ('/audio/envelope', layered_effects['peak_meter'].envelope),
-                # ('/color/sky', color_sky),
-                # ('/bassnuke', video_buffer.keyframes),
-                # ('/midi/note', layered_effects['midi_note'].set),
-                ('/accxyz', layered_effects['pointX'].xyz),
-                # ('/accxyz', layered_effects['pointY'].xyz),
-                # ('/accxyz', layered_effects['pointZ'].xyz),
-                # ('/1/fader1', layered_effects['background'].red),
-                # ('/1/fader2',  layered_effects['background'].green),
-                # ('/1/fader3',  layered_effects['background'].blue),
-                # ('/*', osc_logger),
-            )
+    osc_server = OSCServer(
+        loop = loop,
+        maps = (
+            ('/metronome', layered_effects['scanner'].metronome),
+            ('/audio/envelope', layered_effects['peak_meter'].envelope),
+            # ('/color/sky', color_sky),
+            # ('/bassnuke', video_buffer.keyframes),
+            # ('/midi/note', layered_effects['midi_note'].set),
+            ('/accxyz', layered_effects['pointX'].xyz),
+            # ('/accxyz', layered_effects['pointY'].xyz),
+            # ('/accxyz', layered_effects['pointZ'].xyz),
+            # ('/1/fader1', layered_effects['background'].red),
+            # ('/1/fader2',  layered_effects['background'].green),
+            # ('/1/fader3',  layered_effects['background'].blue),
+            ('/*', osc_logger),
         )
-        osc_server.serve()
+    )
+    osc_server.serve()
+    # loop.add_writer(serial_f.fileno(), write_video_buffer)
+    loop.run_until_complete(write_video_buffer())
 
-        try:
-            loop.run_forever()
-        except KeyboardInterrupt:
-            pass
-        finally:
-            loop.close()
+    try:
+        loop.run_forever()
+    except KeyboardInterrupt:
+        pass
+    finally:
+        loop.close()
 
 if __name__ == "__main__":
     main()

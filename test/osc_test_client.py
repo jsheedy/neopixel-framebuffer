@@ -14,10 +14,10 @@ port = 37337
 
 client = udp_client.UDPClient(ip, port)
 
-def metronome():
+def metronome(bpm=120, beat=1):
     msg = osc_message_builder.OscMessageBuilder(address = "/metronome")
-    msg.add_arg(120)
-    msg.add_arg(1)
+    msg.add_arg(bpm)
+    msg.add_arg(beat)
     msg = msg.build()
     client.send(msg)
 
@@ -57,10 +57,20 @@ def color_ramp():
 bass_nuke()
 
 
-for i in range(0,10000):
-    msg = osc_message_builder.OscMessageBuilder(address = "/audio/envelope/{}/1".format(i/10000.0))
-    msg = msg.build()
-    client.send(msg)
+def envelope():
+    N = 20
+    for i in range(0,N):
+        msg = osc_message_builder.OscMessageBuilder(address = "/audio/envelope")
+        msg.add_arg(i/N)
+        msg.add_arg(1)
+        msg = msg.build()
+        client.send(msg)
+        time.sleep(.05)
+
 # .color_ramp()
 # time.sleep(.5)
-# metronome()
+while True:
+    envelope()
+    # for i in range(1,5):
+        # metronome(bpm=120, beat=i)
+        # time.sleep(.5)
