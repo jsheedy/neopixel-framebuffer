@@ -1,9 +1,12 @@
-from .fx import Fx
-from point import Point
+import logging
+import random
 
 import numpy as np
 
-import random
+from .fx import Fx
+from point import Point
+
+
 
 class Meter():
     def __init__(self, n1=0, n2=100, reverse=False):
@@ -16,13 +19,12 @@ class Meter():
 
     def set(self, level):
         """level 0 -> 1"""
-        self.level = level
+        self.level = np.clip(level, 0, 1)
 
     def get_points(self):
         self.buff *= .7
         self.buff[1:self.N*3-1:3] = self.buff[0:self.N*3:3]*.2
         self.buff[2:self.N*3-6:3] = self.buff[0:self.N*3-6:3]*.3
-        # self.buff = np.roll(self.buff,1)
         pos = int(self.level * self.N)
         self.buff[0:pos*3:3] = [255]*pos
         if not pos == self.N:
@@ -34,7 +36,7 @@ class PeakMeter(Fx):
         self.video_buffer = video_buffer
         self.meters = []
         for d in meters:
-            print(d)
+            logging.info("Creating meter at ({})".format(d))
             self.meters.append(Meter(**d))
 
     def envelope(self, name, y, channel ):

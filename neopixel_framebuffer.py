@@ -27,7 +27,7 @@ logging.basicConfig(level=logging.INFO)
 
 N = 420
 # N = 256
-FRAMERATE = 30 # 26.8 is on the edge of glitching the neopixels on my 2010 MBP.  Just enough glitch to be tasty.
+FRAMERATE = 28 # 26.8 is on the edge of glitching the neopixels on my 2010 MBP.  Just enough glitch to be tasty.
 BAUDRATE = 460800
 # BAUDRATE = 230400
 # BAUDRATE = 115200
@@ -111,7 +111,8 @@ def write_video_buffer():
             if effect.enabled:
                 effect.update()
 
-        serial_f.write(video_buffer.buffer)
+        if serial_f:
+            serial_f.write(video_buffer.buffer)
         yield from asyncio.sleep(1.0 / FRAMERATE)
 
 def main():
@@ -127,11 +128,9 @@ def main():
         {'n1':250,'n2':290},
         {'n1':360,'n2':400},
     ) )
-
     layered_effects['peak_meter'] = fx.PeakMeter(video_buffer, meters=(
-        {'n1': 10, 'n2': 100, 'reverse': False},
-        {'n1': 180, 'n2': 280, 'reverse': False},
-        {'n1': 342, 'n2': 400, 'reverse': False},
+        {'n1': 0, 'n2': 100, 'reverse': False},
+        {'n1': 340, 'n2': 400, 'reverse': False},
     ))
 
     midi_thread = threading.Thread(target=midi.main,kwargs={'q':midi_queue})
@@ -139,8 +138,7 @@ def main():
     midi_thread.start()
 
     # https://docs.python.org/3/library/asyncio-eventloops.html#mac-os-x
-    import selectors
-
+    # import selectors
     # selector = selectors.SelectSelector()
     # loop = asyncio.SelectorEventLoop(selector)
     # asyncio.set_event_loop(loop)
@@ -161,7 +159,7 @@ def main():
             # ('/1/fader1', layered_effects['background'].red),
             # ('/1/fader2',  layered_effects['background'].green),
             # ('/1/fader3',  layered_effects['background'].blue),
-            ('/*', osc_logger),
+            ('/*', osc_logger)
         )
     )
     osc_server.serve()
