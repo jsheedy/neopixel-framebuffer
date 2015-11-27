@@ -7,7 +7,6 @@ from .fx import Fx
 from point import Point
 
 
-
 class Meter():
     def __init__(self, n1=0, n2=100, reverse=False):
         self.set(0)
@@ -16,6 +15,7 @@ class Meter():
         self.level = 0.0
         self.N = self.n2 - self.n1
         self.buff = np.zeros(self.N*3)
+        self.reverse = reverse
 
     def set(self, level):
         """level 0 -> 1"""
@@ -23,12 +23,15 @@ class Meter():
 
     def get_points(self):
         self.buff *= .7
-        self.buff[1:self.N*3-1:3] = self.buff[0:self.N*3:3]*.2
-        self.buff[2:self.N*3-6:3] = self.buff[0:self.N*3-6:3]*.3
+        # self.buff[1:self.N*3-1:3] = self.buff[0:self.N*3:3]*.2
+        # self.buff[2:self.N*3-6:3] = self.buff[0:self.N*3-6:3]*.3
         pos = int(self.level * self.N)
-        self.buff[0:pos*3:3] = [255]*pos
-        if not pos == self.N:
-            self.buff[0+pos*3] = 255*((self.level*self.N)-pos)
+        if self.reverse:
+            if not pos == self.N:
+                self.buff[3*(self.N-pos):self.N*3:3] = [255]*pos
+        else:
+            self.buff[0:pos*3:3] = [255]*pos
+        #     self.buff[0+pos*3] = 255*((self.level*self.N)-pos)
         return self.buff
 
 class PeakMeter(Fx):

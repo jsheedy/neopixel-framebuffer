@@ -14,7 +14,4 @@ class MidiNote(Fx):
         i = self.note % 12
         multiplier = self.video_buffer.N / 12
         n = int(i * multiplier)
-
-        self.video_buffer.lock.acquire()
         self.video_buffer.buffer[n*3:n*3+3] = (255,255,255)
-        self.video_buffer.lock.release()

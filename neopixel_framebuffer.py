@@ -25,16 +25,19 @@ import midi
 
 logging.basicConfig(level=logging.INFO)
 
+
 N = 420
 # N = 256
-FRAMERATE = 28 # 26.8 is on the edge of glitching the neopixels on my 2010 MBP.  Just enough glitch to be tasty.
+FRAMERATE = 26 # 26.8 is on the edge of glitching the neopixels on my 2010 MBP.  Just enough glitch to be tasty.
 BAUDRATE = 460800
 # BAUDRATE = 230400
 # BAUDRATE = 115200
 
 # try these in order until one opens
 SERIAL_DEVS = (
+    '/dev/tty.usbmodem1451',
     '/dev/tty.usbmodemfd141',
+    '/dev/tty.usbmodem1411',
     '/dev/tty.usbmodemfd131',
     '/dev/tty.usbmodemfa141',
 )
@@ -46,7 +49,7 @@ def open_serial():
             logging.info("Opened serial port {}".format(dev))
             return s
         except (serial.SerialException, OSError):
-            logging.debug("Couldn't open serial port {}".format(dev))
+            logging.warn("Couldn't open serial port {}".format(dev))
     raise Exception("couldn't open any serial port, failing")
 
 
@@ -104,67 +107,70 @@ def osc_logger(*args):
     logging.debug(args)
 
 @asyncio.coroutine
-def write_video_buffer():
+def update_video_buffer():
     while True:
-        logging.debug("write_video_buffer cb")
         for key, effect in layered_effects.items():
             if effect.enabled:
                 effect.update()
+                yield from asyncio.sleep(.01)
+        yield from asyncio.sleep(1.0 / FRAMERATE)
 
+@asyncio.coroutine
+def write_serial():
+    while True:
         if serial_f:
-            serial_f.write(video_buffer.buffer)
+            yield from serial_f.write(video_buffer.buffer)
         yield from asyncio.sleep(1.0 / FRAMERATE)
 
 def main():
-    layered_effects['background'] = fx.BackGround(video_buffer, color='')
-    # layered_effects['wave'] = fx.Wave(video_buffer)
+    # layered_effects['background'] = fx.BackGround(video_buffer, color='')
+    # layered_effects['fade'] = fx.FadeBackGround(video_buffer)
+    layered_effects['wave'] = fx.Wave(video_buffer)
     # layered_effects['midi_note'] = fx.MidiNote(video_buffer)
-    layered_effects['pointX'] = fx.PointFx(video_buffer, axis=0)
-    layered_effects['pointY'] = fx.PointFx(video_buffer, axis=1)
-    layered_effects['pointZ'] = fx.PointFx(video_buffer, axis=2)
-    layered_effects['scanner'] = fx.LarsonScanner(video_buffer, scanners=(
-        {'n1':20, 'n2':45},
-        {'n1':150,'n2':170},
-        {'n1':250,'n2':290},
-        {'n1':360,'n2':400},
-    ) )
-    layered_effects['peak_meter'] = fx.PeakMeter(video_buffer, meters=(
-        {'n1': 0, 'n2': 100, 'reverse': False},
-        {'n1': 340, 'n2': 400, 'reverse': False},
-    ))
+    # layered_effects['pointX'] = fx.PointFx(video_buffer, axis=0)
+    # layered_effects['pointY'] = fx.PointFx(video_buffer, axis=1)
+    # layered_effects['pointZ'] = fx.PointFx(video_buffer, axis=2)
+    # layered_effects['scanner'] = fx.LarsonScanner(video_buffer, scanners=(
+        # {'n1':20, 'n2':45},
+        # {'n1':150,'n2':170},
+        # {'n1':250,'n2':290},
+        # {'n1':360,'n2':400},
+    # ) )
+    # layered_effects['peak_meter'] = fx.PeakMeter(video_buffer, meters=(
+        # {'n1': 340, 'n2': 420, 'reverse': True},
+        # {'n1': 0, 'n2': 100, 'reverse': False},
+    # ))
 
-    midi_thread = threading.Thread(target=midi.main,kwargs={'q':midi_queue})
-    midi_thread.daemon = True
-    midi_thread.start()
+    # midi_thread = threading.Thread(target=midi.main,kwargs={'q':midi_queue})
+    # midi_thread.daemon = True
+    # midi_thread.start()
 
-    # https://docs.python.org/3/library/asyncio-eventloops.html#mac-os-x
-    # import selectors
-    # selector = selectors.SelectSelector()
-    # loop = asyncio.SelectorEventLoop(selector)
-    # asyncio.set_event_loop(loop)
     loop = asyncio.get_event_loop()
+    loop.set_debug(True)
+
     websocket_server.serve(loop, video_buffer.buffer)
 
     osc_server = OSCServer(
         loop = loop,
         maps = (
-            ('/metronome', layered_effects['scanner'].metronome),
-            ('/audio/envelope', layered_effects['peak_meter'].envelope),
-            # ('/color/sky', color_sky),
+
+            # ('/metronome', layered_effects['scanner'].metronome),
+            # ('/audio/envelope', layered_effects['peak_meter'].envelope),
             # ('/bassnuke', video_buffer.keyframes),
             # ('/midi/note', layered_effects['midi_note'].set),
-            ('/accxyz', layered_effects['pointX'].xyz),
+            # ('/accxyz', layered_effects['pointX'].xyz),
             # ('/accxyz', layered_effects['pointY'].xyz),
             # ('/accxyz', layered_effects['pointZ'].xyz),
             # ('/1/fader1', layered_effects['background'].red),
             # ('/1/fader2',  layered_effects['background'].green),
             # ('/1/fader3',  layered_effects['background'].blue),
-            ('/*', osc_logger)
+            ('/*', osc_logger),
         )
     )
+
     osc_server.serve()
-    # loop.add_writer(serial_f.fileno(), write_video_buffer)
-    loop.run_until_complete(write_video_buffer())
+    loop.run_until_complete(update_video_buffer())
+    loop.run_until_complete(write_serial())
 
     try:
         loop.run_forever()

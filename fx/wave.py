@@ -14,22 +14,22 @@ class ChannelArray():
         self.intensity = 255
 
     def update(self, i):
-        if random.random() > .97:
-            self.velocity += 1-random.randint(0,2)
-            if self.velocity > 4:
-                self.velocity -= 1
-            elif self.velocity < -4:
-                self.velocity += 1
-        if random.random() > .99:
-            self.velocity *= -1
+        # if random.random() > .97:
+        #     self.velocity += 1-random.randint(0,2)
+        #     if self.velocity > 4:
+        #         self.velocity -= 1
+        #     elif self.velocity < -4:
+        #         self.velocity += 1
+        # if random.random() > .99:
+        #     self.velocity *= -1
 
-        if random.random() > .1:
-            self.intensity += 8-random.randint(0,16)
+        # if random.random() > .1:
+        #     self.intensity += 8-random.randint(0,16)
 
-            if self.intensity >= 255:
-                self.intensity = 254
-            elif self.intensity < 100:
-                self.intensity = 110
+        #     if self.intensity >= 255:
+        #         self.intensity = 254
+        #     elif self.intensity < 100:
+        #         self.intensity = 110
 
         return (self.intensity * np.roll(self.buff, (i*self.velocity)%self.N)) \
             .astype(np.uint8)
@@ -41,8 +41,8 @@ class Wave(Fx):
         self.N = self.video_buffer.N
         self.rgb_arrays = {
             'r': ChannelArray(self.N, wavelength=4, velocity=1),
-            'g': ChannelArray(self.N, wavelength=8, velocity=2),
-            'b': ChannelArray(self.N, wavelength=2, velocity=3)
+            'g': ChannelArray(self.N, wavelength=4, velocity=1),
+            'b': ChannelArray(self.N, wavelength=24, velocity=1)
         }
         self.pointer = itertools.count(0)
 
@@ -52,7 +52,7 @@ class Wave(Fx):
             return
         i = next(self.pointer)
 
-        self.video_buffer.buffer[::3] += self.rgb_arrays['r'].update(i)
+        self.video_buffer.buffer[::3] = self.rgb_arrays['r'].update(i)
         self.video_buffer.buffer[1::3] += self.rgb_arrays['g'].update(i)
         self.video_buffer.buffer[2::3] += self.rgb_arrays['b'].update(i)
 

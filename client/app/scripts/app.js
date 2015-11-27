@@ -66,8 +66,8 @@ angular
            });
 
           // constants
-          var width = 400,
-            height = 400,
+          var width = 900,
+            height = 900,
             radius = ~~(width/105.0), // convert to int
             color = d3.interpolateRgb("#f77", "#77f"),
             // N=420
