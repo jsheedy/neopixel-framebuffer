@@ -20,16 +20,9 @@ class ChannelArray():
         #         self.velocity -= 1
         #     elif self.velocity < -4:
         #         self.velocity += 1
-        # if random.random() > .99:
-        #     self.velocity *= -1
-
-        # if random.random() > .1:
-        #     self.intensity += 8-random.randint(0,16)
-
-        #     if self.intensity >= 255:
-        #         self.intensity = 254
-        #     elif self.intensity < 100:
-        #         self.intensity = 110
+        if random.random() > .99:
+            self.velocity *= -1
+            # self.velocity += (random.random() - 0.5)
 
         return (self.intensity * np.roll(self.buff, (i*self.velocity)%self.N)) \
             .astype(np.uint8)

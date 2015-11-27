@@ -112,7 +112,7 @@ def update_video_buffer():
         for key, effect in layered_effects.items():
             if effect.enabled:
                 effect.update()
-                yield from asyncio.sleep(.01)
+                # yield from asyncio.sleep(.01)
         yield from asyncio.sleep(1.0 / FRAMERATE)
 
 @asyncio.coroutine
@@ -124,22 +124,22 @@ def write_serial():
 
 def main():
     # layered_effects['background'] = fx.BackGround(video_buffer, color='')
-    # layered_effects['fade'] = fx.FadeBackGround(video_buffer)
+    layered_effects['fade'] = fx.FadeBackGround(video_buffer, q=12)
     layered_effects['wave'] = fx.Wave(video_buffer)
-    # layered_effects['midi_note'] = fx.MidiNote(video_buffer)
+    layered_effects['midi_note'] = fx.MidiNote(video_buffer)
     # layered_effects['pointX'] = fx.PointFx(video_buffer, axis=0)
     # layered_effects['pointY'] = fx.PointFx(video_buffer, axis=1)
     # layered_effects['pointZ'] = fx.PointFx(video_buffer, axis=2)
-    # layered_effects['scanner'] = fx.LarsonScanner(video_buffer, scanners=(
-        # {'n1':20, 'n2':45},
-        # {'n1':150,'n2':170},
-        # {'n1':250,'n2':290},
-        # {'n1':360,'n2':400},
-    # ) )
-    # layered_effects['peak_meter'] = fx.PeakMeter(video_buffer, meters=(
-        # {'n1': 340, 'n2': 420, 'reverse': True},
-        # {'n1': 0, 'n2': 100, 'reverse': False},
-    # ))
+    layered_effects['scanner'] = fx.LarsonScanner(video_buffer, scanners=(
+        {'n1':20, 'n2':45},
+        {'n1':150,'n2':170},
+        {'n1':250,'n2':290},
+        {'n1':360,'n2':400},
+    ) )
+    layered_effects['peak_meter'] = fx.PeakMeter(video_buffer, meters=(
+        {'n1': 340, 'n2': 420, 'reverse': True},
+        {'n1': 0, 'n2': 100, 'reverse': False},
+    ))
 
     # midi_thread = threading.Thread(target=midi.main,kwargs={'q':midi_queue})
     # midi_thread.daemon = True
@@ -154,10 +154,10 @@ def main():
         loop = loop,
         maps = (
 
-            # ('/metronome', layered_effects['scanner'].metronome),
-            # ('/audio/envelope', layered_effects['peak_meter'].envelope),
+            ('/metronome', layered_effects['scanner'].metronome),
+            ('/audio/envelope', layered_effects['peak_meter'].envelope),
             # ('/bassnuke', video_buffer.keyframes),
-            # ('/midi/note', layered_effects['midi_note'].set),
+            ('/midi/note', layered_effects['midi_note'].set),
             # ('/accxyz', layered_effects['pointX'].xyz),
             # ('/accxyz', layered_effects['pointY'].xyz),
             # ('/accxyz', layered_effects['pointZ'].xyz),

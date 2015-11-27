@@ -1,7 +1,7 @@
 from datetime import datetime
-import functools
 import logging
-import math
+
+import numpy as np
 
 from .fx import Fx
 from point import Point
@@ -58,6 +58,11 @@ class LarsonScanner(Fx):
             n1,n2 = scanner['n1'], scanner['n2']
             point = Point(self.pos, n2 - n1, width=5)
             points = point.get_points()
-            self.video_buffer.buffer[0+n1*3:n2*3:3] += points
+
+            slice = self.video_buffer.buffer[0+n1*3:n2*3:3].astype(np.int32)
+            slice += points
+            slice.clip(0,255,out=slice)
+            self.video_buffer.buffer[0+n1*3:n2*3:3] = slice
+            # self.video_buffer.buffer[0+n1*3:n2*3:3] += points
             # self.video_buffer.buffer[2+n1*3:n2*3:3] *= .1 # bring down other fx first
             # self.video_buffer.buffer[2+n1*3:n2*3:3] += points*.4

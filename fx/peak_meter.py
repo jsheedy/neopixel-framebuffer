@@ -1,3 +1,4 @@
+from datetime import datetime
 import logging
 import random
 
@@ -16,10 +17,12 @@ class Meter():
         self.N = self.n2 - self.n1
         self.buff = np.zeros(self.N*3)
         self.reverse = reverse
+        self.timestamp = datetime(2000,1,1)
 
     def set(self, level):
         """level 0 -> 1"""
         self.level = np.clip(level, 0, 1)
+        self.timestamp = datetime.now()
 
     def get_points(self):
         self.buff *= .7
@@ -53,4 +56,7 @@ class PeakMeter(Fx):
             return
 
         for meter in self.meters:
+            secs = (datetime.now() - meter.timestamp).total_seconds()
+            if secs > 2:
+                continue
             self.video_buffer.buffer[meter.n1*3:meter.n2*3] = meter.get_points()
