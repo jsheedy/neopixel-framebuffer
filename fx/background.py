@@ -28,8 +28,6 @@ class BackGround(Fx):
 
     def update(self):
         super(BackGround, self).update()
-        if not self.enabled:
-            return
         if self.color == 'blue':
             self.blue(1.0)
         else:

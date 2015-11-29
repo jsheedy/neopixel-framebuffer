@@ -4,6 +4,10 @@
 		"selected_items":
 		[
 			[
+				"as",
+				"asyncio〔module〕"
+			],
+			[
 				"write",
 				"write_video_buffer〔function〕"
 			],
@@ -28,10 +32,10 @@
 	"buffers":
 	[
 		{
-			"file": "fx/point.py",
+			"file": "fx/midi_note.py",
 			"settings":
 			{
-				"buffer_size": 730,
+				"buffer_size": 410,
 				"line_ending": "Unix"
 			}
 		},
@@ -39,23 +43,23 @@
 			"file": "neopixel_framebuffer.py",
 			"settings":
 			{
-				"buffer_size": 5353,
+				"buffer_size": 5331,
 				"line_ending": "Unix"
 			}
 		},
 		{
-			"file": "fx/peak_meter.py",
+			"file": "fx/wave.py",
 			"settings":
 			{
-				"buffer_size": 1428,
+				"buffer_size": 1610,
 				"line_ending": "Unix"
 			}
 		},
 		{
-			"file": "osc.py",
+			"file": "fx/point.py",
 			"settings":
 			{
-				"buffer_size": 604,
+				"buffer_size": 857,
 				"line_ending": "Unix"
 			}
 		}
@@ -134,25 +138,30 @@
 	"expanded_folders":
 	[
 		"/Users/velotron/project/arduino/neopixel-framebuffer",
-		"/Users/velotron/project/arduino/neopixel-framebuffer/fx",
-		"/Users/velotron/project/arduino/neopixel-framebuffer/test"
+		"/Users/velotron/project/arduino/neopixel-framebuffer/fx"
 	],
 	"file_history":
 	[
-		"/Users/velotron/project/arduino/neopixel-framebuffer/websocket_server.py",
-		"/Users/velotron/project/arduino/neopixel-framebuffer/client/app/views/main.html",
-		"/Users/velotron/project/arduino/neopixel-framebuffer/midi.py",
+		"/Users/velotron/project/arduino/neopixel-framebuffer/osc.py",
 		"/Users/velotron/project/arduino/neopixel-framebuffer/fx/larson_scanner.py",
+		"/Users/velotron/project/arduino/neopixel-framebuffer/point.py",
+		"/Users/velotron/project/arduino/neopixel-framebuffer/websocket_server.py",
 		"/Users/velotron/project/arduino/neopixel-framebuffer/fx/wave.py",
 		"/Users/velotron/project/arduino/neopixel-framebuffer/neopixel_framebuffer.py",
-		"/Users/velotron/project/arduino/neopixel-framebuffer/test/osc_test_client.py",
-		"/Users/velotron/project/arduino/neopixel-framebuffer/point.py",
 		"/Users/velotron/project/arduino/neopixel-framebuffer/fx/peak_meter.py",
-		"/Users/velotron/project/arduino/neopixel-framebuffer/osc.py",
-		"/Users/velotron/project/arduino/neopixel-framebuffer/fx/background.py",
-		"/Users/velotron/project/arduino/neopixel-framebuffer/neopixel_framebuffer/neopixel_framebuffer.ino",
-		"/Users/velotron/project/arduino/neopixel-framebuffer/fx/fx.py",
+		"/Users/velotron/project/arduino/neopixel-framebuffer/fx/fade.py",
+		"/Users/velotron/project/arduino/neopixel-framebuffer/client/app/views/main.html",
+		"/Users/velotron/project/arduino/neopixel-framebuffer/client/app/styles/main.scss",
+		"/Users/velotron/project/arduino/neopixel-framebuffer/client/app/scripts/controllers/main.js",
+		"/Users/velotron/project/arduino/neopixel-framebuffer/client/app/scripts/app.js",
 		"/Users/velotron/project/arduino/neopixel-framebuffer/fx/midi_note.py",
+		"/Users/velotron/project/arduino/neopixel-framebuffer/fx/point.py",
+		"/Users/velotron/project/arduino/neopixel-framebuffer/fx/fx.py",
+		"/Users/velotron/project/arduino/neopixel-framebuffer/fx/__init__.py",
+		"/Users/velotron/project/arduino/neopixel-framebuffer/fx/background.py",
+		"/Users/velotron/project/arduino/neopixel-framebuffer/midi.py",
+		"/Users/velotron/project/arduino/neopixel-framebuffer/test/osc_test_client.py",
+		"/Users/velotron/project/arduino/neopixel-framebuffer/neopixel_framebuffer/neopixel_framebuffer.ino",
 		"/Users/velotron/project/arise/git/arise/js/create_graph_from_local_file.js",
 		"/Users/velotron/project/arise/git/arise/js/arise.js",
 		"/Users/velotron/project/arise/2010-10-30_protoglitch/Unity 2010-10-30 00-18-04-61.bmp",
@@ -252,6 +261,26 @@
 		"case_sensitive": false,
 		"find_history":
 		[
+			"functoo",
+			"datetim",
+			"math",
+			"osc_logger",
+			"VideoBuff",
+			"video_buff",
+			"DEBUG",
+			"False",
+			"True",
+			"append",
+			"FRAME",
+			"VideoBuff",
+			"video_buff",
+			"open_ser",
+			"enabled",
+			"enab",
+			"time",
+			"background",
+			"intensity",
+			"with",
 			"serial_f",
 			".write",
 			"print",
@@ -359,9 +388,7 @@
 			"Math",
 			"Siam",
 			"templateSpec",
-			"time\":",
-			"id\": 16",
-			"id\": 18"
+			"time\":"
 		],
 		"highlight": true,
 		"in_selection": false,
@@ -379,24 +406,24 @@
 	"groups":
 	[
 		{
-			"selected": 1,
+			"selected": 2,
 			"sheets":
 			[
 				{
 					"buffer": 0,
-					"file": "fx/point.py",
+					"file": "fx/midi_note.py",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 730,
+						"buffer_size": 410,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								272,
-								272
+								410,
+								410
 							]
 						],
 						"settings":
@@ -418,15 +445,15 @@
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 5353,
+						"buffer_size": 5331,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								3781,
-								3781
+								485,
+								485
 							]
 						],
 						"settings":
@@ -437,33 +464,27 @@
 							"translate_tabs_to_spaces": true
 						},
 						"translation.x": 0.0,
-						"translation.y": 2001.0,
+						"translation.y": 12.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 0,
+					"stack_index": 1,
 					"type": "text"
-				}
-			]
-		},
-		{
-			"selected": 0,
-			"sheets":
-			[
+				},
 				{
 					"buffer": 2,
-					"file": "fx/peak_meter.py",
+					"file": "fx/wave.py",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 1428,
+						"buffer_size": 1610,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								1181,
-								1181
+								1124,
+								1124
 							]
 						],
 						"settings":
@@ -477,24 +498,30 @@
 						"translation.y": 0.0,
 						"zoom_level": 1.0
 					},
-					"stack_index": 1,
+					"stack_index": 0,
 					"type": "text"
-				},
+				}
+			]
+		},
+		{
+			"selected": 0,
+			"sheets":
+			[
 				{
 					"buffer": 3,
-					"file": "osc.py",
+					"file": "fx/point.py",
 					"semi_transient": false,
 					"settings":
 					{
-						"buffer_size": 604,
+						"buffer_size": 857,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								340,
-								340
+								266,
+								266
 							]
 						],
 						"settings":
@@ -542,7 +569,7 @@
 		"cols":
 		[
 			0.0,
-			0.542336340746,
+			0.609452893109,
 			1.0
 		],
 		"rows":
@@ -574,16 +601,36 @@
 		"selected_items":
 		[
 			[
+				"wave",
+				"fx/wave.py"
+			],
+			[
+				"",
+				"fx/larson_scanner.py"
+			],
+			[
+				"lar",
+				"fx/larson_scanner.py"
+			],
+			[
+				"osc",
+				"osc.py"
+			],
+			[
+				"point.",
+				"point.py"
+			],
+			[
+				"midi",
+				"fx/midi_note.py"
+			],
+			[
 				"point",
 				"point.py"
 			],
 			[
 				"back",
 				"fx/background.py"
-			],
-			[
-				"wave",
-				"fx/wave.py"
 			],
 			[
 				"wav",
@@ -600,10 +647,6 @@
 			[
 				"osc.",
 				"osc.py"
-			],
-			[
-				"",
-				"tubaluba.github.io/css/tubalubaband.css"
 			]
 		],
 		"width": 0.0
@@ -638,7 +681,7 @@
 	"show_open_files": true,
 	"show_tabs": true,
 	"side_bar_visible": true,
-	"side_bar_width": 338.0,
+	"side_bar_width": 259.0,
 	"status_bar_visible": true,
 	"template_settings":
 	{

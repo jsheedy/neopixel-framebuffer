@@ -1,22 +1,22 @@
 from datetime import datetime
-import functools
 import logging
-import math
+
+import numpy as np
 
 from .fx import Fx
-from point import Point, gaussian
+from point import Point
 
 
 class LarsonScanner(Fx):
     def __init__(self, video_buffer, scanners):
         self.video_buffer = video_buffer
         self.scanners = scanners
-        self.pos = 0.0 # n1 + abs(n2 - n1)
+        self.pos = 0.0
         self.bpm = 120
         self.count = 1
         self.timestamp = datetime(2000,1,1)
-        self.velocity = .02
-        self.delta_beat = 0.0
+        self.velocity = .04
+        self.delta_beat = 2.0
 
     def metronome(self, endpoint, bpm, count):
         logging.info("scanner setting bpm: {}".format(bpm))
@@ -26,8 +26,6 @@ class LarsonScanner(Fx):
 
     def update(self):
         super(LarsonScanner, self).update()
-        if not self.enabled:
-            return
 
         N = self.video_buffer.N
 
@@ -46,7 +44,6 @@ class LarsonScanner(Fx):
                 self.velocity *= -1
 
         else:
-        # if True:
             self.delta_beat = secs / (60.0/self.bpm)
             self.velocity = (self.bpm/60.0)/26
             if self.count in (1,3):
@@ -57,8 +54,13 @@ class LarsonScanner(Fx):
         for scanner in self.scanners:
 
             n1,n2 = scanner['n1'], scanner['n2']
-            point = Point(self.pos, n2 - n1)
+            point = Point(self.pos, n2 - n1, width=5)
             points = point.get_points()
-            self.video_buffer.buffer[0+n1*3:n2*3:3] += [x*gaussian(i, a=1, b=(len(points)*self.pos), c=2) for i,x in enumerate(points)]
-            self.video_buffer.buffer[2+n1*3:n2*3:3] *= .1 # bring down other fx first
-            self.video_buffer.buffer[2+n1*3:n2*3:3] += points*.4
+
+            slice = self.video_buffer.buffer[0+n1*3:n2*3:3].astype(np.int32)
+            slice += points
+            slice.clip(0,255,out=slice)
+            self.video_buffer.buffer[0+n1*3:n2*3:3] = slice
+            # self.video_buffer.buffer[0+n1*3:n2*3:3] += points
+            # self.video_buffer.buffer[2+n1*3:n2*3:3] *= .1 # bring down other fx first
+            # self.video_buffer.buffer[2+n1*3:n2*3:3] += points*.4

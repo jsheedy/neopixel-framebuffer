@@ -3,10 +3,6 @@ import math
 
 import numpy as np
 
-def gaussian(x, a=1, b=1, c=2):
-    y = a * math.exp(- ((x-b)**2) / (2*c**2) )
-    return y
-
 class Point():
     """ represent a point as a gaussian distribution that can
     be placed anywhere on the line of N units.  position is
@@ -18,10 +14,9 @@ class Point():
         self.N = N
         self.pos = pos
         self.width = width
+        self.hat = (0,255,0)
 
-    def get_points(self, margin=0.2):
+    def get_points(self):
         """returns numpy array of N points"""
-        relativePos = margin*self.N + self.pos * ((1-margin)*self.N)
-        f = functools.partial(gaussian, a=255, b=relativePos, c=self.width)
-        points = np.array(list(map(f, range(self.N))))
-        return points
+        relativePos = self.width + self.pos * (self.N - 2*self.width)
+        return np.interp(range(self.N), (relativePos - self.width,relativePos, relativePos + self.width), self.hat).astype(np.uint8)

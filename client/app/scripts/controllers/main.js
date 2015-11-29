@@ -22,17 +22,5 @@ angular.module('angularApp')
       }, 200);
     };
 
-
-    // noData();
     $scope.data = firehose;
-    $scope.dataStr = function() {
-      var str = "";
-      for (var i=0;i<$scope.data.data.length; i++) {
-        str += "(" +
-        $scope.data.data[i][0] + "," +
-        $scope.data.data[i][0] + "," +
-        $scope.data.data[i][0] + ")";
-      }
-      return str;
-    }
   });

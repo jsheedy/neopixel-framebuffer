@@ -3,6 +3,11 @@ class Fx(object):
 
     def __init__(self, video_buffer):
         self.video_buffer = video_buffer
+        self.enabled = True
 
     def update(self):
-        pass
+        if not self.enabled:
+            return
+
+    def toggle(self):
+        self.enabled = not self.enabled
