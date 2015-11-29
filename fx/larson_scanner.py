@@ -26,8 +26,6 @@ class LarsonScanner(Fx):
 
     def update(self):
         super(LarsonScanner, self).update()
-        if not self.enabled:
-            return
 
         N = self.video_buffer.N
 

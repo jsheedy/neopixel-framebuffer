@@ -12,6 +12,7 @@ import json
 import logging
 from queue import Queue
 import serial
+import sys
 import threading
 import time
 
@@ -90,13 +91,6 @@ class VideoBuffer(object):
             frame = next_frame
         self.lock.release()
 
-
-try:
-    serial_f = open_serial()
-except:
-    logging.warn("no serial")
-    serial_f = None
-
 video_buffer = VideoBuffer()
 
 layered_effects = OrderedDict()  # define later
@@ -115,21 +109,44 @@ def update_video_buffer():
                 # yield from asyncio.sleep(.01)
         yield from asyncio.sleep(1.0 / FRAMERATE)
 
+try:
+    serial_f = open_serial()
+except:
+    logging.warn("no serial")
+
 @asyncio.coroutine
 def write_serial():
     while True:
-        if serial_f:
-            yield from serial_f.write(video_buffer.buffer)
+        serial_f.write(video_buffer.buffer)
         yield from asyncio.sleep(1.0 / FRAMERATE)
 
+def read_stdin():
+    line = sys.stdin.readline().strip()
+    fx = layered_effects.get(line)
+    if fx:
+        fx.toggle()
+        logging.info('toggled f/x {} {}'.format(fx, fx.enabled))
+    elif line[:4] == 'fade':
+        _, fade_amount = line.split()
+        fade = layered_effects['fade']
+        fade.q = int(fade_amount)
+    else:
+        logging.info('unknown f/x {}'.format(line))
+    logging.info('all f/x:')
+
+    for fx in layered_effects.keys():
+        logging.info('{} enabled: {}'.format(fx, layered_effects[fx].enabled))
+
+
+
 def main():
-    # layered_effects['background'] = fx.BackGround(video_buffer, color='')
+    layered_effects['background'] = fx.BackGround(video_buffer, color='')
     layered_effects['fade'] = fx.FadeBackGround(video_buffer, q=12)
     layered_effects['wave'] = fx.Wave(video_buffer)
     layered_effects['midi_note'] = fx.MidiNote(video_buffer)
-    # layered_effects['pointX'] = fx.PointFx(video_buffer, axis=0)
-    # layered_effects['pointY'] = fx.PointFx(video_buffer, axis=1)
-    # layered_effects['pointZ'] = fx.PointFx(video_buffer, axis=2)
+    layered_effects['pointX'] = fx.PointFx(video_buffer, axis=0)
+    layered_effects['pointY'] = fx.PointFx(video_buffer, axis=1)
+    layered_effects['pointZ'] = fx.PointFx(video_buffer, axis=2)
     layered_effects['scanner'] = fx.LarsonScanner(video_buffer, scanners=(
         {'n1':20, 'n2':45},
         {'n1':150,'n2':170},
@@ -141,19 +158,18 @@ def main():
         {'n1': 0, 'n2': 100, 'reverse': False},
     ))
 
-    # midi_thread = threading.Thread(target=midi.main,kwargs={'q':midi_queue})
-    # midi_thread.daemon = True
-    # midi_thread.start()
+    midi_thread = threading.Thread(target=midi.main,kwargs={'q':midi_queue})
+    midi_thread.daemon = True
+    midi_thread.start()
 
     loop = asyncio.get_event_loop()
-    loop.set_debug(True)
+    # loop.set_debug(True)
 
     websocket_server.serve(loop, video_buffer.buffer)
 
     osc_server = OSCServer(
         loop = loop,
         maps = (
-
             ('/metronome', layered_effects['scanner'].metronome),
             ('/audio/envelope', layered_effects['peak_meter'].envelope),
             # ('/bassnuke', video_buffer.keyframes),
@@ -168,11 +184,13 @@ def main():
         )
     )
 
-    osc_server.serve()
-    loop.run_until_complete(update_video_buffer())
-    loop.run_until_complete(write_serial())
+    # loop.add_writer(serial_f, write_serial)
+    loop.create_task(write_serial())
+    loop.create_task(update_video_buffer())
+    loop.add_reader(sys.stdin.fileno(), read_stdin)
 
     try:
+        osc_server.serve()
         loop.run_forever()
     except KeyboardInterrupt:
         pass

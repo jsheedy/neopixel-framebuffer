@@ -9,7 +9,5 @@ class FadeBackGround(Fx):
         self.q = q
 
     def update(self):
-        if not self.enabled:
-            return
         self.video_buffer.buffer[self.video_buffer.buffer >= self.q] -= self.q
         self.video_buffer.buffer[self.video_buffer.buffer < self.q] = 0

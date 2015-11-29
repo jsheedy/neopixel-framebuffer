@@ -29,4 +29,5 @@ class PointFx(Fx):
         # offset = self.position * self.video_buffer.N
         self.point.pos = self.position
         points = self.point.get_points()
-        self.video_buffer.buffer[self.axis:N*3:3] = points
+
+        self.video_buffer.buffer[self.axis:N*3:3][points>0] = points[points>0]

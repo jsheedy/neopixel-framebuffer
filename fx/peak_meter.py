@@ -52,8 +52,6 @@ class PeakMeter(Fx):
 
     def update(self):
         super(PeakMeter, self).update()
-        if not self.enabled:
-            return
 
         for meter in self.meters:
             secs = (datetime.now() - meter.timestamp).total_seconds()

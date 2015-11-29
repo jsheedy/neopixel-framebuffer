@@ -34,18 +34,17 @@ class Wave(Fx):
         self.N = self.video_buffer.N
         self.rgb_arrays = {
             'r': ChannelArray(self.N, wavelength=4, velocity=1),
-            'g': ChannelArray(self.N, wavelength=4, velocity=1),
-            'b': ChannelArray(self.N, wavelength=24, velocity=1)
+            'g': ChannelArray(self.N, wavelength=8, velocity=2),
+            'b': ChannelArray(self.N, wavelength=12, velocity=2)
         }
         self.pointer = itertools.count(0)
 
     def update(self):
         super(Wave, self).update()
-        if not self.enabled:
-            return
+
         i = next(self.pointer)
 
         self.video_buffer.buffer[::3] = self.rgb_arrays['r'].update(i)
-        self.video_buffer.buffer[1::3] += self.rgb_arrays['g'].update(i)
-        self.video_buffer.buffer[2::3] += self.rgb_arrays['b'].update(i)
+        self.video_buffer.buffer[1::3] = self.rgb_arrays['g'].update(i)
+        self.video_buffer.buffer[2::3] = self.rgb_arrays['b'].update(i)
 
