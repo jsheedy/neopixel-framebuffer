@@ -8,8 +8,8 @@ from point import Point
 
 
 class LarsonScanner(Fx):
-    def __init__(self, video_buffer, scanners):
-        self.video_buffer = video_buffer
+    def __init__(self, video_buffer, scanners, **kwargs):
+        super().__init__(video_buffer, **kwargs)
         self.scanners = scanners
         self.pos = 0.0
         self.bpm = 120

@@ -8,6 +8,7 @@ import argparse
 import asyncio
 from collections import OrderedDict
 from datetime import datetime
+import functools
 import json
 import logging
 from queue import Queue
@@ -21,15 +22,17 @@ import numpy as np
 import fx
 import keyframes as kf
 from osc import OSCServer
+from touch_osc import accxyz
 import websocket_server
 import midi
 
-logging.basicConfig(level=logging.INFO)
+logging.basicConfig(level=logging.DEBUG)
 
 
 N = 420
-# N = 256
-FRAMERATE = 26 # 26.8 is on the edge of glitching the neopixels on my 2010 MBP.  Just enough glitch to be tasty.
+FRAMERATE = 25 # 26.8 is on the edge of glitching the neopixels on my 2010 MBP.  Just enough glitch to be tasty.
+# FRAMERATE = 26 # 26.8 is on the edge of glitching the neopixels on my 2010 MBP.  Just enough glitch to be tasty.
+# BAUDRATE = 9600
 BAUDRATE = 460800
 # BAUDRATE = 230400
 # BAUDRATE = 115200
@@ -106,7 +109,6 @@ def update_video_buffer():
         for key, effect in layered_effects.items():
             if effect.enabled:
                 effect.update()
-                # yield from asyncio.sleep(.01)
         yield from asyncio.sleep(1.0 / FRAMERATE)
 
 try:
@@ -117,7 +119,7 @@ except:
 @asyncio.coroutine
 def write_serial():
     while True:
-        serial_f.write(video_buffer.buffer)
+        serial_f.write(video_buffer.buffer.tobytes())
         yield from asyncio.sleep(1.0 / FRAMERATE)
 
 def read_stdin():
@@ -132,35 +134,36 @@ def read_stdin():
         fade.q = int(fade_amount)
     else:
         logging.info('unknown f/x {}'.format(line))
-    logging.info('all f/x:')
+    print('all f/x:')
 
+    print('{0:20} enabled'.format('f/x'))
+    print('-'*30)
     for fx in layered_effects.keys():
-        logging.info('{} enabled: {}'.format(fx, layered_effects[fx].enabled))
-
+        print('{0:20} {1}'.format(fx, layered_effects[fx].enabled))
 
 
 def main():
-    layered_effects['background'] = fx.BackGround(video_buffer, color='')
-    layered_effects['fade'] = fx.FadeBackGround(video_buffer, q=12)
-    layered_effects['wave'] = fx.Wave(video_buffer)
-    layered_effects['midi_note'] = fx.MidiNote(video_buffer)
-    layered_effects['pointX'] = fx.PointFx(video_buffer, axis=0)
-    layered_effects['pointY'] = fx.PointFx(video_buffer, axis=1)
-    layered_effects['pointZ'] = fx.PointFx(video_buffer, axis=2)
-    layered_effects['scanner'] = fx.LarsonScanner(video_buffer, scanners=(
+    # layered_effects['background'] = fx.BackGround(video_buffer, color='')
+    layered_effects['fade'] = fx.FadeBackGround(video_buffer, q=15)
+    layered_effects['wave'] = fx.Wave(video_buffer, enabled=False)
+    layered_effects['midi_note'] = fx.MidiNote(video_buffer, range=(310, 410))
+    # layered_effects['pointX'] = fx.PointFx(video_buffer, range=(360,420))
+    # layered_effects['pointY'] = fx.PointFx(video_buffer)
+    # layered_effects['pointZ'] = fx.PointFx(video_buffer)
+    layered_effects['scanner'] = fx.LarsonScanner(video_buffer, enabled=False, scanners=(
         {'n1':20, 'n2':45},
         {'n1':150,'n2':170},
         {'n1':250,'n2':290},
         {'n1':360,'n2':400},
     ) )
-    layered_effects['peak_meter'] = fx.PeakMeter(video_buffer, meters=(
+    layered_effects['peak_meter'] = fx.PeakMeter(video_buffer, enabled=True, meters=(
         {'n1': 340, 'n2': 420, 'reverse': True},
         {'n1': 0, 'n2': 100, 'reverse': False},
     ))
 
-    midi_thread = threading.Thread(target=midi.main,kwargs={'q':midi_queue})
-    midi_thread.daemon = True
-    midi_thread.start()
+    # midi_thread = threading.Thread(target=midi.main,kwargs={'q':midi_queue})
+    # midi_thread.daemon = True
+    # midi_thread.start()
 
     loop = asyncio.get_event_loop()
     # loop.set_debug(True)
@@ -174,13 +177,11 @@ def main():
             ('/audio/envelope', layered_effects['peak_meter'].envelope),
             # ('/bassnuke', video_buffer.keyframes),
             ('/midi/note', layered_effects['midi_note'].set),
-            # ('/accxyz', layered_effects['pointX'].xyz),
-            # ('/accxyz', layered_effects['pointY'].xyz),
-            # ('/accxyz', layered_effects['pointZ'].xyz),
+            # ('/accxyz', functools.partial(accxyz, axis=0, point=layered_effects['pointX'])),
             # ('/1/fader1', layered_effects['background'].red),
             # ('/1/fader2',  layered_effects['background'].green),
             # ('/1/fader3',  layered_effects['background'].blue),
-            ('/*', osc_logger),
+            # ('/*', osc_logger),
         )
     )
 

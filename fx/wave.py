@@ -29,8 +29,8 @@ class ChannelArray():
 
 class Wave(Fx):
 
-    def __init__(self, video_buffer, w=1):
-        self.video_buffer = video_buffer
+    def __init__(self, video_buffer, w=1, **kwargs):
+        super().__init__(video_buffer, **kwargs)
         self.N = self.video_buffer.N
         self.rgb_arrays = {
             'r': ChannelArray(self.N, wavelength=4, velocity=1),

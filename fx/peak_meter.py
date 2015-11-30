@@ -38,12 +38,9 @@ class Meter():
         return self.buff
 
 class PeakMeter(Fx):
-    def __init__(self, video_buffer, meters):
-        self.video_buffer = video_buffer
-        self.meters = []
-        for d in meters:
-            logging.info("Creating meter at ({})".format(d))
-            self.meters.append(Meter(**d))
+    def __init__(self, video_buffer, meters, **kwargs):
+        super().__init__(video_buffer, **kwargs)
+        self.meters = [Meter(**d) for d in meters]
 
     def envelope(self, name, y, channel ):
         y = float(y)

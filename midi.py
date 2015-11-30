@@ -3,7 +3,7 @@ import time
 import rtmidi
 from rtmidi.midiutil import open_midiport
 
-class MidiInputHandler(object):
+class MidiInputHandler():
     def __init__(self, port, q=None):
         self.port = port
         self._wallclock = time.time()
