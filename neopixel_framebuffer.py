@@ -26,7 +26,7 @@ from touch_osc import accxyz
 import websocket_server
 import midi
 
-logging.basicConfig(level=logging.DEBUG)
+logging.basicConfig(level=logging.INFO)
 
 
 N = 420
@@ -51,6 +51,10 @@ def open_serial():
         try:
             s = serial.Serial(port=dev, baudrate=BAUDRATE, timeout=2)
             logging.info("Opened serial port {}".format(dev))
+            # flush buffers
+            # while(s.inWaiting() == 0):
+            #     s.write(0)
+
             return s
         except (serial.SerialException, OSError):
             logging.warn("Couldn't open serial port {}".format(dev))
@@ -111,16 +115,15 @@ def update_video_buffer():
                 effect.update()
         yield from asyncio.sleep(1.0 / FRAMERATE)
 
+serial_f = None
 try:
     serial_f = open_serial()
 except:
     logging.warn("no serial")
 
-@asyncio.coroutine
 def write_serial():
-    while True:
-        serial_f.write(video_buffer.buffer.tobytes())
-        yield from asyncio.sleep(1.0 / FRAMERATE)
+    status = serial_f.read(serial_f.inWaiting())
+    serial_f.write(video_buffer.buffer.tobytes())
 
 def read_stdin():
     line = sys.stdin.readline().strip()
@@ -150,11 +153,11 @@ def main():
     # layered_effects['pointX'] = fx.PointFx(video_buffer, range=(360,420))
     # layered_effects['pointY'] = fx.PointFx(video_buffer)
     # layered_effects['pointZ'] = fx.PointFx(video_buffer)
-    layered_effects['scanner'] = fx.LarsonScanner(video_buffer, enabled=False, scanners=(
+    layered_effects['scanner'] = fx.LarsonScanner(video_buffer, enabled=True, scanners=(
         {'n1':20, 'n2':45},
         {'n1':150,'n2':170},
         {'n1':250,'n2':290},
-        {'n1':360,'n2':400},
+        # {'n1':360,'n2':400},
     ) )
     layered_effects['peak_meter'] = fx.PeakMeter(video_buffer, enabled=True, meters=(
         {'n1': 340, 'n2': 420, 'reverse': True},
@@ -181,17 +184,17 @@ def main():
             # ('/1/fader1', layered_effects['background'].red),
             # ('/1/fader2',  layered_effects['background'].green),
             # ('/1/fader3',  layered_effects['background'].blue),
-            # ('/*', osc_logger),
+            ('/*', osc_logger),
         )
     )
+    osc_server.serve()
 
-    # loop.add_writer(serial_f, write_serial)
-    loop.create_task(write_serial())
     loop.create_task(update_video_buffer())
+    if serial_f:
+        loop.add_reader(serial_f.fileno(), write_serial)
     loop.add_reader(sys.stdin.fileno(), read_stdin)
 
     try:
-        osc_server.serve()
         loop.run_forever()
     except KeyboardInterrupt:
         pass
