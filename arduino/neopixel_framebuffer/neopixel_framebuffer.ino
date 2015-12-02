@@ -7,7 +7,7 @@
 //#define BAUD 230400
 #define BAUD 460800
 
-Adafruit_NeoPixel strip = Adafruit_NeoPixel(NLEDS, PIN);
+Adafruit_NeoPixel strip = Adafruit_NeoPixel(NLEDS, PIN, NEO_RGB + NEO_KHZ800);
 //Adafruit_NeoPixel strip = Adafruit_NeoPixel(NLEDS, PIN, NEO_RGB + NEO_KHZ800);
 
 void setup() {
@@ -29,6 +29,5 @@ void loop() {
       strip.setPixelColor(i, rgb[2], rgb[1], rgb[0]);
     }
     strip.show();
-    delay(10);
   }
 }

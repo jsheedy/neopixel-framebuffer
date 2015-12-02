@@ -8,7 +8,7 @@ import websockets
 
 import logging
 logger = logging.getLogger('websockets.server')
-logger.setLevel(logging.DEBUG)
+logger.setLevel(logging.INFO)
 logger.addHandler(logging.StreamHandler())
 
 def serve(loop, video_buffer, server_address=('0.0.0.0', 8766)):
@@ -23,8 +23,15 @@ def serve(loop, video_buffer, server_address=('0.0.0.0', 8766)):
     @asyncio.coroutine
     def firehose(websocket, path, timeout=1):
         connections[websocket] = True
+        frame = 0
         while True:
-            data = video_buffer.tobytes()
+            if video_buffer.frame > frame:
+                logging.debug('websocket {} reserving frame {}'.format(websocket, video_buffer.frame))
+                frame = video_buffer.frame
+            else:
+                frame = video_buffer.update()
+
+            data = video_buffer.buffer.tobytes()
             msg = yield from websocket.send(data)
             x = yield from producer()
             if not websocket.open:
