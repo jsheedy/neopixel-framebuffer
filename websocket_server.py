@@ -18,7 +18,7 @@ def serve(loop, video_buffer, server_address=('0.0.0.0', 8766)):
     @asyncio.coroutine
     def producer():
         # yield from video_buffer.tostring()
-        yield from asyncio.sleep(.02)
+        yield from asyncio.sleep(.05)
 
     @asyncio.coroutine
     def firehose(websocket, path, timeout=1):

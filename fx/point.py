@@ -23,10 +23,8 @@ class PointFx(Fx):
     def update(self):
         super(PointFx, self).update()
         N = self.video_buffer.N
-        if self.position > 1:
-            self.position=0
         self.point.pos = self.position
         points = self.point.get_points()
         for i,color in enumerate(self.color):
-            if i == 0:
+            if i in (0,1,2):
                 self.video_buffer.buffer[i:N*3:3][points>0] = color*points[points>0]

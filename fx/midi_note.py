@@ -21,8 +21,7 @@ class MidiNote(Fx):
         range = kwargs.pop('range')
         super().__init__(video_buffer, **kwargs)
         self.points = [PointFx(video_buffer, range=range) for channel in self.channels]
-        self.points[1].color = (255,255,255)
-        self.points[2].color = (255,0,0)
+        self.points[1].color = (255,0,255)
         self.event_buffer = {}
 
     def set(self, addr, note, velocity, channel):

@@ -37,7 +37,7 @@ def read_stdin():
         logging.info('toggled f/x {} {}'.format(fx, fx.enabled))
     elif line[:4] == 'fade':
         _, fade_amount = line.split()
-        fade = effects['fade']
+        fade = video_buffer.effects['fade']
         fade.q = int(fade_amount)
     else:
         logging.info('unknown f/x {}'.format(line))
@@ -51,16 +51,16 @@ def read_stdin():
 
 def main():
     # effects['background'] = fx.BackGround(video_buffer, color='')
-    video_buffer.add_effect('fade', fx.FadeBackGround, q=15)
+    video_buffer.add_effect('fade', fx.FadeBackGround, q=25)
     video_buffer.add_effect('wave', fx.Wave, enabled=False)
     video_buffer.add_effect('midi_note', fx.MidiNote, range=(310, 410))
     # add_effect('pointX'] = fx.PointFx(video_buffer, range=(360,420))
     # add_effect('pointY'] = fx.PointFx(video_buffer)
     # add_effect('pointZ'] = fx.PointFx(video_buffer)
     video_buffer.add_effect('scanner', fx.LarsonScanner, enabled=True, scanners=(
-        {'n1':20, 'n2':45},
-        {'n1':150,'n2':170},
-        {'n1':250,'n2':290},
+        {'n1':20, 'n2':45, 'color': (1, .5, 0)},
+        {'n1':150,'n2':170, 'color': (0, 1, 0)},
+        {'n1':250,'n2':290, 'color': (0, 0, 1)},
         # {'n1':360,'n2':400},
     ))
     video_buffer.add_effect('peak_meter', fx.PeakMeter, enabled=True, meters=(
