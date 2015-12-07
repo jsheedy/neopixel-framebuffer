@@ -16,11 +16,6 @@ def serve(loop, video_buffer, server_address=('0.0.0.0', 8766)):
     connections = {}
 
     @asyncio.coroutine
-    def producer():
-        # yield from video_buffer.tostring()
-        yield from asyncio.sleep(.05)
-
-    @asyncio.coroutine
     def firehose(websocket, path, timeout=1):
         connections[websocket] = True
         frame = 0
@@ -33,7 +28,8 @@ def serve(loop, video_buffer, server_address=('0.0.0.0', 8766)):
 
             data = video_buffer.buffer.tobytes()
             msg = yield from websocket.send(data)
-            x = yield from producer()
+            status = yield from websocket.recv()
+
             if not websocket.open:
                 print("BREAK")
                 del connections[websocket]

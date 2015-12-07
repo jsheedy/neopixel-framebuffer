@@ -8,9 +8,9 @@ import asyncio
 import functools
 import logging
 from queue import Queue
-import sys
 import threading
 
+import console
 import fx
 from osc import OSCServer
 import serial_comms
@@ -29,26 +29,6 @@ midi_queue = Queue()
 def osc_logger(*args):
     logging.debug(args)
 
-def read_stdin():
-    line = sys.stdin.readline().strip()
-    fx = video_buffer.effects.get(line)
-    if fx:
-        fx.toggle()
-        logging.info('toggled f/x {} {}'.format(fx, fx.enabled))
-    elif line[:4] == 'fade':
-        _, fade_amount = line.split()
-        fade = video_buffer.effects['fade']
-        fade.q = int(fade_amount)
-    else:
-        logging.info('unknown f/x {}'.format(line))
-    print('all f/x:')
-
-    print('{0:20} enabled'.format('f/x'))
-    print('-'*30)
-    for fx in video_buffer.effects.keys():
-        print('{0:20} {1}'.format(fx, video_buffer.effects[fx].enabled))
-
-
 def main():
     # effects['background'] = fx.BackGround(video_buffer, color='')
     video_buffer.add_effect('fade', fx.FadeBackGround, q=25)
@@ -58,10 +38,9 @@ def main():
     # add_effect('pointY'] = fx.PointFx(video_buffer)
     # add_effect('pointZ'] = fx.PointFx(video_buffer)
     video_buffer.add_effect('scanner', fx.LarsonScanner, enabled=True, scanners=(
-        {'n1':20, 'n2':45, 'color': (1, .5, 0)},
-        {'n1':150,'n2':170, 'color': (0, 1, 0)},
-        {'n1':250,'n2':290, 'color': (0, 0, 1)},
-        # {'n1':360,'n2':400},
+        {'n1':20, 'n2':45, 'width': 1, 'color': (1, .5, 0)},
+        {'n1':150,'n2':170, 'width': 2, 'color': (0, 1, 0)},
+        {'n1':250,'n2':290, 'width': 10, 'color': (0, 0, 1)}
     ))
     video_buffer.add_effect('peak_meter', fx.PeakMeter, enabled=True, meters=(
         {'n1': 340, 'n2': 420, 'reverse': True},
@@ -74,8 +53,7 @@ def main():
 
     loop = asyncio.get_event_loop()
 
-    loop.add_reader(sys.stdin.fileno(), read_stdin)
-
+    console.init(loop, video_buffer)
     websocket_server.serve(loop, video_buffer)
     serial_comms.init(loop, video_buffer)
 

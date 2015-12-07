@@ -14,15 +14,8 @@ class ChannelArray():
         self.intensity = 255
 
     def update(self, i):
-        # if random.random() > .97:
-        #     self.velocity += 1-random.randint(0,2)
-        #     if self.velocity > 4:
-        #         self.velocity -= 1
-        #     elif self.velocity < -4:
-        #         self.velocity += 1
         if random.random() > .99:
             self.velocity *= -1
-            # self.velocity += (random.random() - 0.5)
 
         return (self.intensity * np.roll(self.buff, (i*self.velocity)%self.N)) \
             .astype(np.uint8)

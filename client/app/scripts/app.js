@@ -39,6 +39,7 @@ angular
         data.data[i] = new Uint8Array(message.data, i*3, 3);
       }
       data.timestamp = (new Date());
+      dataStream.send(0);
     });
 
     return data;
