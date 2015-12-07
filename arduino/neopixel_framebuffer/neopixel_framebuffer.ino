@@ -23,11 +23,9 @@ byte rgb[3];
 
 void loop() {
   Serial.write(0);
-  if (Serial.available() > 0) {
-    for (uint16_t i = 0; i < NLEDS; i++) {
-      Serial.readBytes(rgb, 3);
-      strip.setPixelColor(i, rgb[2], rgb[1], rgb[0]);
-    }
-    strip.show();
+  for (uint16_t i = 0; i < NLEDS; i++) {
+    Serial.readBytes(rgb, 3);
+    strip.setPixelColor(i, rgb[2], rgb[1], rgb[0]);
   }
+  strip.show();
 }

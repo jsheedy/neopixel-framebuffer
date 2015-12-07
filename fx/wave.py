@@ -22,7 +22,6 @@ class ChannelArray():
         delta_t = (new_timestamp - self.timestamp).total_seconds()
 
         phase = delta_t / self.freq
-        print(phase)
 
         if self.forward:
             x = np.arange(self.N)

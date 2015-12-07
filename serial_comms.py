@@ -32,16 +32,30 @@ def open_serial():
             logging.warn("Couldn't open serial port {}".format(dev))
     raise Exception("couldn't open any serial port, failing")
 
+def reset_to_top(serial_f):
+    arduino_status = 1  # 0 indicates ready for entire frame
+    i=0
+    while arduino_status != 0:
+        if serial_f.inWaiting() > 0:
+            arduino_status = ord(serial_f.read())
+            i+=1
+        else:
+            # dump 3 bytes to fill the input buffer
+            serial_f.write(bytes((0,)*3))
+
 def write_serial(serial_f, video_buffer):
     global video_frame
-    serial_f.read(serial_f.inWaiting())
+
+    reset_to_top(serial_f)
+
     if video_buffer.frame > video_frame:
         logging.debug('serial reserving frame {}'.format(video_buffer.frame))
         video_frame = video_buffer.frame
     else:
         video_frame = video_buffer.update()
 
-    serial_f.write(video_buffer.buffer.tobytes())
+    data = video_buffer.buffer.tobytes()
+    serial_f.write(data)
 
 def init(loop, video_buffer):
     global serial_f
