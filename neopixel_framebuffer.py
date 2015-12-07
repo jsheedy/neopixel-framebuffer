@@ -32,7 +32,7 @@ def osc_logger(*args):
 def main():
     # effects['background'] = fx.BackGround(video_buffer, color='')
     video_buffer.add_effect('fade', fx.FadeBackGround, q=25)
-    video_buffer.add_effect('wave', fx.Wave, enabled=False)
+    video_buffer.add_effect('wave', fx.Wave, enabled=True)
     video_buffer.add_effect('midi_note', fx.MidiNote, range=(310, 410))
     # add_effect('pointX'] = fx.PointFx(video_buffer, range=(360,420))
     # add_effect('pointY'] = fx.PointFx(video_buffer)
