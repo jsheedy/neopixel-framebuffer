@@ -24,6 +24,7 @@ def serve(loop, video_buffer, server_address=('0.0.0.0', 8766)):
         frame = 0
         t1 = datetime.now()
         while True:
+
             if video_buffer.frame > frame:
                 logging.debug('websocket {} reserving frame {}'.format(websocket, video_buffer.frame))
                 frame = video_buffer.frame
@@ -38,13 +39,15 @@ def serve(loop, video_buffer, server_address=('0.0.0.0', 8766)):
                 yield from asyncio.sleep(TIMESLICE-dt)
 
             data = video_buffer.buffer.tobytes()
-            msg = yield from websocket.send(data)
-            status = yield from websocket.recv()
 
-            if not websocket.open:
-                print("BREAK")
+            try:
+                msg = yield from websocket.send(data)
+                status = yield from websocket.recv()
+            except websockets.exceptions.InvalidState:
+                logger.info('websocket_server closing connection')
                 del connections[websocket]
                 break
+
 
     logging.info("websockets serving on {}".format(server_address))
     firehose_server = websockets.serve(firehose, *server_address)
