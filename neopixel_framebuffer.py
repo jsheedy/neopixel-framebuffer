@@ -38,9 +38,15 @@ def main():
     # add_effect('pointY'] = fx.PointFx(video_buffer)
     # add_effect('pointZ'] = fx.PointFx(video_buffer)
     video_buffer.add_effect('scanner', fx.LarsonScanner, enabled=True, scanners=(
-        {'n1':20, 'n2':45, 'width': 1, 'color': (1, .5, 0)},
+        {'n1':0, 'n2':30, 'width': 1, 'color': (1, .5, 0)},
+        {'n1':35, 'n2':50, 'width': 2, 'color': (.5, .5, .5)},
+        {'n1':55, 'n2':90, 'width': 1, 'color': (1, .5, .5)},
+        {'n1':100, 'n2':140, 'width': 2, 'color': (.5, .5, 1)},
         {'n1':150,'n2':170, 'width': 2, 'color': (0, 1, 0)},
-        {'n1':250,'n2':290, 'width': 10, 'color': (0, 0, 1)}
+        {'n1':180,'n2':245, 'width': 2, 'color': (.6, .2, 0)},
+        {'n1':250,'n2':290, 'width': 10, 'color': (0, 0, 1)},
+        {'n1':300,'n2':340, 'width': 2, 'color': (.3, .1, 0)},
+        {'n1':350,'n2':420, 'width': 8, 'color': (.2, .05, .05)}
     ))
     video_buffer.add_effect('peak_meter', fx.PeakMeter, enabled=True, meters=(
         {'n1': 340, 'n2': 420, 'reverse': True},

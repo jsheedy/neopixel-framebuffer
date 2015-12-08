@@ -1,4 +1,5 @@
 import asyncio
+from datetime import datetime
 import json
 import logging
 import random
@@ -13,18 +14,28 @@ logger.addHandler(logging.StreamHandler())
 
 def serve(loop, video_buffer, server_address=('0.0.0.0', 8766)):
 
+    FRAMERATE = 33
+    TIMESLICE = 1/FRAMERATE
     connections = {}
 
     @asyncio.coroutine
     def firehose(websocket, path, timeout=1):
         connections[websocket] = True
         frame = 0
+        t1 = datetime.now()
         while True:
             if video_buffer.frame > frame:
                 logging.debug('websocket {} reserving frame {}'.format(websocket, video_buffer.frame))
                 frame = video_buffer.frame
             else:
                 frame = video_buffer.update()
+
+            t2 = datetime.now()
+            dt = (t2-t1).total_seconds()
+            t1 = t2
+
+            if (dt < TIMESLICE):
+                yield from asyncio.sleep(TIMESLICE-dt)
 
             data = video_buffer.buffer.tobytes()
             msg = yield from websocket.send(data)

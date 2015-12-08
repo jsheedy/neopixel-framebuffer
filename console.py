@@ -13,6 +13,10 @@ def read_stdin():
         _, fade_amount = line.split()
         fade = _video_buffer.effects['fade']
         fade.q = int(fade_amount)
+    elif line[:3] == 'bpm':
+        _, bpm = line.split()
+        scanner = _video_buffer.effects['scanner']
+        scanner.bpm = int(bpm)
     else:
         logging.info('unknown f/x {}'.format(line))
     print('all f/x:')
