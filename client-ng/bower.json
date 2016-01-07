@@ -1,0 +1,21 @@
+{
+  "name": "client-ng",
+  "description": "",
+  "main": "index.js",
+  "authors": [
+    "Joseph Sheedy <joseph.sheedy@gmail.com>"
+  ],
+  "license": "ISC",
+  "homepage": "https://github.com/jsheedy/neopixel-framebuffer",
+  "moduleType": [],
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "osc.js": "~2.0.2"
+  }
+}
