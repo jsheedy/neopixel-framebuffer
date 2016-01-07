@@ -21,7 +21,6 @@ def osc_recv(datagram):
         if not q:
             continue
         try:
-            # logger.info('qsize : '  + str(q.qsize()) + ' put ' + str(datagram))
             q.put_nowait(datagram)
         except asyncio.QueueFull:
             logger.warn('queue full for key {}'.format(k))
@@ -65,13 +64,6 @@ def serve(loop, video_buffer, server_address=('0.0.0.0', 8766)):
 
                     if (dt < TIMESLICE):
                         yield from asyncio.sleep(TIMESLICE-dt)
-
-                # gen = firehose(websocket)
-                # while True:
-                #     data = yield from gen
-                #     logging.info(data)
-                #     msg = yield from websocket.send(data)
-                #     # status = yield from websocket.recv()
 
             elif path == "/osc":
                 q = asyncio.Queue(maxsize=2, loop=loop) # , loop=loop)
