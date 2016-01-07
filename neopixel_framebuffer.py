@@ -45,8 +45,8 @@ def main():
         {'n1':150,'n2':170, 'width': 2, 'color': (0, 1, 0)},
         {'n1':180,'n2':245, 'width': 2, 'color': (.6, .2, 0)},
         {'n1':250,'n2':290, 'width': 10, 'color': (0, 0, 1)},
-        {'n1':300,'n2':340, 'width': 2, 'color': (.3, .1, 0)},
-        {'n1':350,'n2':420, 'width': 8, 'color': (.2, .05, .05)}
+        # {'n1':300,'n2':340, 'width': 2, 'color': (.3, .1, 0)},
+        # {'n1':350,'n2':420, 'width': 8, 'color': (.2, .05, .05)}
     ))
     video_buffer.add_effect('peak_meter', fx.PeakMeter, enabled=True, meters=(
         {'n1': 340, 'n2': 420, 'reverse': True},
@@ -75,7 +75,8 @@ def main():
             # ('/1/fader2',  effects['background'].green),
             # ('/1/fader3',  effects['background'].blue),
             ('/*', osc_logger),
-        )
+        ),
+        forward = (websocket_server.osc_recv, )
     )
 
     osc_server.serve()

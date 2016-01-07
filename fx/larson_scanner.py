@@ -17,7 +17,7 @@ class LarsonScanner(Fx):
         self.count = 1
 
     def metronome(self, endpoint, bpm, count):
-        logging.info("scanner setting bpm: {}".format(bpm))
+        logging.debug("scanner setting bpm: {}".format(bpm))
         self.timestamp = datetime.now()
         self.bpm = int(bpm)
         self.count = int(count)
