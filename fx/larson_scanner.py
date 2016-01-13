@@ -44,17 +44,12 @@ class LarsonScanner(Fx):
         for scanner in self.scanners:
 
             n1,n2 = scanner['n1'], scanner['n2']
+            r,g,b = scanner.get('color', (1,1,1))
+
             point = Point(self.pos, n2 - n1, width=scanner.get('width', 2))
             points = point.get_points()
-
-            slice = self.video_buffer.buffer[n1*3:n2*3]
-            int32_slice = slice.astype(np.int32)
-            r,g,b = scanner.get('color', (1,1,1))
-            int32_slice[0::3] += (r*points.astype(np.uint32)).astype(np.uint32)
-            int32_slice[1::3] += (g*points.astype(np.uint32)).astype(np.uint32)
-            int32_slice[2::3] += (b*points.astype(np.uint32)).astype(np.uint32)
-
-            int32_uint8_slice=np.clip(int32_slice,0,255).astype(np.uint8)
-            # numexpr.evaluate('where((slice+int32_uint8_slice)>255, 255, slice+int32_uint8_slice)', out=slice, casting='unsafe')
-            self.video_buffer.buffer[n1*3:n2*3] = int32_uint8_slice
-
+            color_points = np.full((n2-n1)*3, fill_value=0, dtype=np.uint8)
+            color_points[0::3] = r * points
+            color_points[1::3] = g * points
+            color_points[2::3] = b * points
+            self.video_buffer.merge(n1, n2, color_points)

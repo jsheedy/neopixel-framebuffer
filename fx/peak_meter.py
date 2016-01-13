@@ -9,14 +9,15 @@ from point import Point
 
 
 class Meter():
-    def __init__(self, n1=0, n2=100, reverse=False):
+    def __init__(self, n1=0, n2=100, reverse=False, color=(1,1,1)):
         self.set(0)
         self.n1 = n1
         self.n2 = n2
         self.level = 0.0
         self.N = self.n2 - self.n1
-        self.buff = np.zeros(self.N*3)
+        self.buff = np.zeros(self.N*3, dtype=np.float)
         self.reverse = reverse
+        self.color = color
         self.timestamp = datetime(2000,1,1)
 
     def set(self, level):
@@ -25,16 +26,19 @@ class Meter():
         self.timestamp = datetime.now()
 
     def get_points(self):
-        self.buff *= .7
-        # self.buff[1:self.N*3-1:3] = self.buff[0:self.N*3:3]*.2
-        # self.buff[2:self.N*3-6:3] = self.buff[0:self.N*3-6:3]*.3
+        self.buff[:] = 0
         pos = int(self.level * self.N)
+        r,g,b = self.color
+        array = np.full(pos, fill_value=255, dtype=np.uint32)
         if self.reverse:
             if not pos == self.N:
-                self.buff[3*(self.N-pos):self.N*3:3] = [255]*pos
+                self.buff[3*(self.N-pos)+0:(self.N+0)*3:3] = array*r
+                self.buff[3*(self.N-pos)+1:(self.N+1)*3:3] = array*g
+                self.buff[3*(self.N-pos)+2:(self.N+2)*3:3] = array*b
         else:
-            self.buff[0:pos*3:3] = [255]*pos
-        #     self.buff[0+pos*3] = 255*((self.level*self.N)-pos)
+            self.buff[0:pos*3:3] = array*r
+            self.buff[1:pos*3:3] = array*g
+            self.buff[2:pos*3:3] = array*b
         return self.buff
 
 class PeakMeter(Fx):
@@ -54,4 +58,5 @@ class PeakMeter(Fx):
             secs = (datetime.now() - meter.timestamp).total_seconds()
             if secs > 2:
                 continue
-            self.video_buffer.buffer[meter.n1*3:meter.n2*3] = meter.get_points()
+            color_points = meter.get_points()
+            self.video_buffer.merge(meter.n1, meter.n2, color_points)

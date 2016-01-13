@@ -19,6 +19,17 @@ class VideoBuffer(object):
         self.buffer[n * 3:(n + 1) * 3] = c
         self.dirty = True
 
+    def merge(self, n1, n2, array, clip=True):
+        """ merge array into the video_buffer between points
+        n1 and n2, handling clipping """
+
+        array = array.astype(np.uint32)
+        slice = self.buffer[n1*3:n2*3]
+        int32_slice = slice.astype(np.int32)
+        int32_slice[:] += array[:]
+        int32_uint8_slice=np.clip(int32_slice,0,255).astype(np.uint8)
+        self.buffer[n1*3:n2*3] = int32_uint8_slice
+
     def update(self):
         for key, effect in self.effects.items():
             if effect.enabled:

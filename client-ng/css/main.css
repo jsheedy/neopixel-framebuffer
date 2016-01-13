@@ -56,10 +56,13 @@ textarea {
    Author's custom styles
    ========================================================================== */
 
+body {
+    background-color: black;
+}
 #console {
     position: absolute;
-    background-color: white;
-    color: black;
+    background-color: #111;
+    color: #0f0;
     width: 500px;
     height: 500px;
     font-size: 8pt;
