@@ -1,8 +1,7 @@
-from datetime import datetime, timedelta
+from datetime import datetime
 import logging
 
 import numpy as np
-import numexpr
 
 from .fx import Fx
 from point import Point
@@ -15,8 +14,9 @@ class LarsonScanner(Fx):
         self.pos = 0.0
         self.bpm = 120
         self.count = 1
+        self.timestamp = datetime.now()
 
-    def metronome(self, endpoint, bpm, count):
+    def metronome(self, _, bpm, count):
         logging.debug("scanner setting bpm: {}".format(bpm))
         self.timestamp = datetime.now()
         self.bpm = int(bpm)
@@ -25,16 +25,15 @@ class LarsonScanner(Fx):
     def update(self):
         super(LarsonScanner, self).update()
 
-        N = self.video_buffer.N
         secs = (datetime.now() - self.timestamp).total_seconds()
 
         # if we haven't seen a metronome() call in 2 seconds, revert to autoscan
         delta_beat = secs / (60.0/self.bpm)
 
-        if self.count in (1,3):
+        if self.count in (1, 3):
             self.pos = delta_beat
         else:
-            self.pos =  1-delta_beat
+            self.pos =  1 - delta_beat
 
         if delta_beat > 1.05 or delta_beat < -0.05:
             delta_beat = np.clip(delta_beat, 0, 1)

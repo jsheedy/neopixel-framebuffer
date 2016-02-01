@@ -1,7 +1,7 @@
-import queue
 import time
-import rtmidi
-from rtmidi.midiutil import open_midiport
+
+import rtmidi_python as rtmidi
+
 
 class MidiInputHandler():
     def __init__(self, port, q=None):
@@ -19,16 +19,22 @@ class MidiInputHandler():
         elif cc == 33:
             self.q.put({'key':'scanner', 'value': value})
 
+def callback(message, time_stamp):
+    # format changed..
+    print(message, time_stamp)
+
 def main(q=None):
     port = 0
     try:
-        midiin, port_name = open_midiport(port)
+        midi_in = rtmidi.MidiIn()
+        midi_in.open_port(0)
+        # midiin, port_name = open_midiport(port)
+        # midi_in.set_callback(MidiInputHandler(port_name, q=q))
+        print("Attaching MIDI input callback handler.")
+        midi_in.callback = callback
     except:
         print("no MIDI device")
         return
-
-    print("Attaching MIDI input callback handler.")
-    midiin.set_callback(MidiInputHandler(port_name, q=q))
 
     print("Entering main loop. Press Control-C to exit.")
     try:

@@ -1,6 +1,7 @@
 from .fx import Fx
 from point import Point
 
+
 class PointFx(Fx):
     enabled = True
     position = 0
