@@ -20,7 +20,7 @@ from video_buffer import VideoBuffer
 import websocket_server
 import midi
 
-logging.basicConfig(level=logging.DEBUG)
+logging.basicConfig(level=logging.INFO)
 
 N = 420
 
