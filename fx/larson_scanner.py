@@ -22,8 +22,7 @@ class LarsonScanner(Fx):
         self.bpm = int(bpm)
         self.count = int(count)
 
-    def update(self):
-        super(LarsonScanner, self).update()
+    def _update(self):
 
         secs = (datetime.now() - self.timestamp).total_seconds()
 

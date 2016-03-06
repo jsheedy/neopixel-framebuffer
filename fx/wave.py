@@ -34,13 +34,12 @@ class Wave(Fx):
 
 
         self.rgb_arrays = {
-            'r': ChannelArray(self.N, wavelength=4, brightness=random.randrange(0,256), freq=random.choice(self.freqs)),
-            'g': ChannelArray(self.N, wavelength=8, brightness=random.randrange(0,256), freq=random.choice(self.freqs)),
-            'b': ChannelArray(self.N, wavelength=12, brightness=random.randrange(0,256), freq=random.choice(self.freqs))
+            'r': ChannelArray(self.N, wavelength=4, brightness=random.randrange(200,256), freq=random.choice(self.freqs)),
+            'g': ChannelArray(self.N, wavelength=8, brightness=random.randrange(200,256), freq=random.choice(self.freqs)),
+            'b': ChannelArray(self.N, wavelength=12, brightness=random.randrange(200,256), freq=random.choice(self.freqs))
         }
 
-    def update(self):
-        super(Wave, self).update()
+    def _update(self):
 
         self.video_buffer.buffer[::3] = self.rgb_arrays['r'].update()
         self.video_buffer.buffer[1::3] = self.rgb_arrays['g'].update()

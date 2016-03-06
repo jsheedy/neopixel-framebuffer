@@ -21,8 +21,7 @@ class PointFx(Fx):
     def set(self, position):
         self.position = self.project(position)
 
-    def update(self):
-        super(PointFx, self).update()
+    def _update(self):
         N = self.video_buffer.N
         self.point.pos = self.position
         points = self.point.get_points()

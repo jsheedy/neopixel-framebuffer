@@ -38,8 +38,7 @@ class MidiNote(Fx):
             # event isn't in buffer, add it
             self.event_buffer[key] = MidiEvent(note, velocity, channel)
 
-    def update(self):
-        super(MidiNote, self).update()
+    def _update(self):
         midi_min = 24
         midi_max = 120
         for key, event in self.event_buffer.items():

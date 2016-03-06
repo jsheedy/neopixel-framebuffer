@@ -1,3 +1,4 @@
+from asyncio import Lock
 from collections import OrderedDict
 
 import numpy as np
@@ -10,6 +11,7 @@ class VideoBuffer(object):
         self.buffer = np.zeros(N * 3, dtype=np.uint8)
         self.N = N
         self.effects = OrderedDict()
+        self.locked = False
 
     def add_effect(self, name, fx, **kwargs):
         self.effects[name] = fx(self, **kwargs)

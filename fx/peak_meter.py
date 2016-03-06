@@ -51,8 +51,7 @@ class PeakMeter(Fx):
         channel = int(channel)
         self.meters[channel-1].set(float(y))
 
-    def update(self):
-        super(PeakMeter, self).update()
+    def _update(self):
 
         for meter in self.meters:
             secs = (datetime.now() - meter.timestamp).total_seconds()

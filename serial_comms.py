@@ -1,13 +1,14 @@
 import logging
 import serial
 
-# BAUDRATE = 9600
 BAUDRATE = 460800
 # BAUDRATE = 230400
 # BAUDRATE = 115200
 
 # try these in order until one opens
 SERIAL_DEVS = (
+    '/dev/cu.usbmodem1411',
+    '/dev/cu.usbmodem1421',
     '/dev/tty.usbmodem1451',
     '/dev/tty.usbmodemfd141',
     '/dev/tty.usbmodem1411',
@@ -23,10 +24,6 @@ def open_serial():
         try:
             s = serial.Serial(port=dev, baudrate=BAUDRATE, timeout=2)
             logging.info("Opened serial port {}".format(dev))
-            # flush buffers
-            # while(s.inWaiting() == 0):
-            #     s.write(0)
-
             return s
         except (serial.SerialException, OSError):
             logging.warn("Couldn't open serial port {}".format(dev))

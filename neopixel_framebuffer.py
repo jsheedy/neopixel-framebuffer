@@ -4,6 +4,7 @@
 line to an Arduino waiting to map those values to a NeoPixel strip.
 A thread also listens for incoming OSC messages to control the buffer"""
 
+import argparse
 import asyncio
 import functools
 import logging
@@ -19,21 +20,32 @@ from video_buffer import VideoBuffer
 import websocket_server
 import midi
 
-logging.basicConfig(level=logging.INFO)
+logging.basicConfig(level=logging.DEBUG)
 
 N = 420
 
 video_buffer = VideoBuffer(N)
 midi_queue = Queue()
 
+def parse_args():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--ip", default="0.0.0.0",
+        help="The ip of the OSC server")
+    parser.add_argument("--port", type=int, default=37337,
+        help="The port the OSC server to listening on")
+    return parser.parse_args()
+
 def osc_logger(*args):
     logging.debug(args)
 
 def main():
+    args = parse_args()
+
     # effects['background'] = fx.BackGround(video_buffer, color='')
-    video_buffer.add_effect('fade', fx.FadeBackGround, q=25)
-    video_buffer.add_effect('wave', fx.Wave, enabled=True)
-    video_buffer.add_effect('midi_note', fx.MidiNote, range=(310, 410))
+    video_buffer.add_effect('fade', fx.FadeBackGround, q=55)
+    video_buffer.add_effect('strobe', fx.Strobe)
+    video_buffer.add_effect('wave', fx.Wave, enabled=False)
+    video_buffer.add_effect('midi_note', fx.MidiNote, range=(300, 420), enabled=True)
     # add_effect('pointX'] = fx.PointFx(video_buffer, range=(360,420))
     # add_effect('pointY'] = fx.PointFx(video_buffer)
     # add_effect('pointZ'] = fx.PointFx(video_buffer)
@@ -46,8 +58,6 @@ def main():
         {'n1':180,'n2':245, 'width': 2, 'color': (.6, .2, 0)},
         {'n1':340,'n2':360, 'width': 1, 'color': (1, 0, 0)},
         {'n1':355,'n2':360, 'width': 1, 'color': (0, 0, 1)},
-        # {'n1':300,'n2':340, 'width': 2, 'color': (.3, .1, 0)},
-        # {'n1':350,'n2':420, 'width': 8, 'color': (.2, .05, .05)}
     ))
     video_buffer.add_effect('peak_meter', fx.PeakMeter, enabled=True, meters=(
         {'n1': 340, 'n2': 420, 'reverse': True, 'color': (1,.5,0)},
@@ -68,8 +78,8 @@ def main():
         loop = loop,
         maps = (
             ('/metronome', video_buffer.effects['scanner'].metronome),
+            ('/metronome', video_buffer.effects['strobe'].metronome),
             ('/audio/envelope', video_buffer.effects['peak_meter'].envelope),
-            # ('/bassnuke', video_buffer.keyframes),
             ('/midi/note', video_buffer.effects['midi_note'].set),
             # ('/accxyz', functools.partial(accxyz, axis=0, point=effects['pointX'])),
             # ('/1/fader1', effects['background'].red),
@@ -77,7 +87,8 @@ def main():
             # ('/1/fader3',  effects['background'].blue),
             ('/*', osc_logger),
         ),
-        forward = (websocket_server.osc_recv, )
+        forward = (websocket_server.osc_recv, ),
+        server_address = (args.ip, args.port)
     )
 
     osc_server.serve()

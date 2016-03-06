@@ -26,8 +26,7 @@ class BackGround(Fx):
         N = self.video_buffer.N
         self.video_buffer.buffer[:] = 0
 
-    def update(self):
-        super(BackGround, self).update()
+    def _update(self):
         if self.color == 'blue':
             self.blue(1.0)
         else:
