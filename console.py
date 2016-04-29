@@ -17,6 +17,15 @@ def read_stdin():
         _, bpm = line.split()
         scanner = _video_buffer.effects['scanner']
         scanner.bpm = int(bpm)
+    elif line[:3] == 'rgb':
+        _, r, g, b = line.split()
+        for k,v in _video_buffer.effects.items():
+            v.enabled = False
+        N = _video_buffer.N
+        _video_buffer.buffer[0:N*3:3] = int(r)
+        _video_buffer.buffer[1:N*3:3] = int(g)
+        _video_buffer.buffer[2:N*3:3] = int(b)
+
     else:
         logging.info('unknown f/x {}'.format(line))
     print('all f/x:')

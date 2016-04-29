@@ -13,6 +13,7 @@ var conColumns = {};
 function logOSC(message) {
   console.log(message);
 }
+
 function handleOSC(message) {
   logOSC(message);
   if (message.address === '/metronome') {
@@ -44,6 +45,9 @@ function logOSC(message) {
     con.appendChild(col);
   }
   col.appendChild(div);
+  if (col.childNodes.length > 200) {
+    col.removeChild(col.childNodes[0]);
+  }
   col.scrollTop = col.scrollHeight;
 }
 
