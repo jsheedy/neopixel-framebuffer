@@ -22,10 +22,14 @@ import midi
 
 logging.basicConfig(level=logging.INFO)
 
+from audio_input_callback import input_audio_stream
+
 N = 420
 
 video_buffer = VideoBuffer(N)
 midi_queue = Queue()
+
+# input_audio_stream(video_buffer)
 
 def parse_args():
     parser = argparse.ArgumentParser()
@@ -44,12 +48,12 @@ def main():
     # effects['background'] = fx.BackGround(video_buffer, color='')
     video_buffer.add_effect('fade', fx.FadeBackGround, q=55)
     video_buffer.add_effect('strobe', fx.Strobe)
-    video_buffer.add_effect('wave', fx.Wave, enabled=False)
-    video_buffer.add_effect('midi_note', fx.MidiNote, range=(300, 420), enabled=True)
+    video_buffer.add_effect('wave', fx.Wave, enabled=True)
+    video_buffer.add_effect('midi_note', fx.MidiNote, range=(300, 420), enabled=False)
     # add_effect('pointX'] = fx.PointFx(video_buffer, range=(360,420))
     # add_effect('pointY'] = fx.PointFx(video_buffer)
     # add_effect('pointZ'] = fx.PointFx(video_buffer)
-    video_buffer.add_effect('scanner', fx.LarsonScanner, enabled=True, scanners=(
+    video_buffer.add_effect('scanner', fx.LarsonScanner, enabled=False, scanners=(
         {'n1':0, 'n2':30, 'width': 1, 'color': (1, .5, 0)},
         {'n1':35, 'n2':50, 'width': 2, 'color': (.5, .5, .5)},
         {'n1':55, 'n2':90, 'width': 1, 'color': (1, .5, .5)},
@@ -59,10 +63,11 @@ def main():
         {'n1':340,'n2':360, 'width': 1, 'color': (1, 0, 0)},
         {'n1':355,'n2':360, 'width': 1, 'color': (0, 0, 1)},
     ))
-    video_buffer.add_effect('peak_meter', fx.PeakMeter, enabled=True, meters=(
+    video_buffer.add_effect('peak_meter', fx.PeakMeter, enabled=False, meters=(
         {'n1': 340, 'n2': 420, 'reverse': True, 'color': (1,.5,0)},
         {'n1': 0, 'n2': 100, 'reverse': False, 'color': (0,.5,1)},
     ))
+    video_buffer.add_effect('brightness', fx.Brightness)
 
     # midi_thread = threading.Thread(target=midi.main,kwargs={'q':midi_queue})
     # midi_thread.daemon = True
@@ -96,7 +101,7 @@ def main():
     try:
         loop.run_forever()
     except KeyboardInterrupt:
-        pass
+        logging.info("keyboard int")
     finally:
         loop.close()
 

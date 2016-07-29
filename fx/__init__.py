@@ -1,4 +1,5 @@
 from .background import BackGround
+from .brightness import Brightness
 from .fade import FadeBackGround
 from .larson_scanner import LarsonScanner
 from .midi_note import MidiNote

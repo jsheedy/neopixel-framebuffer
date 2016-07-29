@@ -24,9 +24,6 @@ class OSCServer():
         for map in self.maps:
             dsp.map(map[0], map[1])
 
-        # server = osc_server.AsyncIOOSCUDPServer(self.server_address, dsp, self.loop)
-        # server.serve()
-
         class _OSCProtocolFactory(asyncio.DatagramProtocol):
           """OSC protocol factory which passes datagrams to _call_handlers_for_packet"""
 

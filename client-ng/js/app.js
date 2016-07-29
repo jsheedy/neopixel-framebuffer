@@ -10,10 +10,6 @@ var con = document.getElementById('console');
 var body = d3.select('body');
 var conColumns = {};
 
-function logOSC(message) {
-  console.log(message);
-}
-
 function handleOSC(message) {
   logOSC(message);
   if (message.address === '/metronome') {
@@ -34,7 +30,6 @@ function strobe(message) {
 }
 
 function logOSC(message) {
-  console.log(message);
   var div = document.createElement('div');
   div.textContent = message.address + ' ' + message.args;
   var colId = message.address.replace(/\//g,'');
@@ -45,9 +40,6 @@ function logOSC(message) {
     con.appendChild(col);
   }
   col.appendChild(div);
-  if (col.childNodes.length > 200) {
-    col.removeChild(col.childNodes[0]);
-  }
   col.scrollTop = col.scrollHeight;
 }
 
