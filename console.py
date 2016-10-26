@@ -30,6 +30,10 @@ def read_stdin():
         _video_buffer.buffer[0:N*3:3] = int(r)
         _video_buffer.buffer[1:N*3:3] = int(g)
         _video_buffer.buffer[2:N*3:3] = int(b)
+
+    elif line == 'noise':
+        _video_buffer.effects['noise'].enabled = True
+
     elif line == 'yellowblackandredgreenpurple':
 
         _video_buffer.buffer[:] = 0

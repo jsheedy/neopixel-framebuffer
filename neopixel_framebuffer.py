@@ -48,6 +48,7 @@ def main():
     # effects['background'] = fx.BackGround(video_buffer, color='')
     video_buffer.add_effect('fade', fx.FadeBackGround, q=55)
     video_buffer.add_effect('strobe', fx.Strobe)
+    video_buffer.add_effect('noise', fx.Noise)
     video_buffer.add_effect('wave', fx.Wave, enabled=True)
     video_buffer.add_effect('midi_note', fx.MidiNote, range=(300, 420), enabled=False)
     # add_effect('pointX'] = fx.PointFx(video_buffer, range=(360,420))

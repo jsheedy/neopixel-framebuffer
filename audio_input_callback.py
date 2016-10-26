@@ -25,8 +25,8 @@ def send_osc(fft_array):
         msg.add_arg(fft_array.tolist())
         msg = msg.build()
         websocket_server.osc_recv(msg)
-    except:
-        print("no OSC send from audio_input_callback")
+    except Exception as e:
+        print("no OSC send from audio_input_callback. Error: {}".format(str(e)))
 
 def callback(data, frame_count, time_info, status):
     # read from static file
