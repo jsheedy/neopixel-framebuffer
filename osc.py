@@ -6,7 +6,7 @@ from pythonosc import osc_server
 
 class OSCServer():
 
-    def __init__(self, server_address=("0.0.0.0", 37337), loop=None, maps=None, forward=()):
+    def __init__(self, server_address, loop=None, maps=None, forward=()):
         """
         loop - asyncio event loop
         maps - collection of (osc_address_string, handler) mappings

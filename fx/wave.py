@@ -6,6 +6,7 @@ import numpy as np
 
 from .fx import Fx
 
+
 class ChannelArray():
     def __init__(self, N, wavelength=8, brightness=255, freq=1):
         self.N = N
@@ -22,6 +23,7 @@ class ChannelArray():
         if random.random() > .95:
             self.freq += 0.001*(random.random() - .5)
         return np.sin(self.x + phase) * self.brightness
+
 
 class Wave(Fx):
 

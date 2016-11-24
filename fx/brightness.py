@@ -2,6 +2,7 @@ import numpy as np
 
 from .fx import Fx
 
+
 class Brightness(Fx):
 
     def __init__(self, video_buffer, level=1.0):

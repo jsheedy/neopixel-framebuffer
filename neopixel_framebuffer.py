@@ -6,19 +6,16 @@ A thread also listens for incoming OSC messages to control the buffer"""
 
 import argparse
 import asyncio
-import functools
 import logging
 from queue import Queue
-import threading
 
 import console
 import fx
 from osc import OSCServer
 import serial_comms
-from touch_osc import accxyz
+# from touch_osc import accxyz
 from video_buffer import VideoBuffer
 import websocket_server
-import midi
 
 logging.basicConfig(level=logging.INFO)
 
@@ -35,7 +32,7 @@ def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument("--ip", default="0.0.0.0",
         help="The ip of the OSC server")
-    parser.add_argument("--port", type=int, default=37337,
+    parser.add_argument("--port", type=int, default=37340,
         help="The port the OSC server to listening on")
     return parser.parse_args()
 
@@ -48,7 +45,7 @@ def main():
     # effects['background'] = fx.BackGround(video_buffer, color='')
     video_buffer.add_effect('fade', fx.FadeBackGround, q=55)
     video_buffer.add_effect('strobe', fx.Strobe)
-    video_buffer.add_effect('noise', fx.Noise)
+    # video_buffer.add_effect('noise', fx.Noise)
     video_buffer.add_effect('wave', fx.Wave, enabled=True)
     video_buffer.add_effect('midi_note', fx.MidiNote, range=(300, 420), enabled=False)
     # add_effect('pointX'] = fx.PointFx(video_buffer, range=(360,420))
