@@ -28,25 +28,26 @@ midi_queue = Queue()
 
 # input_audio_stream(video_buffer)
 
+
 def parse_args():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--ip", default="0.0.0.0",
-        help="The ip of the OSC server")
-    parser.add_argument("--port", type=int, default=37340,
-        help="The port the OSC server to listening on")
+    parser.add_argument("--ip", default="0.0.0.0", help="The ip of the OSC server")
+    parser.add_argument("--port", type=int, default=37340, help="The port the OSC server to listening on")
     return parser.parse_args()
+
 
 def osc_logger(*args):
     logging.debug(args)
+
 
 def main():
     args = parse_args()
 
     # effects['background'] = fx.BackGround(video_buffer, color='')
-    video_buffer.add_effect('fade', fx.FadeBackGround, q=55)
+    video_buffer.add_effect('fade', fx.FadeBackGround, q=55, enabled=False)
     video_buffer.add_effect('strobe', fx.Strobe)
-    # video_buffer.add_effect('noise', fx.Noise)
-    video_buffer.add_effect('wave', fx.Wave, enabled=True)
+    video_buffer.add_effect('noise', fx.Noise, enabled=False)
+    video_buffer.add_effect('wave', fx.Wave, enabled=False)
     video_buffer.add_effect('midi_note', fx.MidiNote, range=(300, 420), enabled=False)
     # add_effect('pointX'] = fx.PointFx(video_buffer, range=(360,420))
     # add_effect('pointY'] = fx.PointFx(video_buffer)
@@ -65,7 +66,8 @@ def main():
         {'n1': 340, 'n2': 420, 'reverse': True, 'color': (1,.5,0)},
         {'n1': 0, 'n2': 100, 'reverse': False, 'color': (0,.5,1)},
     ))
-    video_buffer.add_effect('brightness', fx.Brightness)
+    video_buffer.add_effect('brightness', fx.Brightness, enabled=False)
+    video_buffer.add_effect('convolution', fx.Convolution, enabled=True)
 
     # midi_thread = threading.Thread(target=midi.main,kwargs={'q':midi_queue})
     # midi_thread.daemon = True

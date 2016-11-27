@@ -2,6 +2,7 @@ from .background import BackGround
 from .brightness import Brightness
 from .fade import FadeBackGround
 from .larson_scanner import LarsonScanner
+from .convolution import Convolution
 from .midi_note import MidiNote
 from .noise import Noise
 from .peak_meter import PeakMeter

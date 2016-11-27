@@ -8,8 +8,8 @@ logger = logging.getLogger(__name__)
 
 class Strobe(Fx):
 
-    def __init__(self, video_buffer):
-        super().__init__(video_buffer)
+    def __init__(self, video_buffer, **kwargs):
+        super().__init__(video_buffer, **kwargs)
         self.frames = 0
         self.colors = (
             (255,255,255),

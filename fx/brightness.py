@@ -5,8 +5,8 @@ from .fx import Fx
 
 class Brightness(Fx):
 
-    def __init__(self, video_buffer, level=1.0):
-        super().__init__(video_buffer)
+    def __init__(self, video_buffer, level=1.0, **kwargs):
+        super().__init__(video_buffer, **kwargs)
         self.level = level
 
     def _update(self):

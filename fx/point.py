@@ -6,8 +6,8 @@ class PointFx(Fx):
     enabled = True
     position = 0
 
-    def __init__(self, video_buffer, color=(255,255,255), range=None):
-        super().__init__(video_buffer)
+    def __init__(self, video_buffer, color=(255,255,255), range=None, **kwargs):
+        super().__init__(video_buffer, **kwargs)
         self.point = Point(0, video_buffer.N)
         self.range = range or (0, video_buffer.N)
         self.color = [c/255.0 for c in color]
