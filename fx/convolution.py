@@ -7,6 +7,7 @@ import random
 
 from .fx import Fx
 
+
 class Convolution(Fx):
 
     ramp = itertools.cycle(np.arange(0,1,.005))
@@ -28,7 +29,7 @@ class Convolution(Fx):
 
         # add glitch to taste
         rval = next(self.ramp)
-        if random.random() >  rval:
+        if random.random() > rval:
             return
         # birth new pulse
         h = ((datetime.timestamp(datetime.now()) - self.t0) % 100) / 100

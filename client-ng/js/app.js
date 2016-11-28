@@ -84,15 +84,9 @@ firehoseSocket.onopen = function(event) {
 },{"./neopixel.js":2}],2:[function(require,module,exports){
 var Neopixel = function(container) {
 
-  // var div = d3.select('.neopixel');
-
-  // function getElementDimensions() {
-  //    return { 'h': div.offsetHeight, 'w': div.offsetWidth };
-  //  };
-
   // constants
-  var width = 500,
-    height = 500,
+  var width = 350,
+    height = 350,
     radius = width/105.0,
     color = d3.interpolateRgb("#f77", "#77f"),
     // N=420
@@ -127,8 +121,9 @@ var Neopixel = function(container) {
       parsedData[i] = new Uint8Array(data, i*3, 3);
     }
     var shp = svg.selectAll("rect").data(parsedData); // identity function to update existing
+    var alpha = 5.0;
     shp
-      .style('fill', function(d) {return d3.rgb(d[0],d[1],d[2])})
+      .style('fill', function(d) {return d3.rgb(d[0]*alpha,d[1]*alpha,d[2]*alpha)})
       .enter()
       .append("rect")
       .attr('x', function(d,i){ return iToXY(i)[0];})

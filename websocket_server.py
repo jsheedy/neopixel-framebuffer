@@ -31,15 +31,13 @@ def osc_send(arguments):
 
 def serve(loop, video_buffer, server_address=('0.0.0.0', 8766)):
 
-    FRAMERATE = 33
+    FRAMERATE = 20
     TIMESLICE = 1/FRAMERATE
 
-    # @asyncio.coroutine
-    def firehose(websocket, timeout=1):
+    def firehose(timeout=1):
         frame = 0
         while True:
             if video_buffer.frame > frame:
-                logging.debug('websocket {} reserving frame {}'.format(websocket, video_buffer.frame))
                 frame = video_buffer.frame
             else:
                 frame = video_buffer.update()
