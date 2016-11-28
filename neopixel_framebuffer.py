@@ -8,6 +8,7 @@ import argparse
 import asyncio
 import logging
 from queue import Queue
+import random
 
 import console
 import fx
@@ -16,8 +17,6 @@ import serial_comms
 # from touch_osc import accxyz
 from video_buffer import VideoBuffer
 import websocket_server
-
-logging.basicConfig(level=logging.INFO)
 
 from audio_input_callback import input_audio_stream
 
@@ -33,6 +32,7 @@ def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument("--ip", default="0.0.0.0", help="The ip of the OSC server")
     parser.add_argument("--port", type=int, default=37340, help="The port the OSC server to listening on")
+    parser.add_argument("-v", "--verbose", action="store_true", help="be chatty")
     return parser.parse_args()
 
 
@@ -40,30 +40,38 @@ def osc_logger(*args):
     logging.debug(args)
 
 
+def scanners(n_scanners):
+    scanners = []
+
+    width = video_buffer.N // n_scanners
+    for i in range(n_scanners):
+        r = random.random()
+        g = random.random()
+        b = random.random()
+        scanner = {'n1': i*width,'n2': i*width+width, 'width': random.randint(1,5), 'color': (r, g, b)}
+        scanners.append(scanner)
+    return scanners
+
+
 def main():
     args = parse_args()
+    if args.verbose:
+        logging.basicConfig(level=logging.DEBUG)
+    else:
+        logging.basicConfig(level=logging.INFO)
 
     # effects['background'] = fx.BackGround(video_buffer, color='')
-    video_buffer.add_effect('fade', fx.FadeBackGround, q=55, enabled=False)
-    video_buffer.add_effect('strobe', fx.Strobe)
+    video_buffer.add_effect('fade', fx.FadeBackGround, q=25, enabled=True)
+    video_buffer.add_effect('strobe', fx.Strobe, enabled=False)
     video_buffer.add_effect('noise', fx.Noise, enabled=False)
     video_buffer.add_effect('wave', fx.Wave, enabled=False)
     video_buffer.add_effect('midi_note', fx.MidiNote, range=(300, 420), enabled=False)
     # add_effect('pointX'] = fx.PointFx(video_buffer, range=(360,420))
     # add_effect('pointY'] = fx.PointFx(video_buffer)
     # add_effect('pointZ'] = fx.PointFx(video_buffer)
-    video_buffer.add_effect('scanner', fx.LarsonScanner, enabled=False, scanners=(
-        {'n1':0, 'n2':30, 'width': 1, 'color': (1, .5, 0)},
-        {'n1':35, 'n2':50, 'width': 2, 'color': (.5, .5, .5)},
-        {'n1':55, 'n2':90, 'width': 1, 'color': (1, .5, .5)},
-        {'n1':100, 'n2':140, 'width': 2, 'color': (.5, .5, 1)},
-        {'n1':150,'n2':170, 'width': 2, 'color': (0, 1, 0)},
-        {'n1':180,'n2':245, 'width': 2, 'color': (.6, .2, 0)},
-        {'n1':340,'n2':360, 'width': 1, 'color': (1, 0, 0)},
-        {'n1':355,'n2':360, 'width': 1, 'color': (0, 0, 1)},
-    ))
-    video_buffer.add_effect('peak_meter', fx.PeakMeter, enabled=False, meters=(
-        {'n1': 340, 'n2': 420, 'reverse': True, 'color': (1,.5,0)},
+    video_buffer.add_effect('scanner', fx.LarsonScanner, enabled=False, scanners=scanners(10))
+    video_buffer.add_effect('peak_meter', fx.PeakMeter, enabled=True, meters=(
+        {'n1': 320, 'n2': 420, 'reverse': True, 'color': (1,.5,0)},
         {'n1': 0, 'n2': 100, 'reverse': False, 'color': (0,.5,1)},
     ))
     video_buffer.add_effect('brightness', fx.Brightness, enabled=False)

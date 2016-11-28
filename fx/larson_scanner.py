@@ -40,7 +40,6 @@ class LarsonScanner(Fx):
             self.timestamp = datetime.now()
 
         for scanner in self.scanners:
-
             n1,n2 = scanner['n1'], scanner['n2']
             r,g,b = scanner.get('color', (1,1,1))
 
