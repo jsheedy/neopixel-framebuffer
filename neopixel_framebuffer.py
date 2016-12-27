@@ -61,10 +61,10 @@ def main():
         logging.basicConfig(level=logging.INFO)
 
     # effects['background'] = fx.BackGround(video_buffer, color='')
-    video_buffer.add_effect('fade', fx.FadeBackGround, q=25, enabled=True)
+    video_buffer.add_effect('fade', fx.FadeBackGround, q=2, enabled=False)
     video_buffer.add_effect('strobe', fx.Strobe, enabled=False)
     video_buffer.add_effect('noise', fx.Noise, enabled=False)
-    video_buffer.add_effect('wave', fx.Wave, enabled=False)
+    video_buffer.add_effect('wave', fx.Wave, enabled=True)
     video_buffer.add_effect('midi_note', fx.MidiNote, range=(300, 420), enabled=False)
     # add_effect('pointX'] = fx.PointFx(video_buffer, range=(360,420))
     # add_effect('pointY'] = fx.PointFx(video_buffer)
@@ -74,8 +74,8 @@ def main():
         {'n1': 320, 'n2': 420, 'reverse': True, 'color': (1,.5,0)},
         {'n1': 0, 'n2': 100, 'reverse': False, 'color': (0,.5,1)},
     ))
-    video_buffer.add_effect('brightness', fx.Brightness, enabled=False)
-    video_buffer.add_effect('convolution', fx.Convolution, enabled=True)
+    video_buffer.add_effect('brightness', fx.Brightness, level=0.4, enabled=True)
+    video_buffer.add_effect('convolution', fx.Convolution, enabled=False)
 
     # midi_thread = threading.Thread(target=midi.main,kwargs={'q':midi_queue})
     # midi_thread.daemon = True
