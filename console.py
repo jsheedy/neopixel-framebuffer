@@ -28,10 +28,8 @@ def read_stdin():
 
     elif line[:3] == 'rgb':
         _, r, g, b = line.split()
-        N = _video_buffer.N
-        _video_buffer.buffer[0:N*3:3] = int(r)
-        _video_buffer.buffer[1:N*3:3] = int(g)
-        _video_buffer.buffer[2:N*3:3] = int(b)
+        color = (int(r), int(g), int(b))
+        _video_buffer.effects['background'].color = color
 
     elif line == 'noise':
         _video_buffer.effects['noise'].enabled = True

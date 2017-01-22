@@ -4,6 +4,7 @@ import logging
 from pythonosc import dispatcher
 from pythonosc import osc_server
 
+
 class OSCServer():
 
     def __init__(self, server_address, loop=None, maps=None, forward=()):
@@ -25,16 +26,16 @@ class OSCServer():
             dsp.map(map[0], map[1])
 
         class _OSCProtocolFactory(asyncio.DatagramProtocol):
-          """OSC protocol factory which passes datagrams to _call_handlers_for_packet"""
+            """OSC protocol factory which passes datagrams to _call_handlers_for_packet"""
 
-          def __init__(self, dispatcher, server):
-            self.dispatcher = dispatcher
-            self.server = server
+            def __init__(self, dispatcher, server):
+                self.dispatcher = dispatcher
+                self.server = server
 
-          def datagram_received(self, data, _unused_addr):
-            osc_server._call_handlers_for_packet(data, self.dispatcher)
-            for f in self.server.forward:
-                f(data)
+            def datagram_received(self, data, _unused_addr):
+                osc_server._call_handlers_for_packet(data, self.dispatcher)
+                for f in self.server.forward:
+                    f(data)
 
         listen = self.loop.create_datagram_endpoint(
             lambda: _OSCProtocolFactory(dsp, self),

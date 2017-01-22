@@ -13,6 +13,9 @@ video_frame = 0
 serial_f = None
 
 
+class SerialPortError(Exception): pass
+
+
 def open_serial():
     for dev in glob.glob(SERIAL_DEVICE_PATTERN):
         try:
@@ -21,7 +24,8 @@ def open_serial():
             return s
         except (serial.SerialException, OSError):
             logging.warn("Couldn't open serial port {}".format(dev))
-    raise Exception("couldn't open any serial port, failing")
+
+    raise SerialPortError("COULD NOT OPEN SERIAL PORT")
 
 
 def reset_to_top(serial_f):
@@ -53,8 +57,5 @@ def write_serial(serial_f, video_buffer):
 
 def init(loop, video_buffer):
     global serial_f
-    try:
-        serial_f = open_serial()
-        loop.add_reader(serial_f.fileno(), write_serial, serial_f, video_buffer)
-    except:
-        logging.warn("no serial")
+    serial_f = open_serial()
+    loop.add_reader(serial_f.fileno(), write_serial, serial_f, video_buffer)

@@ -1,7 +1,5 @@
-import functools
-import math
-
 import numpy as np
+
 
 class Point():
     """ represent a point as a gaussian distribution that can
@@ -14,9 +12,9 @@ class Point():
         self.N = N
         self.pos = pos
         self.width = width
-        self.hat = (0,255,0)
+        self.hat = (0,1.0,0)
 
     def get_points(self):
         """returns numpy array of N points"""
         relativePos = self.width + self.pos * (self.N - 2*self.width)
-        return np.interp(range(self.N), (relativePos - self.width,relativePos, relativePos + self.width), self.hat).astype(np.uint8)
+        return np.interp(range(self.N), (relativePos - self.width,relativePos, relativePos + self.width), self.hat)

@@ -1,4 +1,3 @@
-from asyncio import Lock
 from collections import OrderedDict
 
 import numpy as np
@@ -29,7 +28,7 @@ class VideoBuffer(object):
         slice = self.buffer[n1*3:n2*3]
         int32_slice = slice.astype(np.int32)
         int32_slice[:] += array[:]
-        int32_uint8_slice=np.clip(int32_slice,0,255).astype(np.uint8)
+        int32_uint8_slice = np.clip(int32_slice,0,255).astype(np.uint8)
         self.buffer[n1*3:n2*3] = int32_uint8_slice
 
     def update(self):
