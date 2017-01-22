@@ -60,7 +60,8 @@ class MidiNote(Fx):
         midi_range = midi_max - midi_min
 
         for key, event in self.event_buffer.items():
-            note = np.clip(event.note, midi_min, midi_max)
+            # note = np.clip(event.note, midi_min, midi_max)
+            notes = event.note
             p = note / midi_range
             point = self.points[event.channel]
             point.set(p)
