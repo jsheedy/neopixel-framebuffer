@@ -3,24 +3,21 @@ from .fx import Fx
 
 class BackGround(Fx):
 
-    def __init__(self, video_buffer, color=(255, 0, 0), intensity=50, **kwargs):
+    def __init__(self, video_buffer, color=None, intensity=1.0, **kwargs):
         super().__init__(video_buffer, **kwargs)
-        self.color = color
+        self.color = color or [255, 0, 0]
         self.intensity = intensity
         self.N = self.video_buffer.N
 
-    def red(self, x):
-        N = self.video_buffer.N
-        self.bgbuffer[0:N*3:3] = int(x*255)
-
-    def green(self, x):
-        N = self.video_buffer.N
-        self.bgbuffer[1:N*3:3] = int(x*255)
-
-    def blue(self, x):
-        N = self.video_buffer.N
-        self.video_buffer.buffer[:] = 0
-        self.video_buffer.buffer[2:N*3:3] = int(self.intensity*x*255)
+    def set(self, addr, cc, value):
+        if cc == 22:  # K1 knob
+            self.color[0] = value * 2
+        elif cc == 23:  # K2 knob
+            self.color[1] = value * 2
+        elif cc == 24:  # K3 knob
+            self.color[2] = value * 2
+        elif cc == 25:  # K4 knob
+            self.intensity = value / 127
 
     def clear(self, x):
         self.video_buffer.buffer[:] = 0

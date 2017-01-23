@@ -61,6 +61,7 @@ body {
 }
 #console {
     position: absolute;
+    padding: 10px;
     background-color: #111;
     color: #0f0;
     width: 500px;

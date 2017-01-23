@@ -60,14 +60,16 @@ def main():
     else:
         logging.basicConfig(level=logging.INFO)
 
-    video_buffer.add_effect('background', fx.BackGround, color=(0,255,0), enabled=True)
+    video_buffer.add_effect('background', fx.BackGround, color=[0,255,0], enabled=True)
     video_buffer.add_effect('fade', fx.FadeBackGround, q=2, enabled=False)
     video_buffer.add_effect('strobe', fx.Strobe, enabled=False)
     video_buffer.add_effect('noise', fx.Noise, enabled=False)
     video_buffer.add_effect('wave', fx.Wave, enabled=False)
 
-    # video_buffer.add_effect('midi_note', fx.MidiNote, nrange=(320, 420), enabled=True)
-    video_buffer.add_effect('midi_note2', fx.MidiNote, nrange=(0, 100), enabled=True)
+    video_buffer.add_effect('midi_note1', fx.MidiNote, nrange=(332, 420), enabled=True)
+    video_buffer.add_effect('midi_note2', fx.MidiNote, nrange=(0, 120), enabled=True)
+    video_buffer.add_effect('midi_note3', fx.MidiNote, nrange=(121, 220), enabled=True)
+    video_buffer.add_effect('midi_note4', fx.MidiNote, nrange=(220, 331), enabled=True)
 
     # add_effect('pointX'] = fx.PointFx(video_buffer, range=(360,420))
     # add_effect('pointY'] = fx.PointFx(video_buffer)
@@ -98,8 +100,11 @@ def main():
             ('/metronome', video_buffer.effects['scanner'].metronome),
             ('/metronome', video_buffer.effects['strobe'].metronome),
             ('/audio/envelope', video_buffer.effects['peak_meter'].envelope),
-            # ('/midi/note', video_buffer.effects['midi_note'].set),
+            ('/midi/note', video_buffer.effects['midi_note1'].set),
             ('/midi/note', video_buffer.effects['midi_note2'].set),
+            ('/midi/note', video_buffer.effects['midi_note3'].set),
+            ('/midi/note', video_buffer.effects['midi_note4'].set),
+            ('/midi/cc', video_buffer.effects['background'].set),
             # ('/accxyz', functools.partial(accxyz, axis=0, point=effects['pointX'])),
             # ('/1/fader1', effects['background'].red),
             # ('/1/fader2',  effects['background'].green),

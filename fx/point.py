@@ -25,7 +25,7 @@ class PointFx(Fx):
 
     def set(self, position):
         # self.position = self.project(position)
-        self.point.pos = self.project(position)
+        self.point.pos = position  #self.project(position)
 
     def _update(self):
         N = self.video_buffer.N

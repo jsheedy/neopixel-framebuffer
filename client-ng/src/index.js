@@ -39,6 +39,9 @@ function logOSC(message) {
     con.appendChild(col);
   }
   col.appendChild(div);
+  if (col.childNodes.length > 34) {
+    col.removeChild(col.firstChild);
+  }
   col.scrollTop = col.scrollHeight;
 }
 

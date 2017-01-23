@@ -1,6 +1,7 @@
 import time
 
-import rtmidi_python as rtmidi
+import rtmidi
+# import rtmidi_python as rtmidi
 
 
 class MidiInputHandler():

@@ -1,5 +1,4 @@
 from datetime import datetime
-import itertools
 import random
 
 import numpy as np

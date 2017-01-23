@@ -3,6 +3,8 @@ import logging
 
 import serial
 
+logger = logging.getLogger(__name__)
+
 BAUDRATE = 460800
 # BAUDRATE = 230400
 # BAUDRATE = 115200
@@ -25,8 +27,7 @@ def open_serial():
         except (serial.SerialException, OSError):
             logging.warn("Couldn't open serial port {}".format(dev))
 
-    raise SerialPortError("COULD NOT OPEN SERIAL PORT")
-
+    raise SerialPortError
 
 def reset_to_top(serial_f):
     arduino_status = 1  # 0 indicates ready for entire frame
@@ -57,5 +58,8 @@ def write_serial(serial_f, video_buffer):
 
 def init(loop, video_buffer):
     global serial_f
-    serial_f = open_serial()
-    loop.add_reader(serial_f.fileno(), write_serial, serial_f, video_buffer)
+    try:
+        serial_f = open_serial()
+        loop.add_reader(serial_f.fileno(), write_serial, serial_f, video_buffer)
+    except SerialPortError:
+        logger.critical("\n\nCOULD NOT OPEN SERIAL PORT\n\n")
