@@ -60,33 +60,29 @@ def main():
     else:
         logging.basicConfig(level=logging.INFO)
 
-    video_buffer.add_effect('background', fx.BackGround, color=[0,255,0], enabled=True)
+    video_buffer.add_effect('background', fx.BackGround, color=[20, 10, 40], enabled=False)
     video_buffer.add_effect('fade', fx.FadeBackGround, q=2, enabled=False)
     video_buffer.add_effect('strobe', fx.Strobe, enabled=False)
     video_buffer.add_effect('noise', fx.Noise, enabled=False)
     video_buffer.add_effect('wave', fx.Wave, enabled=False)
 
-    video_buffer.add_effect('midi_note1', fx.MidiNote, nrange=(332, 420), enabled=True)
-    video_buffer.add_effect('midi_note2', fx.MidiNote, nrange=(0, 120), enabled=True)
-    video_buffer.add_effect('midi_note3', fx.MidiNote, nrange=(121, 220), enabled=True)
-    video_buffer.add_effect('midi_note4', fx.MidiNote, nrange=(220, 331), enabled=True)
+    note_ranges = (
+        (0, 60), (61,120), (121, 170), (170, 220), (221, 280), (281, 331), (332, 379), (380, 420)
+    )
+    for i, note_range in enumerate(note_ranges):
+        video_buffer.add_effect('midi_note'+str(i), fx.MidiNote, nrange=note_range, enabled=True)
 
-    # add_effect('pointX'] = fx.PointFx(video_buffer, range=(360,420))
-    # add_effect('pointY'] = fx.PointFx(video_buffer)
-    # add_effect('pointZ'] = fx.PointFx(video_buffer)
+    # video_buffer.add_effect('pointX', fx.PointFx, nrange=(360,420), enabled=True)
+    # video_buffer.add_effect('pointY', fx.PointFx, nrange=(360,420), enabled=True)
+    # video_buffer.add_effect('pointZ', fx.PointFx, nrange=(360,420), enabled=True)
+
     video_buffer.add_effect('scanner', fx.LarsonScanner, enabled=False, scanners=scanners(10))
-    video_buffer.add_effect('peak_meter', fx.PeakMeter, enabled=True, meters=(
+    video_buffer.add_effect('peak_meter', fx.PeakMeter, enabled=False, meters=(
         {'n1': 320, 'n2': 420, 'reverse': True, 'color': (1,.5,0)},
         {'n1': 0, 'n2': 100, 'reverse': False, 'color': (0,.5,1)},
     ))
-    video_buffer.add_effect('brightness', fx.Brightness, level=0.4, enabled=True)
-    video_buffer.add_effect('convolution', fx.Convolution, enabled=False)
-
-    import threading
-    import midi
-    midi_thread = threading.Thread(target=midi.main,kwargs={'q':midi_queue})
-    midi_thread.daemon = True
-    midi_thread.start()
+    video_buffer.add_effect('brightness', fx.Brightness, level=0.4, enabled=False)
+    video_buffer.add_effect('convolution', fx.Convolution, enabled=True)
 
     loop = asyncio.get_event_loop()
 
@@ -100,15 +96,16 @@ def main():
             ('/metronome', video_buffer.effects['scanner'].metronome),
             ('/metronome', video_buffer.effects['strobe'].metronome),
             ('/audio/envelope', video_buffer.effects['peak_meter'].envelope),
+            ('/midi/note', video_buffer.effects['midi_note0'].set),
             ('/midi/note', video_buffer.effects['midi_note1'].set),
             ('/midi/note', video_buffer.effects['midi_note2'].set),
             ('/midi/note', video_buffer.effects['midi_note3'].set),
             ('/midi/note', video_buffer.effects['midi_note4'].set),
+            ('/midi/note', video_buffer.effects['midi_note5'].set),
+            ('/midi/note', video_buffer.effects['midi_note6'].set),
+            ('/midi/note', video_buffer.effects['midi_note7'].set),
             ('/midi/cc', video_buffer.effects['background'].set),
             # ('/accxyz', functools.partial(accxyz, axis=0, point=effects['pointX'])),
-            # ('/1/fader1', effects['background'].red),
-            # ('/1/fader2',  effects['background'].green),
-            # ('/1/fader3',  effects['background'].blue),
             ('/*', osc_logger),
         ),
         forward = (websocket_server.osc_recv, ),

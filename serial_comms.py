@@ -11,8 +11,12 @@ BAUDRATE = 460800
 
 SERIAL_DEVICE_PATTERN = '/dev/*.usbmodem*'
 
-video_frame = 0
-serial_f = None
+globals = {
+    'serial_f': None,
+    'video_buffer': None,
+    'loop': None,
+    'video_frame': 0
+}
 
 
 class SerialPortError(Exception): pass
@@ -29,37 +33,50 @@ def open_serial():
 
     raise SerialPortError
 
+
 def reset_to_top(serial_f):
     arduino_status = 1  # 0 indicates ready for entire frame
     i = 0
-    while arduino_status != 0:
-        if serial_f.inWaiting() > 0:
-            arduino_status = ord(serial_f.read())
-            i += 1
-        else:
-            # dump 3 bytes to fill the input buffer
-            serial_f.write(bytes((0,)*3))
+    try:
+        while arduino_status != 0:
+            if serial_f.inWaiting() > 0:
+                arduino_status = ord(serial_f.read())
+                logger.debug(f'arduino_status: {arduino_status}')
+                i += 1
+            else:
+                # dump 3 bytes to fill the input buffer
+                logger.debug(f'writing 3 0 bytes')
+                serial_f.write(bytes((0,)*3))
+    except Exception as e:
+        logger.exception(e)
+        init(globals['loop'], globals['video_buffer'])
 
 
-def write_serial(serial_f, video_buffer):
-    global video_frame
+def write_serial():
+    serial_f = globals['serial_f']
+    video_buffer = globals['video_buffer']
 
     reset_to_top(serial_f)
 
-    if video_buffer.frame > video_frame:
+    if video_buffer.frame > globals['video_frame']:
         logging.debug('serial reserving frame {}'.format(video_buffer.frame))
-        video_frame = video_buffer.frame
+        globals['video_frame'] = video_buffer.frame
     else:
-        video_frame = video_buffer.update()
+        logging.debug('updating on frame {}'.format(video_buffer.frame))
+        globals['video_frame'] = video_buffer.update()
 
     data = video_buffer.buffer.tobytes()
-    serial_f.write(data)
+    globals['serial_f'].write(data)
 
+def bootup_sequence():
+    write_serial()
 
 def init(loop, video_buffer):
-    global serial_f
+    globals['video_buffer'] = video_buffer
+    globals['loop'] = loop
     try:
-        serial_f = open_serial()
-        loop.add_reader(serial_f.fileno(), write_serial, serial_f, video_buffer)
+        globals['serial_f'] = open_serial()
+        bootup_sequence()
+        loop.add_reader(globals['serial_f'].fileno(), write_serial)
     except SerialPortError:
         logger.critical("\n\nCOULD NOT OPEN SERIAL PORT\n\n")

@@ -7,7 +7,7 @@ class Point():
     in the normalized range (0.0, 1.0)
     """
 
-    def __init__(self, pos, N, width=1.5):
+    def __init__(self, pos, N, width=1.0):
         """ pos is in range (0,1) """
         self.N = N
         self.pos = pos

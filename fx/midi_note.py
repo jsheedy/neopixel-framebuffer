@@ -54,14 +54,14 @@ class MidiNote(Fx):
             self.event_buffer[key] = MidiEvent(note, velocity, channel)
 
     def _update(self):
-        midi_min = 0
-        midi_max = 127
+        midi_min = 12
+        midi_max = 115
         midi_range = midi_max - midi_min
 
         for key, event in self.event_buffer.items():
             # note = np.clip(event.note, midi_min, midi_max)
             note = event.note
-            p = note / midi_range
+            p = (note - midi_min) / midi_range
             point = self.points[event.channel]
             point.set(p)
             point.intensity = event.velocity / 128

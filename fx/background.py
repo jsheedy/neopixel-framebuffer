@@ -1,3 +1,7 @@
+import colorsys
+
+import numpy as np
+
 from .fx import Fx
 
 
@@ -9,7 +13,7 @@ class BackGround(Fx):
         self.intensity = intensity
         self.N = self.video_buffer.N
 
-    def set(self, addr, cc, value):
+    def set(self, addr, cc, value, channel):
         if cc == 22:  # K1 knob
             self.color[0] = value * 2
         elif cc == 23:  # K2 knob
@@ -18,6 +22,13 @@ class BackGround(Fx):
             self.color[2] = value * 2
         elif cc == 25:  # K4 knob
             self.intensity = value / 127
+        elif cc == 34:  # breath
+            h = value / 127
+            s = 1.0
+            v = 1.0
+            # self.intensity = value / 127  # np.clip(value, 0, 1)
+            self.color = list(map(lambda x: x*255, colorsys.hsv_to_rgb(h,s,v)))
+            self.color[2] = value * 2
 
     def clear(self, x):
         self.video_buffer.buffer[:] = 0
