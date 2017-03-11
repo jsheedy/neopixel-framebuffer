@@ -14,6 +14,11 @@ class Fx(object):
         self.timestamp = datetime(2000,1,1)
         self.locked = False
 
+
+    def __str__(self):
+        return self.__class__.__name__
+
+
     def update(self):
         if (not self.enabled) \
             or (not self.locked and self.video_buffer.locked):

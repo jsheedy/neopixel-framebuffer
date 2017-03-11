@@ -60,9 +60,21 @@ def column_header(text):
     return widget_wrap
 
 
-def init_plays():
+def init_plays(video_buffer):
     header = column_header("f/x")
-    widgets = [header]
+    widgets = [header,]
+
+    def callback(cb, state, fx):
+        fx.enabled = state
+
+    for label, fx in video_buffer.effects.items():
+        check_box = urwid.CheckBox(str(fx), state=fx.enabled)
+
+
+        user_data = fx
+        urwid.connect_signal(check_box, 'change', callback, user_data)
+
+        widgets.append(check_box)
     pile = urwid.Filler(urwid.Pile(widgets), valign='top')
     return pile
 
@@ -108,7 +120,7 @@ def urwid_console(video_buffer):
     footer = urwid.AttrWrap(footer, 'footer')
 
     params = init_params(video_buffer)
-    plays = init_plays()
+    plays = init_plays(video_buffer)
     logs = init_logs()
 
     body = urwid.Columns((
