@@ -15,7 +15,7 @@ class ChannelArray():
         self.freq = freq
         self.brightness = brightness
         self.timestamp = datetime.now()
-        self.x = np.arange(self.N)*(self.wavelength*np.pi/self.N)
+        self.x = np.arange(self.N, dtype=np.float64)*(self.wavelength*np.pi/self.N)
 
     def update(self):
         new_timestamp = datetime.now()
@@ -36,7 +36,7 @@ class Wave(Fx):
     def __init__(self, video_buffer, w=1, **kwargs):
         super().__init__(video_buffer, **kwargs)
         self.N = self.video_buffer.N
-        self.buffer = np.full(self.video_buffer.N*3, fill_value=0)
+        self.buffer = np.full(self.video_buffer.N*3, fill_value=0, dtype=np.float64)
 
         self.rgb_arrays = {
             'r': ChannelArray(self.N, wavelength=10, brightness=100, freq=10),

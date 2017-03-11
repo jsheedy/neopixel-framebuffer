@@ -10,7 +10,9 @@ import logging
 from queue import Queue
 import random
 
-import console
+# import console
+import log
+from curses_console import console
 import fx
 from osc import OSCServer
 import serial_comms
@@ -26,7 +28,6 @@ video_buffer = VideoBuffer(N)
 midi_queue = Queue()
 
 # input_audio_stream(video_buffer)
-
 
 def parse_args():
     parser = argparse.ArgumentParser()
@@ -55,10 +56,8 @@ def scanners(n_scanners):
 
 def main():
     args = parse_args()
-    if args.verbose:
-        logging.basicConfig(level=logging.DEBUG)
-    else:
-        logging.basicConfig(level=logging.INFO)
+    level = args.verbose and logging.DEBUG or logging.INFO
+    log.configure_logging(level=level)
 
     video_buffer.add_effect('background', fx.BackGround, color=[20, 10, 40], enabled=False)
     video_buffer.add_effect('fade', fx.FadeBackGround, q=2, enabled=False)
@@ -86,7 +85,10 @@ def main():
 
     loop = asyncio.get_event_loop()
 
-    console.init(loop, video_buffer)
+    console(loop, video_buffer)
+    # console.init(loop, video_buffer)
+
+
     websocket_server.serve(loop, video_buffer)
     serial_comms.init(loop, video_buffer)
 
