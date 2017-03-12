@@ -6,7 +6,7 @@ from logging.handlers import QueueHandler
 queue = Queue()
 
 
-def configure_logging(level=None, detailed=True, queue=False, color=False):
+def configure_logging(level=None, detailed=True, queue_handler=False, color=False):
 
     if detailed:
         fmt = '[%(asctime)s (%(relativeCreated)dms) PID %(process)d] [%(pathname)s:%(lineno)d/%(funcName)s] %(levelname)s - %(message)s'
@@ -20,7 +20,7 @@ def configure_logging(level=None, detailed=True, queue=False, color=False):
     }
     logging.basicConfig(**kwargs)
     logger = logging.getLogger()
-    if queue:
+    if queue_handler:
         logger.handlers = []
         logger.addHandler(QueueHandler(queue))
 

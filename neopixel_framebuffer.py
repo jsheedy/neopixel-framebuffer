@@ -130,16 +130,17 @@ def main():
         ('/midi/note', video_buffer.effects['midi_note7'].set),
         ('/midi/cc', video_buffer.effects['background'].set),
         # ('/accxyz', functools.partial(accxyz, axis=0, point=effects['pointX'])),
-        ('/*', osc_logger),
     ]
 
     loop = asyncio.get_event_loop()
 
     if args.noconsole:
+        maps.append(('/*', osc_logger))
         log.configure_logging(level=level)
+
     else:
         maps.append(('/*', console.osc_recv))
-        log.configure_logging(level=level, queue=True)
+        log.configure_logging(level=level, queue_handler=True)
         console.init(loop, video_buffer)
 
     osc_server = OSCServer(

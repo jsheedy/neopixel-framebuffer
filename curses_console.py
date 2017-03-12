@@ -212,7 +212,8 @@ def show_or_exit(key):
 
 
 def osc_recv(*args):
-    osc_queue.put_nowait(args)
+    if osc_queue:
+        osc_queue.put_nowait(args)
 
 
 def init(loop, video_buffer):
