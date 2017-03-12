@@ -6,11 +6,12 @@ A thread also listens for incoming OSC messages to control the buffer"""
 
 import argparse
 import asyncio
+import json
 import logging
 from queue import Queue
+import os
 import random
 
-# import console
 import log
 from curses_console import console
 import fx
@@ -53,23 +54,45 @@ def scanners(n_scanners):
         scanners.append(scanner)
     return scanners
 
+CONFIG_FILE = os.path.join(os.path.dirname(__file__), "config.json")
+
+
+def load_config():
+    try:
+        with open(CONFIG_FILE) as f:
+            return json.load(f)
+    except:
+        return {}
+
+
+def save_config():
+    obj = {}
+    for name, effect in video_buffer.effects.items():
+        obj[name] = effect.enabled
+
+    with open(CONFIG_FILE, 'w') as f:
+        return json.dump(obj, f)
+
 
 def main():
     args = parse_args()
     level = args.verbose and logging.DEBUG or logging.INFO
     log.configure_logging(level=level)
 
-    video_buffer.add_effect('background', fx.BackGround, color=[0, 0, 255], enabled=False)
-    video_buffer.add_effect('fade', fx.FadeBackGround, q=2, enabled=False)
-    video_buffer.add_effect('strobe', fx.Strobe, enabled=False)
-    video_buffer.add_effect('noise', fx.Noise, enabled=False)
-    video_buffer.add_effect('wave', fx.Wave, enabled=True)
+    config = load_config()
+
+    video_buffer.add_effect('background', fx.BackGround, color=[0, 0, 255], enabled=config.get('background', False))
+    video_buffer.add_effect('fade', fx.FadeBackGround, q=2, enabled=config.get('fade', False))
+    video_buffer.add_effect('strobe', fx.Strobe, enabled=config.get('strobe', False))
+    video_buffer.add_effect('noise', fx.Noise, enabled=config.get('noise', False))
+    video_buffer.add_effect('wave', fx.Wave, enabled=config.get('wave', False))
 
     note_ranges = (
         (0, 60), (61,120), (121, 170), (170, 220), (221, 280), (281, 331), (332, 379), (380, 420)
     )
     for i, note_range in enumerate(note_ranges):
-        video_buffer.add_effect('midi_note'+str(i), fx.MidiNote, nrange=note_range, enabled=True)
+        name = 'midi_note'+str(i)
+        video_buffer.add_effect(name, fx.MidiNote, nrange=note_range, enabled=config.get(name, False))
 
     # video_buffer.add_effect('pointX', fx.PointFx, nrange=(360,420), enabled=True)
     # video_buffer.add_effect('pointY', fx.PointFx, nrange=(360,420), enabled=True)
@@ -80,8 +103,8 @@ def main():
         {'n1': 320, 'n2': 420, 'reverse': True, 'color': (1,.5,0)},
         {'n1': 0, 'n2': 100, 'reverse': False, 'color': (0,.5,1)},
     ))
-    video_buffer.add_effect('brightness', fx.Brightness, level=0.4, enabled=False)
-    video_buffer.add_effect('convolution', fx.Convolution, enabled=True)
+    video_buffer.add_effect('brightness', fx.Brightness, level=0.4, enabled=config.get('brightness', False))
+    video_buffer.add_effect('convolution', fx.Convolution, enabled=config.get('convolution', False))
 
     loop = asyncio.get_event_loop()
 
@@ -133,6 +156,7 @@ def main():
         logging.info("keyboard int")
     finally:
         loop.close()
+        save_config()
 
 
 if __name__ == "__main__":
