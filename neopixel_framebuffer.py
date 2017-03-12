@@ -59,11 +59,11 @@ def main():
     level = args.verbose and logging.DEBUG or logging.INFO
     log.configure_logging(level=level)
 
-    video_buffer.add_effect('background', fx.BackGround, color=[20, 10, 40], enabled=False)
+    video_buffer.add_effect('background', fx.BackGround, color=[0, 0, 255], enabled=False)
     video_buffer.add_effect('fade', fx.FadeBackGround, q=2, enabled=False)
     video_buffer.add_effect('strobe', fx.Strobe, enabled=False)
     video_buffer.add_effect('noise', fx.Noise, enabled=False)
-    video_buffer.add_effect('wave', fx.Wave, enabled=False)
+    video_buffer.add_effect('wave', fx.Wave, enabled=True)
 
     note_ranges = (
         (0, 60), (61,120), (121, 170), (170, 220), (221, 280), (281, 331), (332, 379), (380, 420)
@@ -87,7 +87,6 @@ def main():
 
     console(loop, video_buffer)
     # console.init(loop, video_buffer)
-
 
     websocket_server.serve(loop, video_buffer)
     serial_comms.init(loop, video_buffer)
@@ -116,12 +115,25 @@ def main():
 
     osc_server.serve()
 
+    async def idle():
+        frame = 0
+        while True:
+            if video_buffer.frame > frame:
+                frame = video_buffer.frame
+            else:
+                frame = video_buffer.update()
+
+            await asyncio.sleep(.1)
+
+    asyncio.ensure_future(idle())
+
     try:
         loop.run_forever()
     except KeyboardInterrupt:
         logging.info("keyboard int")
     finally:
         loop.close()
+
 
 if __name__ == "__main__":
     main()

@@ -10,8 +10,6 @@ import websockets
 
 import logging
 logger = logging.getLogger('websockets.server')
-logger.setLevel(logging.INFO)
-logger.addHandler(logging.StreamHandler())
 
 connections = {}
 
