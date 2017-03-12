@@ -57,6 +57,7 @@ def update_pixels(video_buffer):
 
 
 t0 = datetime.now()
+epoch = datetime.now()
 f0 = 0
 
 def init_params(video_buffer):
@@ -69,11 +70,17 @@ def init_params(video_buffer):
         df = f1 - f0
         t0 = t1
         f0 = f1
-        return "{:.1f}".format(df/dt)
+        return "{:.1f} fps".format(df/dt)
+
+    def runtime():
+        t1 = datetime.now()
+        dt = (t1-epoch).total_seconds()
+        return "{:.1f}s".format(dt)
 
     parameters = (
         ("frame", "0", lambda: str(video_buffer.frame)),
-        ("fps", "0", fps)
+        ("fps", "0", fps),
+        ("runtime", "0", runtime)
     )
 
     for label, value, update_function in parameters:
