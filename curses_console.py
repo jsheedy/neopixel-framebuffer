@@ -1,5 +1,5 @@
 import asyncio
-import json
+import functools
 import logging
 
 import urwid
@@ -9,8 +9,6 @@ import log
 
 logger = logging.getLogger()
 
-attrs_txt = urwid.Text("ATTRS HERE")
-
 palette = [
     ('header', 'black', 'light blue'),
     ('footer', 'black', 'light green'),
@@ -19,16 +17,10 @@ palette = [
     ('playing', 'dark green', 'black'),
 ]
 
-parameters = [
-    ('param 1', '0', lambda: "goat"),
-    ('param 2', '0', lambda: "-0"),
-]
-
 play_pause_indicator = urwid.Text('PLAYING', align='center', wrap='clip')
 play_pause_indicator_attr = urwid.AttrWrap(urwid.Padding(play_pause_indicator), 'playing')
 
 _video_buffer = None
-game_state = urwid.Text('', align='left')
 
 params_widgets = []
 
@@ -40,14 +32,26 @@ listbox = urwid.AttrWrap(listbox, 'listbox')
 
 pixels = []
 
-def update_pixels(video_buffer):
-
+attr_specs = {}
+@functools.lru_cache()
+def get_attr(entry):
+    """ caches AttrSpecs """
     foreground = "#fff"
     colors = 256
+    if entry in attr_specs:
+        return attr_specs[entry]
+    else:
+        attr = urwid.AttrSpec(foreground, entry, colors)
+        attr_specs[entry] = attr
+        return attr
+
+
+def update_pixels(video_buffer):
+
     for i, pixel in enumerate(pixels):
         r,g,b = video_buffer.buffer[i*3:i*3+3]
         entry = "#" + "".join(["{:02x}".format(x)[0] for x in (r,g,b)])
-        attr = urwid.AttrSpec(foreground, entry, colors)
+        attr = get_attr(entry)
         pixel.set_attr_map({None: attr})
 
 
@@ -69,7 +73,7 @@ def init_params(video_buffer):
     params_widgets.append(widget)
 
     divider = urwid.Divider('-')
-    widgets = [urwid.Padding(play_pause_indicator_attr), divider] + params_widgets + [divider, game_state]
+    widgets = [urwid.Padding(play_pause_indicator_attr), divider] + params_widgets + [divider, ]
 
     for i in range(video_buffer.N):
         foreground = "#fff"
@@ -91,7 +95,7 @@ def column_header(text):
     return widget_wrap
 
 
-def init_plays(video_buffer):
+def init_fx(video_buffer):
     header = column_header("f/x")
     widgets = [header,]
 
@@ -147,28 +151,16 @@ def urwid_console(video_buffer):
     footer = urwid.AttrWrap(footer, 'footer')
 
     params = init_params(video_buffer)
-    plays = init_plays(video_buffer)
-    logs = init_logs()
+    plays = init_fx(video_buffer)
 
     body = urwid.Columns((
         ('weight', 1, params),
         ('weight', 1, plays),
-        ('weight', 1, logs),
+        ('weight', 1, listbox),
     ), dividechars=3)
 
     frame = urwid.Frame(body, header=header, footer=footer)
     return frame
-
-
-def clear():
-    lw[:] = []
-    last_play.set_text('')
-
-    for param in params_widgets:
-        widget, options = param.contents[1]
-        widget.set_text('')
-
-    game_state.set_text('')
 
 
 def show_or_exit(key):
@@ -180,9 +172,6 @@ def show_or_exit(key):
         play_pause_indicator.set_text(msg)
         play_pause_indicator_attr.set_attr(msg.lower())
 
-    elif key in ('c', 'C'):
-        clear()
-
     elif key in ('q', 'Q'):
         for task in asyncio.Task.all_tasks():
             task.cancel()
@@ -191,9 +180,9 @@ def show_or_exit(key):
 
 
 def console(loop, video_buffer):
-    colors = 256
     global _video_buffer
     _video_buffer = video_buffer
+    colors = 256
     asyncio.ensure_future(log_handler())
     asyncio.ensure_future(update_ui(video_buffer))
     global urwid_loop
