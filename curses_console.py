@@ -8,6 +8,7 @@ import urwid
 import log
 
 
+osc_queue = None
 logger = logging.getLogger()
 
 palette = [
@@ -24,6 +25,8 @@ play_pause_indicator_attr = urwid.AttrWrap(urwid.Padding(play_pause_indicator), 
 _video_buffer = None
 
 params_widgets = []
+pixels = []
+attr_specs = {}
 
 urwid_loop = None
 
@@ -31,9 +34,8 @@ lw = urwid.SimpleListWalker([])
 listbox = urwid.ListBox(lw)
 listbox = urwid.AttrWrap(listbox, 'listbox')
 
-pixels = []
 
-attr_specs = {}
+
 @functools.lru_cache()
 def get_attr(entry):
     """ caches AttrSpecs """
@@ -146,7 +148,17 @@ async def update_ui(video_buffer):
             widget.set_text(text)
 
         update_pixels(video_buffer)
-        await asyncio.sleep(0.1)
+        await asyncio.sleep(0.2)
+
+
+async def osc_handler():
+
+    while True:
+        osc = await osc_queue.get()
+        message = "OSC: {}".format(osc)
+        lw.append(urwid.Text(message))
+        lw.append(urwid.Divider('-'))
+        listbox.set_focus(len(lw) - 1, 'above')
 
 
 async def log_handler():
@@ -199,11 +211,18 @@ def show_or_exit(key):
         asyncio.get_event_loop().stop()
 
 
-def console(loop, video_buffer):
+def osc_recv(*args):
+    osc_queue.put_nowait(args)
+
+
+def init(loop, video_buffer):
     global _video_buffer
+    global osc_queue
+    osc_queue = asyncio.Queue(loop=loop)
     _video_buffer = video_buffer
     colors = 256
     asyncio.ensure_future(log_handler())
+    asyncio.ensure_future(osc_handler())
     asyncio.ensure_future(update_ui(video_buffer))
     global urwid_loop
     urwid_loop = urwid.MainLoop(urwid_console(video_buffer), palette, event_loop=urwid.AsyncioEventLoop(), unhandled_input=show_or_exit)
@@ -216,4 +235,4 @@ if __name__ == "__main__":
     loop = asyncio.get_event_loop()
     from video_buffer import VideoBuffer
 
-    console(loop, VideoBuffer(N=420))
+    init(loop, VideoBuffer(N=420))

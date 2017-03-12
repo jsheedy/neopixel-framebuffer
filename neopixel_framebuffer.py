@@ -8,12 +8,11 @@ import argparse
 import asyncio
 import json
 import logging
-from queue import Queue
 import os
 import random
 
 import log
-from curses_console import console
+import curses_console as console
 import fx
 from osc import OSCServer
 import serial_comms
@@ -26,15 +25,16 @@ from audio_input_callback import input_audio_stream
 N = 420
 
 video_buffer = VideoBuffer(N)
-midi_queue = Queue()
 
 # input_audio_stream(video_buffer)
+
 
 def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument("--ip", default="0.0.0.0", help="The ip of the OSC server")
     parser.add_argument("--port", type=int, default=37340, help="The port the OSC server to listening on")
     parser.add_argument("-v", "--verbose", action="store_true", help="be chatty")
+    parser.add_argument("-n", "--noconsole", action="store_true", help="disable console")
     return parser.parse_args()
 
 
@@ -74,10 +74,20 @@ def save_config():
         return json.dump(obj, f)
 
 
+async def idle():
+    frame = 0
+    while True:
+        if video_buffer.frame > frame:
+            frame = video_buffer.frame
+        else:
+            frame = video_buffer.update()
+
+        await asyncio.sleep(.05)
+
+
 def main():
     args = parse_args()
     level = args.verbose and logging.DEBUG or logging.INFO
-    log.configure_logging(level=level)
 
     config = load_config()
 
@@ -106,48 +116,42 @@ def main():
     video_buffer.add_effect('brightness', fx.Brightness, level=0.4, enabled=config.get('brightness', False))
     video_buffer.add_effect('convolution', fx.Convolution, enabled=config.get('convolution', False))
 
+    maps = [
+        ('/metronome', video_buffer.effects['scanner'].metronome),
+        ('/metronome', video_buffer.effects['strobe'].metronome),
+        ('/audio/envelope', video_buffer.effects['peak_meter'].envelope),
+        ('/midi/note', video_buffer.effects['midi_note0'].set),
+        ('/midi/note', video_buffer.effects['midi_note1'].set),
+        ('/midi/note', video_buffer.effects['midi_note2'].set),
+        ('/midi/note', video_buffer.effects['midi_note3'].set),
+        ('/midi/note', video_buffer.effects['midi_note4'].set),
+        ('/midi/note', video_buffer.effects['midi_note5'].set),
+        ('/midi/note', video_buffer.effects['midi_note6'].set),
+        ('/midi/note', video_buffer.effects['midi_note7'].set),
+        ('/midi/cc', video_buffer.effects['background'].set),
+        # ('/accxyz', functools.partial(accxyz, axis=0, point=effects['pointX'])),
+        ('/*', osc_logger),
+    ]
+
     loop = asyncio.get_event_loop()
 
-    console(loop, video_buffer)
-    # console.init(loop, video_buffer)
-
-    websocket_server.serve(loop, video_buffer)
-    serial_comms.init(loop, video_buffer)
+    if args.noconsole:
+        log.configure_logging(level=level)
+    else:
+        maps.append(('/*', console.osc_recv))
+        log.configure_logging(level=level, queue=True)
+        console.init(loop, video_buffer)
 
     osc_server = OSCServer(
         loop = loop,
-        maps = (
-            ('/metronome', video_buffer.effects['scanner'].metronome),
-            ('/metronome', video_buffer.effects['strobe'].metronome),
-            ('/audio/envelope', video_buffer.effects['peak_meter'].envelope),
-            ('/midi/note', video_buffer.effects['midi_note0'].set),
-            ('/midi/note', video_buffer.effects['midi_note1'].set),
-            ('/midi/note', video_buffer.effects['midi_note2'].set),
-            ('/midi/note', video_buffer.effects['midi_note3'].set),
-            ('/midi/note', video_buffer.effects['midi_note4'].set),
-            ('/midi/note', video_buffer.effects['midi_note5'].set),
-            ('/midi/note', video_buffer.effects['midi_note6'].set),
-            ('/midi/note', video_buffer.effects['midi_note7'].set),
-            ('/midi/cc', video_buffer.effects['background'].set),
-            # ('/accxyz', functools.partial(accxyz, axis=0, point=effects['pointX'])),
-            ('/*', osc_logger),
-        ),
+        maps = maps,
         forward = (websocket_server.osc_recv, ),
         server_address = (args.ip, args.port)
     )
 
+    websocket_server.serve(loop, video_buffer)
+    serial_comms.init(loop, video_buffer)
     osc_server.serve()
-
-    async def idle():
-        frame = 0
-        while True:
-            if video_buffer.frame > frame:
-                frame = video_buffer.frame
-            else:
-                frame = video_buffer.update()
-
-            await asyncio.sleep(.1)
-
     asyncio.ensure_future(idle())
 
     try:
