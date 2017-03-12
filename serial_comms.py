@@ -41,11 +41,11 @@ def reset_to_top(serial_f):
         while arduino_status != 0:
             if serial_f.inWaiting() > 0:
                 arduino_status = ord(serial_f.read())
-                logger.debug(f'arduino_status: {arduino_status}')
+                # logger.debug(f'arduino_status: {arduino_status}')
                 i += 1
             else:
                 # dump 3 bytes to fill the input buffer
-                logger.debug(f'writing 3 0 bytes')
+                # logger.debug(f'writing 3 0 bytes')
                 serial_f.write(bytes((0,)*3))
     except Exception as e:
         logger.exception(e)
@@ -62,7 +62,7 @@ def write_serial():
         logging.debug('serial reserving frame {}'.format(video_buffer.frame))
         globals['video_frame'] = video_buffer.frame
     else:
-        logging.debug('updating on frame {}'.format(video_buffer.frame))
+        # logging.debug('updating on frame {}'.format(video_buffer.frame))
         globals['video_frame'] = video_buffer.update()
 
     data = video_buffer.buffer.tobytes()

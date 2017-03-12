@@ -46,7 +46,7 @@ class LarsonScanner(Fx):
             point = Point(self.pos, n2 - n1, width=scanner.get('width', 2))
             points = point.get_points()
             color_points = np.full((n2-n1)*3, fill_value=0, dtype=np.uint8)
-            color_points[0::3] = r * points
-            color_points[1::3] = g * points
-            color_points[2::3] = b * points
+            color_points[0::3] = r * points * 255
+            color_points[1::3] = g * points * 255
+            color_points[2::3] = b * points * 255
             self.video_buffer.merge(n1, n2, color_points)
