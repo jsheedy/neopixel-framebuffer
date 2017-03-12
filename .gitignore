@@ -69,3 +69,5 @@ client-ng/node_modules
 *.sublime-workspace
 
 *.sublime-workspace
+
+config.json

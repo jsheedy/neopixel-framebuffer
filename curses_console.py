@@ -1,4 +1,5 @@
 import asyncio
+from datetime import datetime
 import functools
 import logging
 
@@ -55,10 +56,24 @@ def update_pixels(video_buffer):
         pixel.set_attr_map({None: attr})
 
 
+t0 = datetime.now()
+f0 = 0
+
 def init_params(video_buffer):
+    def fps():
+        global t0
+        global f0
+        t1 = datetime.now()
+        f1 = video_buffer.frame
+        dt = (t1-t0).total_seconds()
+        df = f1 - f0
+        t0 = t1
+        f0 = f1
+        return "{:.1f}".format(df/dt)
 
     parameters = (
         ("frame", "0", lambda: str(video_buffer.frame)),
+        ("fps", "0", fps)
     )
 
     for label, value, update_function in parameters:
@@ -68,9 +83,7 @@ def init_params(video_buffer):
             urwid.Text(value, align='right'),
         ])
         widget.update_function = update_function
-
-
-    params_widgets.append(widget)
+        params_widgets.append(widget)
 
     divider = urwid.Divider('-')
     widgets = [urwid.Padding(play_pause_indicator_attr), divider] + params_widgets + [divider, ]
