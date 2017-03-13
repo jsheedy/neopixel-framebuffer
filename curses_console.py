@@ -243,7 +243,7 @@ def urwid_console(video_buffer):
     return frame
 
 
-def show_or_exit(key):
+def input_handler(key):
 
     if key in ('p', 'P'):
         _video_buffer.enabled = not _video_buffer.enabled
@@ -271,7 +271,9 @@ def init(loop, video_buffer):
     _video_buffer = video_buffer
 
     global urwid_loop
-    urwid_loop = urwid.MainLoop(urwid_console(video_buffer), palette, event_loop=urwid.AsyncioEventLoop(), unhandled_input=show_or_exit)
+    event_loop = urwid.AsyncioEventLoop(loop=loop)
+    main_widget = urwid_console(video_buffer)
+    urwid_loop = urwid.MainLoop(main_widget, palette, event_loop=event_loop, unhandled_input=input_handler)
     screen = urwid_loop.screen
     screen.set_terminal_properties(colors)
     asyncio.ensure_future(log_handler())
