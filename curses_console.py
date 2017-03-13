@@ -26,6 +26,7 @@ _video_buffer = None
 
 colors = 256
 params_widgets = []
+pixel_check_box = None
 pixels = []
 attr_specs = {}
 
@@ -52,7 +53,6 @@ def get_attr(entry):
 
 
 async def update_pixels(video_buffer):
-
     for i, pixel in enumerate(pixels):
         r,g,b = video_buffer.buffer[i*3:i*3+3]
         entry = "#" + "".join(["{:02x}".format(x)[0] for x in (r,g,b)])
@@ -99,18 +99,25 @@ def init_params(video_buffer):
         params_widgets.append(widget)
 
     divider = urwid.Divider('-')
-    widgets = [urwid.Padding(play_pause_indicator_attr), divider] + params_widgets + [divider, ]
 
     for i in range(video_buffer.N):
         foreground = "#fff"
-        entry = "#" + ("{:02x}".format(i%256)[0]) * 3
+        entry = "#" + ("{:02x}".format(i % 256)[0]) * 3
         colors = 256
         attr = urwid.AttrSpec(foreground, entry, colors)
         text = urwid.Text(".")
         pixel = urwid.AttrMap(text, attr)
         pixels.append(pixel)
     pixel_grid_flow = urwid.GridFlow(pixels, 1, 0, 0, 'center')
-    widgets.append(pixel_grid_flow)
+
+    global pixel_check_box
+    pixel_check_box = urwid.CheckBox("RENDER PIXELS", state=True)
+
+    widgets = [urwid.Padding(play_pause_indicator_attr), divider] + \
+        params_widgets + \
+        [divider, pixel_check_box, pixel_grid_flow]
+
+
     pile = urwid.Filler(urwid.Pile(widgets), valign='top')
     return pile
 
@@ -140,7 +147,6 @@ def init_fx(video_buffer):
 
     for label, fx in video_buffer.effects.items():
         check_box = urwid.CheckBox(str(fx), state=fx.enabled)
-
         user_data = fx
         urwid.connect_signal(check_box, 'change', callback, user_data)
 
@@ -164,7 +170,8 @@ async def update_ui(video_buffer):
             text = param.update_function()
             widget.set_text(text)
 
-        # await update_pixels(video_buffer)
+        if pixel_check_box.get_state():
+            await update_pixels(video_buffer)
         await asyncio.sleep(0.1)
 
 
