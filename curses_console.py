@@ -24,6 +24,7 @@ play_pause_indicator_attr = urwid.AttrWrap(urwid.Padding(play_pause_indicator), 
 
 _video_buffer = None
 
+colors = 256
 params_widgets = []
 pixels = []
 attr_specs = {}
@@ -34,6 +35,7 @@ lw = urwid.SimpleListWalker([])
 listbox = urwid.ListBox(lw)
 listbox = urwid.AttrWrap(listbox, 'listbox')
 
+osc_widget = None
 
 
 @functools.lru_cache()
@@ -44,18 +46,20 @@ def get_attr(entry):
     if entry in attr_specs:
         return attr_specs[entry]
     else:
-        attr = urwid.AttrSpec(foreground, entry, colors)
+        attr = {None: urwid.AttrSpec(foreground, entry, colors)}
         attr_specs[entry] = attr
         return attr
 
 
-def update_pixels(video_buffer):
+async def update_pixels(video_buffer):
 
     for i, pixel in enumerate(pixels):
         r,g,b = video_buffer.buffer[i*3:i*3+3]
         entry = "#" + "".join(["{:02x}".format(x)[0] for x in (r,g,b)])
         attr = get_attr(entry)
-        pixel.set_attr_map({None: attr})
+        pixel.set_attr_map(attr)
+        # if i % 100 == 0:
+        #     await asyncio.sleep(0.001)
 
 
 t0 = datetime.now()
@@ -117,6 +121,16 @@ def column_header(text):
     return widget_wrap
 
 
+def init_osc():
+    global osc_widget
+    header = column_header("OSC")
+    text_widget = urwid.AttrWrap(urwid.Text("OSC"), 'listbox')
+    osc_widget = urwid.Pile([text_widget])
+    widgets = [header, osc_widget]
+    pile = urwid.Filler(urwid.Pile(widgets), valign='top')
+    return pile
+
+
 def init_fx(video_buffer):
     header = column_header("f/x")
     widgets = [header,]
@@ -136,7 +150,10 @@ def init_fx(video_buffer):
 
 
 def init_logs():
-    return listbox
+    header = column_header("logs")
+    widgets = [header,listbox]
+    pile = urwid.Filler(urwid.Pile(widgets), valign='top')
+    return pile
 
 
 async def update_ui(video_buffer):
@@ -147,18 +164,40 @@ async def update_ui(video_buffer):
             text = param.update_function()
             widget.set_text(text)
 
-        update_pixels(video_buffer)
-        await asyncio.sleep(0.2)
+        # await update_pixels(video_buffer)
+        await asyncio.sleep(0.1)
 
 
 async def osc_handler():
+    keys = {}
+
+    def make_key(osc):
+        address = osc[0]
+        if address == "/midi/note":
+            channel = str(osc[3])
+            key = address + channel
+        elif address ==  "/midi/cc":
+            channel = str(osc[1])
+            key = address + channel
+        else:
+            key = address
+        return key
 
     while True:
         osc = await osc_queue.get()
-        message = "OSC: {}".format(osc)
-        lw.append(urwid.Text(message))
-        lw.append(urwid.Divider('-'))
-        listbox.set_focus(len(lw) - 1, 'above')
+        key = make_key(osc)
+        message = "{}".format(osc)
+
+        if key in keys:
+            i = keys[key]
+            widget, options = osc_widget.contents[i]
+            widget.set_text(message)
+        else:
+            i = len(osc_widget.contents)
+            options = ('weight', 1)
+            new = urwid.Text(('header', message), align='left')
+            osc_widget.contents.append((new, options))
+            keys[key] = i
 
 
 async def log_handler():
@@ -183,11 +222,13 @@ def urwid_console(video_buffer):
     footer = urwid.AttrWrap(footer, 'footer')
 
     params = init_params(video_buffer)
-    plays = init_fx(video_buffer)
+    fx = init_fx(video_buffer)
+    osc = init_osc()
 
     body = urwid.Columns((
         ('weight', 1, params),
-        ('weight', 1, plays),
+        ('weight', 1, osc),
+        ('weight', 1, fx),
         ('weight', 1, listbox),
     ), dividechars=3)
 
@@ -221,14 +262,14 @@ def init(loop, video_buffer):
     global osc_queue
     osc_queue = asyncio.Queue(loop=loop)
     _video_buffer = video_buffer
-    colors = 256
-    asyncio.ensure_future(log_handler())
-    asyncio.ensure_future(osc_handler())
-    asyncio.ensure_future(update_ui(video_buffer))
+
     global urwid_loop
     urwid_loop = urwid.MainLoop(urwid_console(video_buffer), palette, event_loop=urwid.AsyncioEventLoop(), unhandled_input=show_or_exit)
     screen = urwid_loop.screen
     screen.set_terminal_properties(colors)
+    asyncio.ensure_future(log_handler())
+    asyncio.ensure_future(osc_handler())
+    asyncio.ensure_future(update_ui(video_buffer))
     urwid_loop.start()
 
 
