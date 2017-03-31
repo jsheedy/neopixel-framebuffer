@@ -28,7 +28,6 @@ colors = 256
 params_widgets = []
 pixel_check_box = None
 pixels = []
-attr_specs = {}
 
 urwid_loop = None
 
@@ -40,26 +39,19 @@ osc_widget = None
 
 
 @functools.lru_cache()
-def get_attr(entry):
+def get_attr(rgb):
     """ caches AttrSpecs """
     foreground = "#fff"
     colors = 256
-    if entry in attr_specs:
-        return attr_specs[entry]
-    else:
-        attr = {None: urwid.AttrSpec(foreground, entry, colors)}
-        attr_specs[entry] = attr
-        return attr
+    entry = "#" + "".join(["{:02x}".format(x)[0] for x in rgb])
+    return {None: urwid.AttrSpec(foreground, entry, colors)}
 
 
 async def update_pixels(video_buffer):
     for i, pixel in enumerate(pixels):
-        r,g,b = video_buffer.buffer[i*3:i*3+3]
-        entry = "#" + "".join(["{:02x}".format(x)[0] for x in (r,g,b)])
-        attr = get_attr(entry)
+        rgb = tuple(video_buffer.buffer[i*3:i*3+3])
+        attr = get_attr(rgb)
         pixel.set_attr_map(attr)
-        # if i % 100 == 0:
-        #     await asyncio.sleep(0.001)
 
 
 t0 = datetime.now()
@@ -101,11 +93,8 @@ def init_params(video_buffer):
     divider = urwid.Divider('-')
 
     for i in range(video_buffer.N):
-        foreground = "#fff"
-        entry = "#" + ("{:02x}".format(i % 256)[0]) * 3
-        colors = 256
-        attr = urwid.AttrSpec(foreground, entry, colors)
-        text = urwid.Text(".")
+        attr = get_attr((0,0,0))
+        text = urwid.Text("`")
         pixel = urwid.AttrMap(text, attr)
         pixels.append(pixel)
     pixel_grid_flow = urwid.GridFlow(pixels, 1, 0, 0, 'center')
@@ -165,6 +154,10 @@ def init_logs():
 async def update_ui(video_buffer):
 
     while True:
+        await asyncio.sleep(0.05)
+        if not video_buffer.enabled:
+            continue
+
         for param in params_widgets:
             widget, options = param.contents[1]
             text = param.update_function()
@@ -172,7 +165,6 @@ async def update_ui(video_buffer):
 
         if pixel_check_box.get_state():
             await update_pixels(video_buffer)
-        await asyncio.sleep(0.1)
 
 
 async def osc_handler():
@@ -272,10 +264,9 @@ def init(loop, video_buffer):
 
     global urwid_loop
     event_loop = urwid.AsyncioEventLoop(loop=loop)
+    event_loop._idle_emulation_delay = 1/20
     main_widget = urwid_console(video_buffer)
     urwid_loop = urwid.MainLoop(main_widget, palette, event_loop=event_loop, unhandled_input=input_handler)
-    screen = urwid_loop.screen
-    screen.set_terminal_properties(colors)
     asyncio.ensure_future(log_handler())
     asyncio.ensure_future(osc_handler())
     asyncio.ensure_future(update_ui(video_buffer))

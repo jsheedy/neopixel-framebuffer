@@ -45,12 +45,13 @@ def osc_logger(*args):
 def scanners(n_scanners):
     scanners = []
 
-    width = video_buffer.N // n_scanners
+    span = video_buffer.N // n_scanners
+    width = 14
     for i in range(n_scanners):
         r = random.random()
         g = random.random()
         b = random.random()
-        scanner = {'n1': i*width,'n2': i*width+width, 'width': random.randint(1,5), 'color': (r, g, b)}
+        scanner = {'n1': i*span,'n2': i*span+width, 'width': random.randint(1,3), 'color': (r, g, b)}
         scanners.append(scanner)
     return scanners
 
@@ -97,9 +98,10 @@ def main():
     video_buffer.add_effect('noise', fx.Noise, enabled=config.get('noise', False))
     video_buffer.add_effect('wave', fx.Wave, enabled=config.get('wave', False))
 
-    note_ranges = (
-        (0, 60), (61,120), (121, 170), (170, 220), (221, 280), (281, 331), (332, 379), (380, 420)
-    )
+    # note_ranges = (
+    #     (0, 60), (61,120), (121, 170), (170, 220), (221, 280), (281, 331), (332, 379), (380, 420)
+    # )
+    note_ranges = ((260,320), (300,340), (340,380), (380,420), (0,40),(40,80),(80,120),(120,160),)
     for i, note_range in enumerate(note_ranges):
         name = 'midi_note'+str(i)
         video_buffer.add_effect(name, fx.MidiNote, nrange=note_range, enabled=config.get(name, False))
@@ -116,18 +118,16 @@ def main():
     video_buffer.add_effect('brightness', fx.Brightness, level=0.4, enabled=config.get('brightness', False))
     video_buffer.add_effect('convolution', fx.Convolution, enabled=config.get('convolution', False))
 
+    def midi_handler(*args):
+        addr, note, velocity, channel = args
+        key = f'midi_note{channel}'
+        video_buffer.effects[key].set(*args)
+
     maps = [
         ('/metronome', video_buffer.effects['scanner'].metronome),
         ('/metronome', video_buffer.effects['strobe'].metronome),
         ('/audio/envelope', video_buffer.effects['peak_meter'].envelope),
-        ('/midi/note', video_buffer.effects['midi_note0'].set),
-        ('/midi/note', video_buffer.effects['midi_note1'].set),
-        ('/midi/note', video_buffer.effects['midi_note2'].set),
-        ('/midi/note', video_buffer.effects['midi_note3'].set),
-        ('/midi/note', video_buffer.effects['midi_note4'].set),
-        ('/midi/note', video_buffer.effects['midi_note5'].set),
-        ('/midi/note', video_buffer.effects['midi_note6'].set),
-        ('/midi/note', video_buffer.effects['midi_note7'].set),
+        ('/midi/note', midi_handler),
         ('/midi/cc', video_buffer.effects['background'].set),
         # ('/accxyz', functools.partial(accxyz, axis=0, point=effects['pointX'])),
     ]
