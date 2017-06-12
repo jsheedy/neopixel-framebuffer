@@ -46,6 +46,7 @@ class PeakMeter(Fx):
         super().__init__(video_buffer, **kwargs)
         self.meters = [Meter(**d) for d in meters]
 
+
     def envelope(self, name, y, channel ):
         y = float(y)
         channel = int(channel)

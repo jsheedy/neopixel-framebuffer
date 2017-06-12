@@ -6,6 +6,7 @@ A thread also listens for incoming OSC messages to control the buffer"""
 
 import argparse
 import asyncio
+import functools
 import json
 import logging
 import os
@@ -20,13 +21,12 @@ import serial_comms
 from video_buffer import VideoBuffer
 import websocket_server
 
-from audio_input_callback import input_audio_stream
+from audio_input_callback import input_audio_stream, callback_video_buffer
 
 N = 420
 
 video_buffer = VideoBuffer(N)
-
-# input_audio_stream(video_buffer)
+input_audio_stream(functools.partial(callback_video_buffer, video_buffer=video_buffer))
 
 
 def parse_args():
@@ -102,6 +102,7 @@ def main():
     #     (0, 60), (61,120), (121, 170), (170, 220), (221, 280), (281, 331), (332, 379), (380, 420)
     # )
     note_ranges = ((260,320), (300,340), (340,380), (380,420), (0,40),(40,80),(80,120),(120,160),)
+    note_ranges = ((340, 380), (340,420), (340,380), (380,420), (0,40),(40,80),(80,120),(120,160),)
     for i, note_range in enumerate(note_ranges):
         name = 'midi_note'+str(i)
         video_buffer.add_effect(name, fx.MidiNote, nrange=note_range, enabled=config.get(name, False))

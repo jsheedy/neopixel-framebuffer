@@ -264,7 +264,7 @@ def init(loop, video_buffer):
 
     global urwid_loop
     event_loop = urwid.AsyncioEventLoop(loop=loop)
-    event_loop._idle_emulation_delay = 1/20
+    event_loop._idle_emulation_delay = 1/18
     main_widget = urwid_console(video_buffer)
     urwid_loop = urwid.MainLoop(main_widget, palette, event_loop=event_loop, unhandled_input=input_handler)
     asyncio.ensure_future(log_handler())

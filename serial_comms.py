@@ -41,7 +41,7 @@ def reset_to_top(serial_f):
         while arduino_status != 0:
             if serial_f.inWaiting() > 0:
                 arduino_status = ord(serial_f.read())
-                # logger.debug(f'arduino_status: {arduino_status}')
+                logger.debug(f'arduino_status: {arduino_status}')
                 i += 1
             else:
                 # dump 3 bytes to fill the input buffer
