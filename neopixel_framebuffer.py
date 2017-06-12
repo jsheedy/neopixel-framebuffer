@@ -21,7 +21,7 @@ import serial_comms
 from video_buffer import VideoBuffer
 import websocket_server
 
-from audio_input_callback import input_audio_stream, callback_video_buffer
+from audio_input import input_audio_stream, callback_video_buffer
 
 N = 420
 
