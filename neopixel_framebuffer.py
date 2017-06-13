@@ -93,7 +93,7 @@ def main():
     config = load_config()
 
     video_buffer.add_effect('background', fx.BackGround, color=[0, 0, 255], enabled=config.get('background', False))
-    video_buffer.add_effect('fade', fx.FadeBackGround, q=71, enabled=config.get('fade', False))
+    video_buffer.add_effect('fade', fx.FadeBackGround, q=51, enabled=config.get('fade', False))
     video_buffer.add_effect('strobe', fx.Strobe, enabled=config.get('strobe', False))
     video_buffer.add_effect('noise', fx.Noise, enabled=config.get('noise', False))
     video_buffer.add_effect('wave', fx.Wave, enabled=config.get('wave', False))
@@ -113,8 +113,18 @@ def main():
 
     video_buffer.add_effect('scanner', fx.LarsonScanner, enabled=config.get('scanner', False), scanners=scanners(12))
     video_buffer.add_effect('peak_meter', fx.PeakMeter, enabled=config.get('peak_meter', False), meters=(
+
+        {'n1': 60, 'n2': 120, 'reverse': True, 'color': (1,.5,0)},
+        {'n1': 120, 'n2': 160, 'reverse': False, 'color': (1,.5,0)},
+
+        {'n1': 160, 'n2': 214, 'reverse': True, 'color': (1,.5,0)},
+        {'n1': 214, 'n2': 260, 'reverse': False, 'color': (1,.5,0)},
+
+        {'n1': 260, 'n2': 332, 'reverse': True, 'color': (1,.5,0)},
+        {'n1': 332, 'n2': 380, 'reverse': False, 'color': (1,.5,0)},
+
         {'n1': 320, 'n2': 420, 'reverse': True, 'color': (1,.5,0)},
-        {'n1': 0, 'n2': 100, 'reverse': False, 'color': (0,.5,1)},
+        {'n1': 0, 'n2': 100, 'reverse': False, 'color': (1,.5,0)},
     ))
     video_buffer.add_effect('brightness', fx.Brightness, level=0.4, enabled=config.get('brightness', False))
     video_buffer.add_effect('convolution', fx.Convolution, enabled=config.get('convolution', False))

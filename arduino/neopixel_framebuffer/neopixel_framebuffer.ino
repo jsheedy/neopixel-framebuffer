@@ -6,9 +6,12 @@
 #define BAUD 460800
 
 Adafruit_NeoPixel strip = Adafruit_NeoPixel(NLEDS, PIN, NEO_GRB + NEO_KHZ800);
+byte rgb[3];
 
 void colorTest(int colorIndex) {
-  byte rgb[3] = {0,0,0};
+  rgb[0] = 0;
+  rgb[1] = 0;
+  rgb[2] = 0;
   rgb[colorIndex] = 255;
   int skip = 5;
   for (uint16_t i = colorIndex; i < NLEDS; i+=skip) {
@@ -21,8 +24,8 @@ void setup() {
   strip.begin();
 
   colorTest(0);
-  colorTest(1);
-  colorTest(2);
+//  colorTest(1);
+//  colorTest(2);
 
   Serial.begin(BAUD);
 
@@ -31,8 +34,6 @@ void setup() {
     Serial.read();
   }
 }
-
-byte rgb[3];
 
 void loop() {
   Serial.write(0);

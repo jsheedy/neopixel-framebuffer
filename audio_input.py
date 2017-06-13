@@ -38,13 +38,11 @@ def callback_video_buffer(data, frame_count, time_info, status, video_buffer=Non
     # TODO: calculate power spectral density using scipy.signal.periodogram
 
     h = np.max(a) / (2**(8*WIDTH))
-    rgb = colorsys.hsv_to_rgb(h, 1.0, 1.0)
-    x = video_buffer.frame % video_buffer.N
 
-    logging.info(f"{h} {np.max(a)} {rgb}")
-    name = ""
-    channel = 0
-    video_buffer.effects['peak_meter'].envelope(name, h, channel)
+    peak_meter = video_buffer.effects['peak_meter']
+    for i in range(len(peak_meter.meters)):
+        peak_meter.envelope('', h, i)
+
     a[:] = 0
     return (a.tobytes(), pyaudio.paContinue)
 
