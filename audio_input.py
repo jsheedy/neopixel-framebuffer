@@ -8,10 +8,15 @@ from pythonosc import osc_message_builder
 from point import Point
 import websocket_server
 
-CHUNK = 512
+CHUNK = 1024
 WIDTH = 2
 CHANNELS = 2
 RATE = 44100
+
+# INPUT_DEVICE = 3  # Soundflower input
+INPUT_DEVICE_INDEX = 3  # Aggregate Audio device nput
+# INPUT_DEVICE_INDEX = 6  # Aggregate Audio device nput
+OUTPUT_DEVICE_INDEX = 3  # soundflower 64 output
 
 p = pyaudio.PyAudio()
 
@@ -37,11 +42,11 @@ def callback_video_buffer(data, frame_count, time_info, status, video_buffer=Non
 
     # TODO: calculate power spectral density using scipy.signal.periodogram
 
-    h = np.max(a) / (2**(8*WIDTH))
+    h = np.max(mono) / (2**(8*WIDTH))
 
     peak_meter = video_buffer.effects['peak_meter']
     for i in range(len(peak_meter.meters)):
-        peak_meter.envelope('', h, i)
+        peak_meter.envelope('', h, i, gain=4.0)
 
     a[:] = 0
     return (a.tobytes(), pyaudio.paContinue)
@@ -55,10 +60,8 @@ def input_audio_stream(callback):
                     channels=CHANNELS,
                     rate=RATE,
                     input=True,
-                    input_device_index=3, # Soundflower input
-                    # output_device_index=3, # Saffire output
-                    # output_device_index=4, # Soundflower output 2
-                    output_device_index=5, # Soundflower output 64
+                    input_device_index=INPUT_DEVICE_INDEX,
+                    output_device_index=OUTPUT_DEVICE_INDEX,
                     output=True,
                     frames_per_buffer=CHUNK,
                     stream_callback=callback)
@@ -73,4 +76,4 @@ def input_audio_stream(callback):
 if __name__ == "__main__":
     from video_buffer import VideoBuffer
     input_audio_stream(print)
-    input('waiting')
+    input()

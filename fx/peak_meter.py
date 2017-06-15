@@ -47,8 +47,8 @@ class PeakMeter(Fx):
         self.meters = [Meter(**d) for d in meters]
 
 
-    def envelope(self, name, y, channel ):
-        y = float(y)
+    def envelope(self, name, y, channel, gain=1.0):
+        y = gain * float(y)
         channel = int(channel)
         self.meters[channel-1].set(float(y))
 

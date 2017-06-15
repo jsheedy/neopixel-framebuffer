@@ -93,7 +93,7 @@ def main():
     config = load_config()
 
     video_buffer.add_effect('background', fx.BackGround, color=[0, 0, 255], enabled=config.get('background', False))
-    video_buffer.add_effect('fade', fx.FadeBackGround, q=51, enabled=config.get('fade', False))
+    video_buffer.add_effect('fade', fx.FadeBackGround, q=31, enabled=config.get('fade', False))
     video_buffer.add_effect('strobe', fx.Strobe, enabled=config.get('strobe', False))
     video_buffer.add_effect('noise', fx.Noise, enabled=config.get('noise', False))
     video_buffer.add_effect('wave', fx.Wave, enabled=config.get('wave', False))

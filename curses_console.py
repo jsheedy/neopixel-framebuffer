@@ -31,6 +31,8 @@ pixels = []
 
 urwid_loop = None
 
+SLEEP_TIME = 0.25
+
 lw = urwid.SimpleListWalker([])
 listbox = urwid.ListBox(lw)
 listbox = urwid.AttrWrap(listbox, 'listbox')
@@ -153,8 +155,10 @@ def init_logs():
 
 async def update_ui(video_buffer):
 
+    global SLEEP_TIME
+
     while True:
-        await asyncio.sleep(0.05)
+        await asyncio.sleep(SLEEP_TIME)
         if not video_buffer.enabled:
             continue
 
@@ -164,7 +168,10 @@ async def update_ui(video_buffer):
             widget.set_text(text)
 
         if pixel_check_box.get_state():
+            SLEEP_TIME = 0.05
             await update_pixels(video_buffer)
+        else:
+            SLEEP_TIME = 0.25
 
 
 async def osc_handler():
