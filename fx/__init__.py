@@ -10,3 +10,4 @@ from .point import PointFx
 from .solid import Solid
 from .strobe import Strobe
 from .wave import Wave
+from .yellowblackandredgreenpurple import YellowBlackAndRedGreenPurple

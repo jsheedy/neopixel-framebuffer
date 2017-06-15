@@ -128,6 +128,7 @@ def main():
     ))
     video_buffer.add_effect('brightness', fx.Brightness, level=0.4, enabled=config.get('brightness', False))
     video_buffer.add_effect('convolution', fx.Convolution, enabled=config.get('convolution', False))
+    video_buffer.add_effect('yb&rgp', fx.YellowBlackAndRedGreenPurple, enabled=config.get('yb&rgp', False))
 
     def midi_handler(*args):
         addr, note, velocity, channel = args
