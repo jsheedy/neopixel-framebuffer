@@ -1,10 +1,10 @@
 #include <math.h>
 
 float point1 = 0.0;
-float velocity1 = 0.01; //1.0/(float)(NLEDS);
+float velocity1 = 0.005; //1.0/(float)(NLEDS);
 
 float point2 = 0.0;
-float velocity2 = -0.01; //1.0/(float)(NLEDS);
+float velocity2 = -0.005; //1.0/(float)(NLEDS);
 
 float randKick() {
   return (float)(random(0,1000)-500) / 500 * 0.0001;  
@@ -37,34 +37,38 @@ void waves()
   }
   
   float width = 0.025;
-  
+  float deltaPoint = deltaPoints(point1, point2);
+  int h =  (int)(deltaPoint * 255);
+  int s = 255;
+    
   for (uint16_t i = 0; i < NLEDS; i++) {
     float iPoint = (float)i / NLEDS;
     float delta1 = deltaPoints(iPoint, point1);
     float delta2 = deltaPoints(iPoint, point2);
-
+    
     if (delta1 < width && delta2 < width) {
-      strip.setPixelColor(i, 255, 0, 0);    
+      int v = 255;
+      leds[i] = CHSV(128,s,v);    
     }
     else if (delta1 < width) {
-      int red = (int)(255.0 * (1-(delta1/width)));    
-      strip.setPixelColor(i, red, 0, 0 );    
+      int v = (int)(255.0 * (1-(delta1/width))); 
+      leds[i] = CHSV(h,s,v);
     }
     else if (delta2 < width) {
-      int color = (int)(255.0 * (1-(delta2/width)));    
-      strip.setPixelColor(i, 0, 0, color);    
+      int v = (int)(255.0 * (1-(delta2/width))); 
+      leds[i] = CHSV(h+((int)(128*deltaPoint)),s,v);
     }
     else {
-      strip.setPixelColor(i, 0,0,0);    
+      leds[i] = CRGB( 0,0,0);    
     }
   }
-  strip.show();
+  FastLED.show();
 }
 
-int red = 1;
-int delta = 1;
-
 void demo1() {
+  int red = 1;
+  int delta = 1;
+
    if (red == 255) {
     delta = -1;
   }
@@ -73,9 +77,9 @@ void demo1() {
   }
   red += delta;
   for (uint16_t i = 0; i < NLEDS; i++) {
-    strip.setPixelColor(i, red, (i*red)%255, 255-red );
+    leds[i] = CRGB(red, (i*red)%255, 255-red );
   }
-  strip.show();
+  FastLED.show();
 }
 
 void colorTest(int colorIndex) {
@@ -85,8 +89,9 @@ void colorTest(int colorIndex) {
   rgb[colorIndex] = 255;
   int skip = 5;
   for (uint16_t i = colorIndex; i < NLEDS; i+=skip) {
-    strip.setPixelColor(i-skip, 0, 0, 0 );
-    strip.setPixelColor(i, rgb[0], rgb[1], rgb[2] );
-    strip.show();
+    leds[i-skip] = CRGB(0, 0, 0 );
+    leds[i] = CRGB(rgb[0], rgb[1], rgb[2] );
   }
+  FastLED.show();
+
 }
