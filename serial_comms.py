@@ -36,17 +36,12 @@ def open_serial():
 
 def reset_to_top(serial_f):
     arduino_status = 1  # 0 indicates ready for entire frame
-    i = 0
     try:
         while arduino_status != 0:
             if serial_f.inWaiting() > 0:
                 arduino_status = ord(serial_f.read())
-                logger.debug(f'arduino_status: {arduino_status}')
-                i += 1
             else:
-                # dump 3 bytes to fill the input buffer
-                # logger.debug(f'writing 3 0 bytes')
-                serial_f.write(bytes((0,)*3))
+                serial_f.write(bytes((0,)))
     except Exception as e:
         logger.exception(e)
         init(globals['loop'], globals['video_buffer'])
@@ -59,24 +54,19 @@ def write_serial():
     reset_to_top(serial_f)
 
     if video_buffer.frame > globals['video_frame']:
-        logging.debug('serial reserving frame {}'.format(video_buffer.frame))
         globals['video_frame'] = video_buffer.frame
     else:
-        # logging.debug('updating on frame {}'.format(video_buffer.frame))
         globals['video_frame'] = video_buffer.update()
 
     data = video_buffer.buffer.tobytes()
     globals['serial_f'].write(data)
 
-def bootup_sequence():
-    write_serial()
 
 def init(loop, video_buffer):
     globals['video_buffer'] = video_buffer
     globals['loop'] = loop
     try:
         globals['serial_f'] = open_serial()
-        bootup_sequence()
         loop.add_reader(globals['serial_f'].fileno(), write_serial)
     except SerialPortError:
         logger.critical("\n\nCOULD NOT OPEN SERIAL PORT\n\n")
