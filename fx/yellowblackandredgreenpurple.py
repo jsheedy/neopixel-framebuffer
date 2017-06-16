@@ -3,11 +3,18 @@ from .fx import Fx
 
 class YellowBlackAndRedGreenPurple(Fx):
 
+    colors = (
+        [255,255,0] * 20,
+        [0,0,0] * 20,
+        [255,0,0] * 20,
+        [0,255,0] * 20,
+        [102,51,153] * 20
+    )
+
+    width = 20
+    # list(zip(range(6), itertools.cycle(range(3))))
+
     def _update(self):
-        buff = self.video_buffer.buffer
-        buff[:] = 0
-        buff[0*3:20*3] = [255,255,0] * 20
-        buff[20*3:40*3] = [0,0,0] * 20
-        buff[40*3:60*3] = [255,0,0] * 20
-        buff[60*3:80*3] = [0,255,0] * 20
-        buff[80*3:100*3] = [102,51,153] * 20
+        for start_index in (0, 105, 210, 320):
+            for i, color in enumerate(self.colors):
+                self.video_buffer.buffer[(start_index + i*self.width)*3:(start_index + (i+1)*self.width)*3] = color
