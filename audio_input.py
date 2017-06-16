@@ -1,31 +1,24 @@
-import colorsys
-import logging
-
 import pyaudio
 import numpy as np
 from pythonosc import osc_message_builder
+import sounddevice
 
-from point import Point
 import websocket_server
 
-CHUNK = 1024
+CHUNK = 2048
 WIDTH = 2
 CHANNELS = 2
 RATE = 44100
 
-# INPUT_DEVICE = 3  # Soundflower input
-INPUT_DEVICE_INDEX = 3  # Aggregate Audio device nput
-# INPUT_DEVICE_INDEX = 6  # Aggregate Audio device nput
+INPUT_DEVICE_NAME = 'Loopback Audio'
 OUTPUT_DEVICE_INDEX = 3  # soundflower 64 output
 
-p = pyaudio.PyAudio()
+pa = pyaudio.PyAudio()
 
 video_buffer = None
 
+
 def send_osc(fft_array):
-    if not fft_array.any():
-        loggging.info("received bad fft_array")
-        return
     msg = osc_message_builder.OscMessageBuilder(address = "/fft")
     msg.add_arg(fft_array.tolist())
     msg = msg.build()
@@ -43,37 +36,30 @@ def callback_video_buffer(data, frame_count, time_info, status, video_buffer=Non
     # TODO: calculate power spectral density using scipy.signal.periodogram
 
     h = np.max(mono) / (2**(8*WIDTH))
-
     peak_meter = video_buffer.effects['peak_meter']
     for i in range(len(peak_meter.meters)):
-        peak_meter.envelope('', h, i, gain=4.0)
+        peak_meter.envelope('', h, i, gain=2.0)
 
-    a[:] = 0
-    return (a.tobytes(), pyaudio.paContinue)
+    return (data, pyaudio.paContinue)
 
 
 def input_audio_stream(callback):
-
-    # python -m sounddevice to get device list
-    # maybe use sounddevice instead
-    stream = p.open(format=p.get_format_from_width(WIDTH),
-                    channels=CHANNELS,
-                    rate=RATE,
-                    input=True,
-                    input_device_index=INPUT_DEVICE_INDEX,
-                    output_device_index=OUTPUT_DEVICE_INDEX,
-                    output=True,
-                    frames_per_buffer=CHUNK,
-                    stream_callback=callback)
+    input_device_index = next((i for i,x in enumerate(sounddevice.query_devices()) if x['name'] == INPUT_DEVICE_NAME))
+    stream = pa.open(
+        format=pa.get_format_from_width(WIDTH),
+        channels=CHANNELS,
+        rate=RATE,
+        input=True,
+        input_device_index=input_device_index,
+        output_device_index=OUTPUT_DEVICE_INDEX,
+        output=True,
+        frames_per_buffer=CHUNK,
+        stream_callback=callback
+    )
 
     stream.start_stream()
 
-# stream.stop_stream()
-# stream.close()
-#
-# p.terminate()
 
 if __name__ == "__main__":
-    from video_buffer import VideoBuffer
     input_audio_stream(print)
     input()
