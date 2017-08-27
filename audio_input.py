@@ -1,22 +1,29 @@
-import pyaudio
+import logging
+
 import numpy as np
+import pyaudio
 from pythonosc import osc_message_builder
 import sounddevice
 
 import websocket_server
 
-CHUNK = 2048
+
+logger = logging.getLogger()
+
+
+CHUNK = 512
 WIDTH = 2
 CHANNELS = 2
-RATE = 44100
+RATE = 48000  #44100
 
-INPUT_DEVICE_NAME = 'Loopback Audio'
+INPUT_DEVICE_NAME = 'Saffire'
 OUTPUT_DEVICE_INDEX = 3  # soundflower 64 output
 
 pa = pyaudio.PyAudio()
 
 video_buffer = None
-
+callback = None
+stream = None
 
 def send_osc(fft_array):
     msg = osc_message_builder.OscMessageBuilder(address = "/fft")
@@ -36,6 +43,9 @@ def callback_video_buffer(data, frame_count, time_info, status, video_buffer=Non
     # TODO: calculate power spectral density using scipy.signal.periodogram
 
     h = np.max(mono) / (2**(8*WIDTH))
+
+    logging.debug(f"audio input: {h}")
+
     peak_meter = video_buffer.effects['peak_meter']
     for i in range(len(peak_meter.meters)):
         peak_meter.envelope('', h, i, gain=2.0)
@@ -43,8 +53,13 @@ def callback_video_buffer(data, frame_count, time_info, status, video_buffer=Non
     return (data, pyaudio.paContinue)
 
 
-def input_audio_stream(callback):
-    input_device_index = next((i for i,x in enumerate(sounddevice.query_devices()) if x['name'] == INPUT_DEVICE_NAME))
+def change_stream(input_device_index):
+    global stream
+    if stream:
+        stream.stop_stream()
+
+    logger.info(f"initializing audio device {input_device_index}")
+
     stream = pa.open(
         format=pa.get_format_from_width(WIDTH),
         channels=CHANNELS,
@@ -58,6 +73,14 @@ def input_audio_stream(callback):
     )
 
     stream.start_stream()
+
+
+def input_audio_stream(_callback):
+    global callback, stream
+    callback = _callback
+
+    input_device_index = next((i for i,device in enumerate(sounddevice.query_devices()) if device['name'] == INPUT_DEVICE_NAME))
+    change_stream(input_device_index)
 
 
 if __name__ == "__main__":

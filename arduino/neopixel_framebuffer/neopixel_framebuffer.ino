@@ -4,7 +4,7 @@
 #define CLOCK_PIN 6
 #define NLEDS 420
 #define BAUD 460800
-#define SERIAL_TIMEOUT 50  // milliseconds before idle function called
+#define SERIAL_TIMEOUT 200  // milliseconds before idle function called
 
 CRGB leds[NLEDS];
 

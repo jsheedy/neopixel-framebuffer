@@ -24,9 +24,9 @@ import websocket_server
 from audio_input import input_audio_stream, callback_video_buffer
 
 N = 420
+IDLE_TIME = 1/20
 
 video_buffer = VideoBuffer(N)
-input_audio_stream(functools.partial(callback_video_buffer, video_buffer=video_buffer))
 
 
 def parse_args():
@@ -34,7 +34,7 @@ def parse_args():
     parser.add_argument("--ip", default="0.0.0.0", help="The ip of the OSC server")
     parser.add_argument("--port", type=int, default=37340, help="The port the OSC server to listening on")
     parser.add_argument("-v", "--verbose", action="store_true", help="be chatty")
-    parser.add_argument("-n", "--noconsole", action="store_true", help="disable console")
+    parser.add_argument("-n", "--no-console", action="store_true", help="disable console")
     return parser.parse_args()
 
 
@@ -83,7 +83,7 @@ async def idle():
         else:
             frame = video_buffer.update()
 
-        await asyncio.sleep(.05)
+        await asyncio.sleep(IDLE_TIME)
 
 
 def main():
@@ -93,7 +93,7 @@ def main():
     config = load_config()
 
     video_buffer.add_effect('background', fx.BackGround, color=[0, 0, 255], enabled=config.get('background', False))
-    video_buffer.add_effect('fade', fx.FadeBackGround, q=131, enabled=config.get('fade', False))
+    video_buffer.add_effect('fade', fx.FadeBackGround, q=255, enabled=config.get('fade', False))
     video_buffer.add_effect('strobe', fx.Strobe, enabled=config.get('strobe', False))
     video_buffer.add_effect('noise', fx.Noise, enabled=config.get('noise', False))
     video_buffer.add_effect('wave', fx.Wave, enabled=config.get('wave', False))
@@ -146,7 +146,7 @@ def main():
 
     loop = asyncio.get_event_loop()
 
-    if args.noconsole:
+    if args.no_console:
         maps.append(('/*', osc_logger))
         log.configure_logging(level=level)
 
@@ -162,10 +162,12 @@ def main():
         server_address = (args.ip, args.port)
     )
 
-    websocket_server.serve(loop, video_buffer)
+    # websocket_server.serve(loop, video_buffer)
     serial_comms.init(loop, video_buffer)
-    osc_server.serve()
-    asyncio.ensure_future(idle())
+    # osc_server.serve()
+    # asyncio.ensure_future(idle())
+
+    input_audio_stream(functools.partial(callback_video_buffer, video_buffer=video_buffer))
 
     try:
         loop.run_forever()

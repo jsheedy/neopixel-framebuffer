@@ -3,8 +3,10 @@ from datetime import datetime
 import functools
 import logging
 
+import sounddevice
 import urwid
 
+import audio_input
 import log
 
 
@@ -129,11 +131,34 @@ def init_osc():
     return pile
 
 
+def init_audio_source(video_buffer):
+    header = column_header("audio source")
+    widgets = [header,]
+
+    def callback(_radio_button, state, device_index):
+        if state:
+            audio_input.change_stream(device_index)
+
+    radio_group = []
+    for device_index, device in enumerate(sounddevice.query_devices()):
+        radio = urwid.RadioButton(
+            radio_group,
+            f"{device['name']}",
+            state=device['name'] == audio_input.INPUT_DEVICE_NAME,
+            on_state_change=callback,
+            user_data=device_index
+        )
+        widgets.append(radio)
+
+    pile = urwid.Filler(urwid.Pile(widgets), valign='top')
+    return pile
+
+
 def init_fx(video_buffer):
     header = column_header("f/x")
     widgets = [header,]
 
-    def callback(cb, state, fx):
+    def callback(_check_box, state, fx):
         fx.enabled = state
 
     for label, fx in video_buffer.effects.items():
@@ -171,7 +196,7 @@ async def update_ui(video_buffer):
             SLEEP_TIME = 0.05
             await update_pixels(video_buffer)
         else:
-            SLEEP_TIME = 0.25
+            SLEEP_TIME = 0.5
 
 
 async def osc_handler():
@@ -228,12 +253,14 @@ def urwid_console(video_buffer):
     footer = urwid.AttrWrap(footer, 'footer')
 
     params = init_params(video_buffer)
+    audio = init_audio_source(video_buffer)
     fx = init_fx(video_buffer)
     osc = init_osc()
 
     body = urwid.Columns((
         ('weight', 1, params),
         ('weight', 1, osc),
+        ('weight', 1, audio),
         ('weight', 1, fx),
         ('weight', 1, listbox),
     ), dividechars=3)
@@ -271,7 +298,8 @@ def init(loop, video_buffer):
 
     global urwid_loop
     event_loop = urwid.AsyncioEventLoop(loop=loop)
-    event_loop._idle_emulation_delay = 1/18
+    # slow down refresh
+    event_loop._idle_emulation_delay = 1/10 # 1/18
     main_widget = urwid_console(video_buffer)
     urwid_loop = urwid.MainLoop(main_widget, palette, event_loop=event_loop, unhandled_input=input_handler)
     asyncio.ensure_future(log_handler())
