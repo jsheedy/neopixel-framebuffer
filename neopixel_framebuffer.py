@@ -162,10 +162,10 @@ def main():
         server_address = (args.ip, args.port)
     )
 
-    # websocket_server.serve(loop, video_buffer)
+    websocket_server.serve(loop, video_buffer)
     serial_comms.init(loop, video_buffer)
-    # osc_server.serve()
-    # asyncio.ensure_future(idle())
+    osc_server.serve()
+    asyncio.ensure_future(idle())
 
     input_audio_stream(functools.partial(callback_video_buffer, video_buffer=video_buffer))
 

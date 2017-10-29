@@ -141,6 +141,10 @@ def init_audio_source(video_buffer):
 
     radio_group = []
     for device_index, device in enumerate(sounddevice.query_devices()):
+
+        if device['max_input_channels'] < 2:
+            continue
+
         radio = urwid.RadioButton(
             radio_group,
             f"{device['name']}",

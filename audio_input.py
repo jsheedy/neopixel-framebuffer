@@ -79,9 +79,11 @@ def input_audio_stream(_callback):
     global callback, stream
     callback = _callback
 
-    input_device_index = next((i for i,device in enumerate(sounddevice.query_devices()) if device['name'] == INPUT_DEVICE_NAME))
-    change_stream(input_device_index)
-
+    try:
+        input_device_index = next((i for i,device in enumerate(sounddevice.query_devices()) if device['name'] == INPUT_DEVICE_NAME))
+        change_stream(input_device_index)
+    except StopIteration:
+        logger.warning(f"unable to open audio device {INPUT_DEVICE_NAME}")
 
 if __name__ == "__main__":
     input_audio_stream(print)
