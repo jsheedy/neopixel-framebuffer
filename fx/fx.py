@@ -1,6 +1,7 @@
 from datetime import datetime
 import logging
 
+import numpy as np
 
 logger = logging.getLogger(__name__)
 
@@ -13,7 +14,11 @@ class Fx(object):
         self.enabled = enabled
         self.timestamp = datetime(2000,1,1)
         self.locked = False
-
+        self.parameters = dict()
+        self.N = video_buffer.N
+        self.x = np.arange(self.N, dtype=np.float64)
+        self.gamma_exp = 2.8
+        self.gamma =(255*(np.arange(256,dtype=np.float64)/255) ** self.gamma_exp).astype(np.uint8)
 
     def __str__(self):
         return self.__class__.__name__

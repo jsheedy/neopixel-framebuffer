@@ -94,15 +94,20 @@ def main():
 
     video_buffer.add_effect('background', fx.BackGround, color=[0, 0, 255], enabled=config.get('background', False))
     video_buffer.add_effect('fade', fx.FadeBackGround, q=255, enabled=config.get('fade', False))
+
+    video_buffer.add_effect('midi_note_spark_1', fx.MidiNoteSpark, nrange=(300,420), enabled=config.get('midi_note_spark_1', False))
+    video_buffer.add_effect('midi_note_spark_2', fx.MidiNoteSpark, nrange=(0,150), enabled=config.get('midi_note_spark_2', False))
+    video_buffer.add_effect('midi_note_spark_3', fx.MidiNoteSpark, nrange=(150,300), enabled=config.get('midi_note_spark_3', False))
+
     video_buffer.add_effect('strobe', fx.Strobe, enabled=config.get('strobe', False))
     video_buffer.add_effect('noise', fx.Noise, enabled=config.get('noise', False))
     video_buffer.add_effect('wave', fx.Wave, enabled=config.get('wave', False))
+    video_buffer.add_effect('creamsicle', fx.Creamsicle, enabled=config.get('creamsicle', False))
 
-    # note_ranges = (
-    #     (0, 60), (61,120), (121, 170), (170, 220), (221, 280), (281, 331), (332, 379), (380, 420)
-    # )
-    note_ranges = ((260,320), (300,340), (340,380), (380,420), (0,40),(40,80),(80,120),(120,160),)
-    note_ranges = ((340, 380), (340,420), (340,380), (380,420), (0,40),(40,80),(80,120),(120,160),)
+    # note_ranges = ((260,320), (300,340), (340,380), (380,420), (0,40),(40,80),(80,120),(120,160),)
+    # note_ranges = ((340, 380), (340,420), (340,380), (380,420), (0,40),(40,80),(80,120),(120,160),)
+    note_ranges = ((0,0), (300,420),)
+
     for i, note_range in enumerate(note_ranges):
         name = 'midi_note'+str(i)
         video_buffer.add_effect(name, fx.MidiNote, nrange=note_range, enabled=config.get(name, False))
@@ -133,6 +138,12 @@ def main():
     def midi_handler(*args):
         addr, note, velocity, channel = args
         key = f'midi_note{channel}'
+        video_buffer.effects[key].set(*args)
+        key = f'midi_note_spark_1'
+        video_buffer.effects[key].set(*args)
+        key = f'midi_note_spark_2'
+        video_buffer.effects[key].set(*args)
+        key = f'midi_note_spark_3'
         video_buffer.effects[key].set(*args)
 
     maps = [
@@ -167,7 +178,7 @@ def main():
     osc_server.serve()
     asyncio.ensure_future(idle())
 
-    input_audio_stream(functools.partial(callback_video_buffer, video_buffer=video_buffer))
+    # input_audio_stream(functools.partial(callback_video_buffer, video_buffer=video_buffer))
 
     try:
         loop.run_forever()

@@ -1,4 +1,5 @@
 from collections import OrderedDict
+from datetime import datetime
 
 import numpy as np
 
@@ -12,6 +13,8 @@ class VideoBuffer(object):
         self.effects = OrderedDict()
         self.locked = False
         self.enabled = True
+        self.t0 = datetime.now()
+        self.t = self.t0
 
     def add_effect(self, name, fx, **kwargs):
         self.effects[name] = fx(self, **kwargs)
@@ -33,6 +36,7 @@ class VideoBuffer(object):
         self.buffer[n1*3:n2*3] = int32_uint8_slice
 
     def update(self):
+        self.t = (datetime.now() - self.t0).total_seconds()
         if not self.enabled:
             return self.frame
         for key, effect in self.effects.items():

@@ -3,11 +3,14 @@ from .brightness import Brightness
 from .fade import FadeBackGround
 from .larson_scanner import LarsonScanner
 from .convolution import Convolution
+from .midi_event import MidiEvent
 from .midi_note import MidiNote
+from .midi_note_spark import MidiNoteSpark
 from .noise import Noise
 from .peak_meter import PeakMeter
 from .point import PointFx
 from .solid import Solid
 from .strobe import Strobe
 from .wave import Wave
+from .creamsicle import Creamsicle
 from .yellowblackandredgreenpurple import YellowBlackAndRedGreenPurple

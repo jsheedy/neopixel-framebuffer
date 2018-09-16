@@ -1,0 +1,382 @@
+!_TAG_FILE_FORMAT	2	/extended format; --format=1 will not append ;" to lines/
+!_TAG_FILE_SORTED	1	/0=unsorted, 1=sorted, 2=foldcase/
+!_TAG_PROGRAM_AUTHOR	Darren Hiebert	/dhiebert@users.sourceforge.net/
+!_TAG_PROGRAM_NAME	Exuberant Ctags	//
+!_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
+!_TAG_PROGRAM_VERSION	5.8	//
+BAUDRATE	../serial_comms.py	/^BAUDRATE = 460800$/;"	kind:variable	line:8
+BackGround	../fx/__init__.py	/^from .background import BackGround$/;"	kind:namespace	line:1
+BackGround	../fx/background.py	/^class BackGround(Fx):$/;"	kind:class	line:8
+Brightness	../fx/__init__.py	/^from .brightness import Brightness$/;"	kind:namespace	line:2
+Brightness	../fx/brightness.py	/^class Brightness(Fx):$/;"	kind:class	line:6
+CHANNELS	../audio_input.py	/^CHANNELS = 2$/;"	kind:variable	line:16
+CHUNK	../audio_input.py	/^CHUNK = 512$/;"	kind:variable	line:14
+CONFIG_FILE	../neopixel_framebuffer.py	/^CONFIG_FILE = os.path.join(os.path.dirname(__file__), "config.json")$/;"	kind:variable	line:58
+ChannelArray	../fx/wave.py	/^class ChannelArray():$/;"	kind:class	line:11
+Convolution	../fx/__init__.py	/^from .convolution import Convolution$/;"	kind:namespace	line:5
+Convolution	../fx/convolution.py	/^class Convolution(Fx):$/;"	kind:class	line:11
+FadeBackGround	../fx/__init__.py	/^from .fade import FadeBackGround$/;"	kind:namespace	line:3
+FadeBackGround	../fx/fade.py	/^class FadeBackGround(Fx):$/;"	kind:class	line:5
+Fx	../fx/background.py	/^from .fx import Fx$/;"	kind:namespace	line:5
+Fx	../fx/brightness.py	/^from .fx import Fx$/;"	kind:namespace	line:3
+Fx	../fx/convolution.py	/^from .fx import Fx$/;"	kind:namespace	line:8
+Fx	../fx/fade.py	/^from .fx import Fx$/;"	kind:namespace	line:3
+Fx	../fx/fx.py	/^class Fx(object):$/;"	kind:class	line:8
+Fx	../fx/larson_scanner.py	/^from .fx import Fx$/;"	kind:namespace	line:6
+Fx	../fx/midi_note.py	/^from .fx import Fx$/;"	kind:namespace	line:5
+Fx	../fx/noise.py	/^from .fx import Fx$/;"	kind:namespace	line:3
+Fx	../fx/peak_meter.py	/^from .fx import Fx$/;"	kind:namespace	line:7
+Fx	../fx/point.py	/^from .fx import Fx$/;"	kind:namespace	line:1
+Fx	../fx/solid.py	/^from .fx import Fx$/;"	kind:namespace	line:1
+Fx	../fx/strobe.py	/^from .fx import Fx$/;"	kind:namespace	line:3
+Fx	../fx/wave.py	/^from .fx import Fx$/;"	kind:namespace	line:8
+Fx	../fx/yellowblackandredgreenpurple.py	/^from .fx import Fx$/;"	kind:namespace	line:2
+IDLE_TIME	../neopixel_framebuffer.py	/^IDLE_TIME = 1\/20$/;"	kind:variable	line:27
+INPUT_DEVICE_NAME	../audio_input.py	/^INPUT_DEVICE_NAME = 'Saffire'$/;"	kind:variable	line:19
+LarsonScanner	../fx/__init__.py	/^from .larson_scanner import LarsonScanner$/;"	kind:namespace	line:4
+LarsonScanner	../fx/larson_scanner.py	/^class LarsonScanner(Fx):$/;"	kind:class	line:10
+Meter	../fx/peak_meter.py	/^class Meter():$/;"	kind:class	line:11
+MidiEvent	../fx/midi_note.py	/^class MidiEvent():$/;"	kind:class	line:9
+MidiNote	../fx/__init__.py	/^from .midi_note import MidiNote$/;"	kind:namespace	line:6
+MidiNote	../fx/midi_note.py	/^class MidiNote(Fx):$/;"	kind:class	line:23
+N	../neopixel_framebuffer.py	/^N = 420$/;"	kind:variable	line:26
+Noise	../fx/__init__.py	/^from .noise import Noise$/;"	kind:namespace	line:7
+Noise	../fx/noise.py	/^class Noise(Fx):$/;"	kind:class	line:5
+OSCServer	../neopixel_framebuffer.py	/^from osc import OSCServer$/;"	kind:namespace	line:18
+OSCServer	../osc.py	/^class OSCServer():$/;"	kind:class	line:8
+OUTPUT_DEVICE_INDEX	../audio_input.py	/^OUTPUT_DEVICE_INDEX = 3  # soundflower 64 output$/;"	kind:variable	line:20
+OrderedDict	../video_buffer.py	/^from collections import OrderedDict$/;"	kind:namespace	line:1
+PeakMeter	../fx/__init__.py	/^from .peak_meter import PeakMeter$/;"	kind:namespace	line:8
+PeakMeter	../fx/peak_meter.py	/^class PeakMeter(Fx):$/;"	kind:class	line:44
+Point	../fx/larson_scanner.py	/^from point import Point$/;"	kind:namespace	line:7
+Point	../fx/peak_meter.py	/^from point import Point$/;"	kind:namespace	line:8
+Point	../fx/point.py	/^from point import Point$/;"	kind:namespace	line:2
+Point	../point.py	/^class Point():$/;"	kind:class	line:4
+PointFx	../fx/__init__.py	/^from .point import PointFx$/;"	kind:namespace	line:9
+PointFx	../fx/midi_note.py	/^from .point import PointFx$/;"	kind:namespace	line:6
+PointFx	../fx/point.py	/^class PointFx(Fx):$/;"	kind:class	line:7
+Queue	../log.py	/^from asyncio import Queue$/;"	kind:namespace	line:1
+QueueHandler	../log.py	/^from logging.handlers import QueueHandler$/;"	kind:namespace	line:3
+RATE	../audio_input.py	/^RATE = 48000  #44100$/;"	kind:variable	line:17
+SERIAL_DEVICE_PATTERN	../serial_comms.py	/^SERIAL_DEVICE_PATTERN = '\/dev\/*.usbmodem*'$/;"	kind:variable	line:12
+SLEEP_TIME	../curses_console.py	/^SLEEP_TIME = 0.25$/;"	kind:variable	line:36
+SerialPortError	../serial_comms.py	/^class SerialPortError(Exception): pass$/;"	kind:class	line:22
+Solid	../fx/__init__.py	/^from .solid import Solid$/;"	kind:namespace	line:10
+Solid	../fx/solid.py	/^class Solid(Fx):$/;"	kind:class	line:3
+Strobe	../fx/__init__.py	/^from .strobe import Strobe$/;"	kind:namespace	line:11
+Strobe	../fx/strobe.py	/^class Strobe(Fx):$/;"	kind:class	line:9
+VideoBuffer	../curses_console.py	/^    from video_buffer import VideoBuffer$/;"	kind:namespace	line:332
+VideoBuffer	../neopixel_framebuffer.py	/^from video_buffer import VideoBuffer$/;"	kind:namespace	line:21
+VideoBuffer	../video_buffer.py	/^class VideoBuffer(object):$/;"	kind:class	line:6
+WIDTH	../audio_input.py	/^WIDTH = 2$/;"	kind:variable	line:15
+Wave	../fx/__init__.py	/^from .wave import Wave$/;"	kind:namespace	line:12
+Wave	../fx/wave.py	/^class Wave(Fx):$/;"	kind:class	line:29
+YellowBlackAndRedGreenPurple	../fx/__init__.py	/^from .yellowblackandredgreenpurple import YellowBlackAndRedGreenPurple$/;"	kind:namespace	line:13
+YellowBlackAndRedGreenPurple	../fx/yellowblackandredgreenpurple.py	/^class YellowBlackAndRedGreenPurple(Fx):$/;"	kind:class	line:5
+_OSCProtocolFactory	../osc.py	/^        class _OSCProtocolFactory(asyncio.DatagramProtocol):$/;"	kind:class	line:28
+__init__	../fx/background.py	/^    def __init__(self, video_buffer, color=None, intensity=1.0, **kwargs):$/;"	kind:member	line:10
+__init__	../fx/brightness.py	/^    def __init__(self, video_buffer, level=1.0, **kwargs):$/;"	kind:member	line:8
+__init__	../fx/convolution.py	/^    def __init__(self, video_buffer, **kwargs):$/;"	kind:member	line:15
+__init__	../fx/fade.py	/^    def __init__(self, video_buffer, q=1, **kwargs):$/;"	kind:member	line:7
+__init__	../fx/fx.py	/^    def __init__(self, video_buffer, enabled=True):$/;"	kind:member	line:11
+__init__	../fx/larson_scanner.py	/^    def __init__(self, video_buffer, scanners, **kwargs):$/;"	kind:member	line:11
+__init__	../fx/midi_note.py	/^    def __init__(self, note, velocity, channel):$/;"	kind:member	line:10
+__init__	../fx/midi_note.py	/^    def __init__(self, video_buffer, **kwargs):$/;"	kind:member	line:27
+__init__	../fx/noise.py	/^    def __init__(self, video_buffer, **kwargs):$/;"	kind:member	line:7
+__init__	../fx/peak_meter.py	/^    def __init__(self, n1=0, n2=100, reverse=False, color=(1,1,1)):$/;"	kind:member	line:12
+__init__	../fx/peak_meter.py	/^    def __init__(self, video_buffer, meters, **kwargs):$/;"	kind:member	line:45
+__init__	../fx/point.py	/^    def __init__(self, video_buffer, color=(255,255,255), nrange=None, **kwargs):$/;"	kind:member	line:12
+__init__	../fx/solid.py	/^    def __init__(self, video_buffer, **kwargs):$/;"	kind:member	line:5
+__init__	../fx/strobe.py	/^    def __init__(self, video_buffer, **kwargs):$/;"	kind:member	line:11
+__init__	../fx/wave.py	/^    def __init__(self, N, wavelength=8, brightness=255, freq=1):$/;"	kind:member	line:12
+__init__	../fx/wave.py	/^    def __init__(self, video_buffer, w=1, **kwargs):$/;"	kind:member	line:36
+__init__	../fx/yellowblackandredgreenpurple.py	/^    def __init__(self, *args, width=20, start_indexes=(0, 105, 210, 320),**kwargs):$/;"	kind:member	line:15
+__init__	../osc.py	/^            def __init__(self, dispatcher, server):$/;"	kind:member	line:31
+__init__	../osc.py	/^    def __init__(self, server_address, loop=None, maps=None, forward=()):$/;"	kind:member	line:10
+__init__	../point.py	/^    def __init__(self, pos, N, width=1.0):$/;"	kind:member	line:10
+__init__	../video_buffer.py	/^    def __init__(self, N):$/;"	kind:member	line:9
+__init__.py	../fx/__init__.py	1;"	kind:file	line:1
+__repr__	../fx/midi_note.py	/^    def __repr__(self):$/;"	kind:member	line:15
+__str__	../fx/fx.py	/^    def __str__(self):$/;"	kind:member	line:18
+_colors	../fx/yellowblackandredgreenpurple.py	/^    _colors = ($/;"	kind:variable	line:7
+_update	../fx/background.py	/^    def _update(self):$/;"	kind:member	line:37
+_update	../fx/brightness.py	/^    def _update(self):$/;"	kind:member	line:12
+_update	../fx/convolution.py	/^    def _update(self):$/;"	kind:member	line:20
+_update	../fx/fade.py	/^    def _update(self):$/;"	kind:member	line:11
+_update	../fx/larson_scanner.py	/^    def _update(self):$/;"	kind:member	line:25
+_update	../fx/midi_note.py	/^    def _update(self):$/;"	kind:member	line:56
+_update	../fx/noise.py	/^    def _update(self):$/;"	kind:member	line:10
+_update	../fx/peak_meter.py	/^    def _update(self):$/;"	kind:member	line:55
+_update	../fx/point.py	/^    def _update(self):$/;"	kind:member	line:30
+_update	../fx/solid.py	/^    def _update(self):$/;"	kind:member	line:9
+_update	../fx/strobe.py	/^    def _update(self):$/;"	kind:member	line:21
+_update	../fx/wave.py	/^    def _update(self):$/;"	kind:member	line:48
+_update	../fx/yellowblackandredgreenpurple.py	/^    def _update(self):$/;"	kind:member	line:24
+_video_buffer	../curses_console.py	/^_video_buffer = None$/;"	kind:variable	line:27
+accxyz	../touch_osc.py	/^def accxyz(addr, *args, axis=1,point=None):$/;"	kind:function	line:2
+add_effect	../video_buffer.py	/^    def add_effect(self, name, fx, **kwargs):$/;"	kind:member	line:16
+argparse	../neopixel_framebuffer.py	/^import argparse$/;"	kind:namespace	line:7
+asyncio	../curses_console.py	/^import asyncio$/;"	kind:namespace	line:1
+asyncio	../neopixel_framebuffer.py	/^import asyncio$/;"	kind:namespace	line:8
+asyncio	../osc.py	/^import asyncio$/;"	kind:namespace	line:1
+asyncio	../test/websockets/client.py	/^import asyncio$/;"	kind:namespace	line:3
+asyncio	../test/websockets/server.py	/^import asyncio$/;"	kind:namespace	line:3
+asyncio	../test/ws_test.py	/^import asyncio$/;"	kind:namespace	line:3
+asyncio	../websocket_server.py	/^import asyncio$/;"	kind:namespace	line:1
+audio_input	../curses_console.py	/^import audio_input$/;"	kind:namespace	line:9
+audio_input.py	../audio_input.py	1;"	kind:file	line:1
+background.py	../fx/background.py	1;"	kind:file	line:1
+bass_nuke	../test/osc_test_client.py	/^def bass_nuke():$/;"	kind:function	line:24
+brightness.py	../fx/brightness.py	1;"	kind:file	line:1
+callback	../audio_input.py	/^callback = None$/;"	kind:variable	line:25
+callback	../curses_console.py	/^    def callback(_check_box, state, fx):$/;"	kind:function	line:165
+callback	../curses_console.py	/^    def callback(_radio_button, state, device_index):$/;"	kind:function	line:138
+callback_video_buffer	../audio_input.py	/^def callback_video_buffer(data, frame_count, time_info, status, video_buffer=None):$/;"	kind:function	line:35
+callback_video_buffer	../neopixel_framebuffer.py	/^from audio_input import input_audio_stream, callback_video_buffer$/;"	kind:namespace	line:24
+change_stream	../audio_input.py	/^def change_stream(input_device_index):$/;"	kind:function	line:56
+channels	../fx/midi_note.py	/^    channels = list(range(17))$/;"	kind:variable	line:25
+clear	../fx/background.py	/^    def clear(self, x):$/;"	kind:member	line:34
+client	../test/midi_note_test.py	/^client = udp_client.UDPClient(ip, port)$/;"	kind:variable	line:15
+client	../test/osc_test_client.py	/^client = udp_client.UDPClient(ip, port)$/;"	kind:variable	line:15
+client.py	../test/websockets/client.py	1;"	kind:file	line:1
+color_ramp	../test/osc_test_client.py	/^def color_ramp():$/;"	kind:function	line:29
+colors	../curses_console.py	/^colors = 256$/;"	kind:variable	line:29
+colorsys	../fx/background.py	/^import colorsys$/;"	kind:namespace	line:1
+colorsys	../fx/convolution.py	/^import colorsys$/;"	kind:namespace	line:1
+colorsys	../fx/midi_note.py	/^import colorsys$/;"	kind:namespace	line:1
+colorsys	../fx/wave.py	/^import colorsys$/;"	kind:namespace	line:1
+column_header	../curses_console.py	/^def column_header(text):$/;"	kind:function	line:118
+configure_logging	../log.py	/^def configure_logging(level=None, detailed=True, queue_handler=False, color=False):$/;"	kind:function	line:9
+connections	../websocket_server.py	/^connections = {}$/;"	kind:variable	line:14
+console	../neopixel_framebuffer.py	/^import curses_console as console$/;"	kind:namespace	line:16
+convolution.py	../fx/convolution.py	1;"	kind:file	line:1
+curses_console.py	../curses_console.py	1;"	kind:file	line:1
+datagram_received	../osc.py	/^            def datagram_received(self, data, _unused_addr):$/;"	kind:member	line:35
+datetime	../curses_console.py	/^from datetime import datetime$/;"	kind:namespace	line:2
+datetime	../fx/convolution.py	/^from datetime import datetime$/;"	kind:namespace	line:3
+datetime	../fx/fx.py	/^from datetime import datetime$/;"	kind:namespace	line:1
+datetime	../fx/larson_scanner.py	/^from datetime import datetime$/;"	kind:namespace	line:1
+datetime	../fx/peak_meter.py	/^from datetime import datetime$/;"	kind:namespace	line:1
+datetime	../fx/wave.py	/^from datetime import datetime$/;"	kind:namespace	line:2
+datetime	../websocket_server.py	/^from datetime import datetime$/;"	kind:namespace	line:2
+detect-audio.py	../bin/detect-audio.py	1;"	kind:file	line:1
+devinfo	../bin/detect-audio.py	/^devinfo = p.get_device_info_by_index(1)$/;"	kind:variable	line:14
+dispatcher	../osc.py	/^from pythonosc import dispatcher$/;"	kind:namespace	line:4
+dispatcher	../test/midi_note_test.py	/^from pythonosc import dispatcher$/;"	kind:namespace	line:6
+dispatcher	../test/osc_test_client.py	/^from pythonosc import dispatcher$/;"	kind:namespace	line:6
+enabled	../fx/fx.py	/^    enabled = True$/;"	kind:variable	line:9
+enabled	../fx/point.py	/^    enabled = True$/;"	kind:variable	line:8
+envelope	../fx/peak_meter.py	/^    def envelope(self, name, y, channel, gain=1.0):$/;"	kind:member	line:50
+envelope	../test/osc_test_client.py	/^def envelope():$/;"	kind:function	line:60
+epoch	../curses_console.py	/^epoch = datetime.now()$/;"	kind:variable	line:62
+f0	../curses_console.py	/^f0 = 0$/;"	kind:variable	line:63
+fade.py	../fx/fade.py	1;"	kind:file	line:1
+firehose	../test/ws_test.py	/^def firehose(websocket, path):$/;"	kind:function	line:25
+firehose	../websocket_server.py	/^    def firehose(timeout=1):$/;"	kind:function	line:35
+firehose_server	../test/ws_test.py	/^firehose_server = websockets.serve(firehose, 'localhost', 8766)$/;"	kind:variable	line:35
+fps	../curses_console.py	/^    def fps():$/;"	kind:function	line:66
+frame	../video_buffer.py	/^    frame = 0$/;"	kind:variable	line:7
+freqs	../fx/wave.py	/^    freqs = list(range(-5, 5))$/;"	kind:variable	line:31
+functools	../curses_console.py	/^import functools$/;"	kind:namespace	line:3
+functools	../neopixel_framebuffer.py	/^import functools$/;"	kind:namespace	line:9
+fx	../neopixel_framebuffer.py	/^import fx$/;"	kind:namespace	line:17
+fx.py	../fx/fx.py	1;"	kind:file	line:1
+get_attr	../curses_console.py	/^def get_attr(rgb):$/;"	kind:function	line:46
+get_points	../fx/peak_meter.py	/^    def get_points(self):$/;"	kind:member	line:28
+get_points	../point.py	/^    def get_points(self):$/;"	kind:member	line:17
+glob	../serial_comms.py	/^import glob$/;"	kind:namespace	line:1
+globals	../serial_comms.py	/^globals = {$/;"	kind:variable	line:14
+hello	../test/websockets/client.py	/^def hello():$/;"	kind:function	line:7
+hello	../test/websockets/server.py	/^def hello(websocket, path):$/;"	kind:function	line:8
+hello	../test/ws_test.py	/^def hello(websocket, path):$/;"	kind:function	line:7
+hue	../fx/wave.py	/^    hue = 0$/;"	kind:variable	line:34
+hue_speed	../fx/wave.py	/^    hue_speed = .005$/;"	kind:variable	line:33
+idle	../neopixel_framebuffer.py	/^async def idle():$/;"	kind:function	line:78
+info	../bin/detect-audio.py	/^info = p.get_host_api_info_by_index(0)$/;"	kind:variable	line:4
+init	../curses_console.py	/^def init(loop, video_buffer):$/;"	kind:function	line:312
+init	../serial_comms.py	/^def init(loop, video_buffer):$/;"	kind:function	line:65
+init_audio_source	../curses_console.py	/^def init_audio_source(video_buffer):$/;"	kind:function	line:134
+init_fx	../curses_console.py	/^def init_fx(video_buffer):$/;"	kind:function	line:161
+init_logs	../curses_console.py	/^def init_logs():$/;"	kind:function	line:193
+init_osc	../curses_console.py	/^def init_osc():$/;"	kind:function	line:124
+init_params	../curses_console.py	/^def init_params(video_buffer):$/;"	kind:function	line:65
+input_audio_stream	../audio_input.py	/^def input_audio_stream(_callback):$/;"	kind:function	line:78
+input_audio_stream	../neopixel_framebuffer.py	/^from audio_input import input_audio_stream, callback_video_buffer$/;"	kind:namespace	line:24
+input_channels	../bin/detect-audio.py	/^                         input_channels=2, # devinfo['maxInputChannels'],$/;"	kind:variable	line:18
+input_device	../bin/detect-audio.py	/^                         input_device=devinfo["index"],$/;"	kind:variable	line:17
+input_format	../bin/detect-audio.py	/^                         input_format=pyaudio.paInt24 ): # pyaudio.paInt16):$/;"	kind:variable	line:19
+input_handler	../curses_console.py	/^def input_handler(key):$/;"	kind:function	line:291
+intensity	../fx/point.py	/^    intensity = 1.0$/;"	kind:variable	line:10
+ip	../test/midi_note_test.py	/^ip = "127.0.0.1"$/;"	kind:variable	line:12
+ip	../test/osc_test_client.py	/^ip = "127.0.0.1"$/;"	kind:variable	line:12
+itertools	../fx/convolution.py	/^import itertools$/;"	kind:namespace	line:2
+itertools	../fx/wave.py	/^import itertools$/;"	kind:namespace	line:3
+itertools	../fx/yellowblackandredgreenpurple.py	/^import itertools$/;"	kind:namespace	line:1
+itertools	../test/midi_note_test.py	/^import itertools$/;"	kind:namespace	line:3
+itertools	../test/osc_test_client.py	/^import itertools$/;"	kind:namespace	line:3
+json	../neopixel_framebuffer.py	/^import json$/;"	kind:namespace	line:10
+json	../websocket_server.py	/^import json$/;"	kind:namespace	line:3
+larson_scanner.py	../fx/larson_scanner.py	1;"	kind:file	line:1
+listbox	../curses_console.py	/^listbox = urwid.AttrWrap(listbox, 'listbox')$/;"	kind:variable	line:40
+listbox	../curses_console.py	/^listbox = urwid.ListBox(lw)$/;"	kind:variable	line:39
+load_config	../neopixel_framebuffer.py	/^def load_config():$/;"	kind:function	line:61
+local_addr	../osc.py	/^            local_addr = self.server_address$/;"	kind:variable	line:42
+lock	../fx/fx.py	/^    def lock(self):$/;"	kind:member	line:30
+log	../curses_console.py	/^import log$/;"	kind:namespace	line:10
+log	../neopixel_framebuffer.py	/^import log$/;"	kind:namespace	line:15
+log.py	../log.py	1;"	kind:file	line:1
+log_handler	../curses_console.py	/^async def log_handler():$/;"	kind:function	line:253
+logger	../audio_input.py	/^logger = logging.getLogger()$/;"	kind:variable	line:11
+logger	../curses_console.py	/^logger = logging.getLogger()$/;"	kind:variable	line:14
+logger	../fx/fx.py	/^logger = logging.getLogger(__name__)$/;"	kind:variable	line:5
+logger	../fx/strobe.py	/^logger = logging.getLogger(__name__)$/;"	kind:variable	line:6
+logger	../serial_comms.py	/^logger = logging.getLogger(__name__)$/;"	kind:variable	line:6
+logger	../websocket_server.py	/^logger = logging.getLogger('websockets.server')$/;"	kind:variable	line:12
+logging	../audio_input.py	/^import logging$/;"	kind:namespace	line:1
+logging	../curses_console.py	/^import logging$/;"	kind:namespace	line:4
+logging	../fx/fx.py	/^import logging$/;"	kind:namespace	line:2
+logging	../fx/larson_scanner.py	/^import logging$/;"	kind:namespace	line:2
+logging	../fx/peak_meter.py	/^import logging$/;"	kind:namespace	line:2
+logging	../fx/strobe.py	/^import logging$/;"	kind:namespace	line:1
+logging	../log.py	/^import logging$/;"	kind:namespace	line:2
+logging	../neopixel_framebuffer.py	/^import logging$/;"	kind:namespace	line:11
+logging	../osc.py	/^import logging$/;"	kind:namespace	line:2
+logging	../serial_comms.py	/^import logging$/;"	kind:namespace	line:2
+logging	../websocket_server.py	/^import logging$/;"	kind:namespace	line:11
+logging	../websocket_server.py	/^import logging$/;"	kind:namespace	line:4
+loop	../curses_console.py	/^    loop = asyncio.get_event_loop()$/;"	kind:variable	line:331
+lw	../curses_console.py	/^lw = urwid.SimpleListWalker([])$/;"	kind:variable	line:38
+main	../neopixel_framebuffer.py	/^def main():$/;"	kind:function	line:89
+make_key	../curses_console.py	/^    def make_key(osc):$/;"	kind:function	line:224
+make_key	../fx/midi_note.py	/^def make_key(note, channel):$/;"	kind:function	line:19
+merge	../video_buffer.py	/^    def merge(self, n1, n2, array, clip=True):$/;"	kind:member	line:24
+metronome	../fx/larson_scanner.py	/^    def metronome(self, _, bpm, count):$/;"	kind:member	line:19
+metronome	../fx/strobe.py	/^    def metronome(self, _, bpm, count):$/;"	kind:member	line:28
+metronome	../test/osc_test_client.py	/^def metronome(bpm=120, beat=1):$/;"	kind:function	line:17
+midi_handler	../neopixel_framebuffer.py	/^    def midi_handler(*args):$/;"	kind:function	line:133
+midi_note.py	../fx/midi_note.py	1;"	kind:file	line:1
+midi_note_off	../test/midi_note_test.py	/^def midi_note_off():$/;"	kind:function	line:25
+midi_note_on	../test/midi_note_test.py	/^def midi_note_on():$/;"	kind:function	line:17
+midi_note_test.py	../test/midi_note_test.py	1;"	kind:file	line:1
+neopixel_framebuffer.py	../neopixel_framebuffer.py	1;"	kind:file	line:1
+noise.py	../fx/noise.py	1;"	kind:file	line:1
+np	../audio_input.py	/^import numpy as np$/;"	kind:namespace	line:3
+np	../fx/background.py	/^import numpy as np$/;"	kind:namespace	line:3
+np	../fx/brightness.py	/^import numpy as np$/;"	kind:namespace	line:1
+np	../fx/convolution.py	/^import numpy as np$/;"	kind:namespace	line:5
+np	../fx/fade.py	/^import numpy as np$/;"	kind:namespace	line:1
+np	../fx/larson_scanner.py	/^import numpy as np$/;"	kind:namespace	line:4
+np	../fx/midi_note.py	/^import numpy as np$/;"	kind:namespace	line:3
+np	../fx/noise.py	/^import numpy as np$/;"	kind:namespace	line:1
+np	../fx/peak_meter.py	/^import numpy as np$/;"	kind:namespace	line:5
+np	../fx/point.py	/^import numpy as np$/;"	kind:namespace	line:4
+np	../fx/wave.py	/^import numpy as np$/;"	kind:namespace	line:6
+np	../point.py	/^import numpy as np$/;"	kind:namespace	line:1
+np	../video_buffer.py	/^import numpy as np$/;"	kind:namespace	line:3
+numdevices	../bin/detect-audio.py	/^numdevices = info.get('deviceCount')$/;"	kind:variable	line:5
+open_serial	../serial_comms.py	/^def open_serial():$/;"	kind:function	line:25
+os	../neopixel_framebuffer.py	/^import os$/;"	kind:namespace	line:12
+osc.py	../osc.py	1;"	kind:file	line:1
+osc_handler	../curses_console.py	/^async def osc_handler():$/;"	kind:function	line:221
+osc_logger	../neopixel_framebuffer.py	/^def osc_logger(*args):$/;"	kind:function	line:41
+osc_message_builder	../audio_input.py	/^from pythonosc import osc_message_builder$/;"	kind:namespace	line:5
+osc_message_builder	../test/midi_note_test.py	/^from pythonosc import osc_message_builder$/;"	kind:namespace	line:9
+osc_message_builder	../test/osc_test_client.py	/^from pythonosc import osc_message_builder$/;"	kind:namespace	line:9
+osc_queue	../curses_console.py	/^osc_queue = None$/;"	kind:variable	line:13
+osc_recv	../curses_console.py	/^def osc_recv(*args):$/;"	kind:function	line:307
+osc_recv	../websocket_server.py	/^def osc_recv(datagram):$/;"	kind:function	line:16
+osc_send	../websocket_server.py	/^def osc_send(arguments):$/;"	kind:function	line:26
+osc_server	../osc.py	/^from pythonosc import osc_server$/;"	kind:namespace	line:5
+osc_server	../test/midi_note_test.py	/^from pythonosc import osc_server$/;"	kind:namespace	line:7
+osc_server	../test/osc_test_client.py	/^from pythonosc import osc_server$/;"	kind:namespace	line:7
+osc_test_client.py	../test/osc_test_client.py	1;"	kind:file	line:1
+osc_widget	../curses_console.py	/^osc_widget = None$/;"	kind:variable	line:42
+p	../bin/detect-audio.py	/^p = pyaudio.PyAudio()$/;"	kind:variable	line:3
+pa	../audio_input.py	/^pa = pyaudio.PyAudio()$/;"	kind:variable	line:22
+palette	../curses_console.py	/^palette = [$/;"	kind:variable	line:16
+params_widgets	../curses_console.py	/^params_widgets = []$/;"	kind:variable	line:30
+parse_args	../neopixel_framebuffer.py	/^def parse_args():$/;"	kind:function	line:32
+peak_meter.py	../fx/peak_meter.py	1;"	kind:file	line:1
+pixel_check_box	../curses_console.py	/^pixel_check_box = None$/;"	kind:variable	line:31
+pixels	../curses_console.py	/^pixels = []$/;"	kind:variable	line:32
+play_pause_indicator	../curses_console.py	/^play_pause_indicator = urwid.Text('PLAYING', align='center', wrap='clip')$/;"	kind:variable	line:24
+play_pause_indicator_attr	../curses_console.py	/^play_pause_indicator_attr = urwid.AttrWrap(urwid.Padding(play_pause_indicator), 'playing')$/;"	kind:variable	line:25
+point.py	../fx/point.py	1;"	kind:file	line:1
+point.py	../point.py	1;"	kind:file	line:1
+port	../test/midi_note_test.py	/^port = 37337$/;"	kind:variable	line:13
+port	../test/osc_test_client.py	/^port = 37337$/;"	kind:variable	line:13
+position	../fx/point.py	/^    position = 0.0$/;"	kind:variable	line:9
+producer	../test/ws_test.py	/^def producer():$/;"	kind:function	line:19
+project	../fx/point.py	/^    def project(self, position):$/;"	kind:member	line:22
+pyaudio	../audio_input.py	/^import pyaudio$/;"	kind:namespace	line:4
+pyaudio	../bin/detect-audio.py	/^import pyaudio$/;"	kind:namespace	line:1
+queue	../log.py	/^queue = Queue()$/;"	kind:variable	line:6
+queue	../websocket_server.py	/^import queue$/;"	kind:namespace	line:5
+ramp	../fx/convolution.py	/^    ramp = itertools.cycle(np.arange(0,1,.005))$/;"	kind:variable	line:13
+random	../fx/convolution.py	/^import random$/;"	kind:namespace	line:6
+random	../fx/peak_meter.py	/^import random$/;"	kind:namespace	line:3
+random	../fx/wave.py	/^import random$/;"	kind:namespace	line:4
+random	../neopixel_framebuffer.py	/^import random$/;"	kind:namespace	line:13
+random	../test/ws_test.py	/^import random$/;"	kind:namespace	line:18
+random	../websocket_server.py	/^import random$/;"	kind:namespace	line:6
+reset_to_top	../serial_comms.py	/^def reset_to_top(serial_f):$/;"	kind:function	line:37
+router	../websocket_server.py	/^    def router(websocket, path, timeout=1):$/;"	kind:function	line:47
+runtime	../curses_console.py	/^    def runtime():$/;"	kind:function	line:77
+save_config	../neopixel_framebuffer.py	/^def save_config():$/;"	kind:function	line:69
+scanners	../neopixel_framebuffer.py	/^def scanners(n_scanners):$/;"	kind:function	line:45
+send_osc	../audio_input.py	/^def send_osc(fft_array):$/;"	kind:function	line:28
+serial	../serial_comms.py	/^import serial$/;"	kind:namespace	line:4
+serial_comms	../neopixel_framebuffer.py	/^import serial_comms$/;"	kind:namespace	line:19
+serial_comms.py	../serial_comms.py	1;"	kind:file	line:1
+serve	../osc.py	/^    def serve(self):$/;"	kind:member	line:21
+serve	../websocket_server.py	/^def serve(loop, video_buffer, server_address=('0.0.0.0', 8766)):$/;"	kind:function	line:30
+server.py	../test/websockets/server.py	1;"	kind:file	line:1
+set	../fx/background.py	/^    def set(self, addr, cc, value, channel):$/;"	kind:member	line:17
+set	../fx/midi_note.py	/^    def set(self, addr, note, velocity, channel):$/;"	kind:member	line:42
+set	../fx/peak_meter.py	/^    def set(self, level):$/;"	kind:member	line:23
+set	../fx/point.py	/^    def set(self, position):$/;"	kind:member	line:26
+set	../video_buffer.py	/^    def set(self, n, c):$/;"	kind:member	line:19
+solid.py	../fx/solid.py	1;"	kind:file	line:1
+sounddevice	../audio_input.py	/^import sounddevice$/;"	kind:namespace	line:6
+sounddevice	../curses_console.py	/^import sounddevice$/;"	kind:namespace	line:6
+start_server	../test/websockets/server.py	/^start_server = websockets.serve(hello, 'localhost', 8765)$/;"	kind:variable	line:14
+start_server	../test/ws_test.py	/^start_server = websockets.serve(hello, 'localhost', 8765)$/;"	kind:variable	line:14
+stream	../audio_input.py	/^stream = None$/;"	kind:variable	line:26
+strobe	../fx/strobe.py	/^    def strobe(self, frames=20, color=(255,255,255)):$/;"	kind:member	line:36
+strobe.py	../fx/strobe.py	1;"	kind:file	line:1
+t0	../curses_console.py	/^t0 = datetime.now()$/;"	kind:variable	line:61
+text_callback	../curses_console.py	/^    def text_callback(widget, value, user_data):$/;"	kind:function	line:168
+time	../test/midi_note_test.py	/^import time$/;"	kind:namespace	line:4
+time	../test/osc_test_client.py	/^import time$/;"	kind:namespace	line:4
+time	../test/websockets/server.py	/^import time$/;"	kind:namespace	line:5
+time	../test/ws_test.py	/^import time$/;"	kind:namespace	line:17
+time	../websocket_server.py	/^import time$/;"	kind:namespace	line:7
+toggle	../fx/fx.py	/^    def toggle(self):$/;"	kind:member	line:38
+touch_osc.py	../touch_osc.py	1;"	kind:file	line:1
+udp_client	../test/midi_note_test.py	/^from pythonosc import udp_client$/;"	kind:namespace	line:10
+udp_client	../test/osc_test_client.py	/^from pythonosc import udp_client$/;"	kind:namespace	line:10
+unlock	../fx/fx.py	/^    def unlock(self):$/;"	kind:member	line:34
+update	../fx/fx.py	/^    def update(self):$/;"	kind:member	line:22
+update	../fx/wave.py	/^    def update(self):$/;"	kind:member	line:20
+update	../video_buffer.py	/^    def update(self):$/;"	kind:member	line:35
+update_pixels	../curses_console.py	/^async def update_pixels(video_buffer):$/;"	kind:function	line:54
+update_ui	../curses_console.py	/^async def update_ui(video_buffer):$/;"	kind:function	line:200
+urwid	../curses_console.py	/^import urwid$/;"	kind:namespace	line:7
+urwid_console	../curses_console.py	/^def urwid_console(video_buffer):$/;"	kind:function	line:266
+urwid_loop	../curses_console.py	/^urwid_loop = None$/;"	kind:variable	line:34
+velocity	../fx/midi_note.py	/^    velocity = 0$/;"	kind:variable	line:24
+video_buffer	../audio_input.py	/^video_buffer = None$/;"	kind:variable	line:24
+video_buffer	../neopixel_framebuffer.py	/^video_buffer = VideoBuffer(N)$/;"	kind:variable	line:29
+video_buffer.py	../video_buffer.py	1;"	kind:file	line:1
+wave.py	../fx/wave.py	1;"	kind:file	line:1
+wavelengths	../fx/wave.py	/^    wavelengths = list(range(1, 20))$/;"	kind:variable	line:32
+websocket_server	../audio_input.py	/^import websocket_server$/;"	kind:namespace	line:8
+websocket_server	../neopixel_framebuffer.py	/^import websocket_server$/;"	kind:namespace	line:22
+websocket_server.py	../websocket_server.py	1;"	kind:file	line:1
+websockets	../test/websockets/client.py	/^import websockets$/;"	kind:namespace	line:4
+websockets	../test/websockets/server.py	/^import websockets$/;"	kind:namespace	line:4
+websockets	../test/ws_test.py	/^import websockets$/;"	kind:namespace	line:4
+websockets	../websocket_server.py	/^import websockets$/;"	kind:namespace	line:9
+write_serial	../serial_comms.py	/^def write_serial():$/;"	kind:function	line:50
+ws_test.py	../test/ws_test.py	1;"	kind:file	line:1
+yellowblackandredgreenpurple.py	../fx/yellowblackandredgreenpurple.py	1;"	kind:file	line:1

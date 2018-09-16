@@ -75,9 +75,7 @@ def init_params(video_buffer):
         return "{:.1f} fps".format(df/dt)
 
     def runtime():
-        t1 = datetime.now()
-        dt = (t1-epoch).total_seconds()
-        return "{:.1f}s".format(dt)
+        return "{:.1f}s".format(video_buffer.t)
 
     parameters = (
         ("frame", "0", lambda: str(video_buffer.frame)),
@@ -165,12 +163,27 @@ def init_fx(video_buffer):
     def callback(_check_box, state, fx):
         fx.enabled = state
 
+    def text_callback(widget, value, user_data):
+        # raise Exception(value)
+        # console.warning(value)
+        # console.warning(user_data)
+        fx = user_data['fx']
+        logging.warning(fx)
+        fx.parameters[user_data['key']] = int(value)
+
     for label, fx in video_buffer.effects.items():
         check_box = urwid.CheckBox(str(fx), state=fx.enabled)
         user_data = fx
         urwid.connect_signal(check_box, 'change', callback, user_data)
 
         widgets.append(check_box)
+
+        for key, param in fx.parameters.items():
+            widget = urwid.Edit(caption=key, edit_text=str(param))
+            user_data = {'key': key, 'fx': fx}
+            urwid.connect_signal(widget, 'change', text_callback, user_data)
+            widgets.append(widget)
+
     pile = urwid.Filler(urwid.Pile(widgets), valign='top')
     return pile
 

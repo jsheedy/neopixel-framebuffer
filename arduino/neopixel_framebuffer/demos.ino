@@ -7,7 +7,8 @@ float point2 = 0.0;
 float velocity2 = -0.005; //1.0/(float)(NLEDS);
 
 float randKick() {
-  return (float)(random(0,1000)-500) / 500 * 0.0001;  
+  float kick = (float)(random(0,10000)-5000) / 10000000.0;  
+  return kick;
 }
 
 float deltaPoints(float p1, float p2) {
@@ -23,19 +24,26 @@ float deltaPoints(float p1, float p2) {
 
 void waves()
 {
+  float maxVelocity = 0.005;
+  velocity1 = constrain(velocity1 + randKick(), -maxVelocity, maxVelocity);
+  velocity2 = constrain(velocity2 + randKick(), -maxVelocity, maxVelocity);
+
   point1 = (point1 + velocity1);  
   point2 = (point2 + velocity2);
 
-  velocity1 += randKick();
-  velocity2 += randKick();
-  
   if (point1 >= 1.0) {
     point1 = 0.0;
   }
-  if (point2 <= 0.0) {
-    point2 = 1.0;
+  if (point1 <= 0.0) {
+    point1 = 1.0;
   }
   
+  if (point2 >= 1.0) {
+    point2 = 0.0;
+  }
+  if (point2 <= 0.0) {
+    point2 = 1.0;
+  }  
   float width = 0.025;
   float deltaPoint = deltaPoints(point1, point2);
   int h =  (int)(deltaPoint * 255);
