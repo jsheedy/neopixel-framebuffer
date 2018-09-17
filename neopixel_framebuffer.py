@@ -24,7 +24,7 @@ import websocket_server
 from audio_input import input_audio_stream, callback_video_buffer
 
 N = 420
-IDLE_TIME = 1/20
+IDLE_TIME = 1/30
 
 video_buffer = VideoBuffer(N)
 
@@ -160,6 +160,8 @@ def main():
     if args.no_console:
         maps.append(('/*', osc_logger))
         log.configure_logging(level=level)
+        import uvloop
+        asyncio.set_event_loop_policy(uvloop.EventLoopPolicy())
 
     else:
         maps.append(('/*', console.osc_recv))

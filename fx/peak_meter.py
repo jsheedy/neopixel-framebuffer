@@ -59,4 +59,4 @@ class PeakMeter(Fx):
             if secs > 2:
                 continue
             color_points = meter.get_points()
-            self.video_buffer.merge(meter.n1, meter.n2, color_points)
+            self.video_buffer.merge(color_points, meter.n1, meter.n2)

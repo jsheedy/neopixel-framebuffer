@@ -36,4 +36,4 @@ class PointFx(Fx):
         b_arr = self.color[1]*self.intensity*points
         g_arr = self.color[2]*self.intensity*points
         arr = np.vstack((r_arr, g_arr, b_arr)).reshape((-1,), order='F')
-        self.video_buffer.merge(self.range[0], self.range[1], arr)
+        self.video_buffer.merge(arr, self.range[0], self.range[1])

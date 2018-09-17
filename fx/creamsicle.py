@@ -14,16 +14,15 @@ class Creamsicle(Fx):
         self.x = self.w * self.x
         h = 30 / 360
         v = 1
-        self.rgb = []
+        _rgb = []
         for s in range(256):
             rgb = colorsys.hsv_to_rgb(h,s/255,v)
-            self.rgb.append([self.gamma[int(255*x)] for x in rgb])
+            _rgb.append([self.gamma[int(255*c)] for c in rgb])
+
+        self.rgb = np.array(_rgb, dtype=np.uint8)
 
 
     def _update(self):
         phase = self.video_buffer.t * 2
-        y = (255 * (np.sin(self.x + phase) / 2 + 0.5)).astype(np.uint8)
-        rgb_tuples = [self.rgb[s] for s in y]
-        # flatten list of lists
-        rgb = [rgb for sublist in rgb_tuples for rgb in sublist]
-        self.video_buffer.buffer[:] = rgb
+        idx = (255 * (np.sin(self.x + phase) / 2 + 0.5)).astype(np.uint8)
+        self.video_buffer.merge(self.rgb[idx].flatten())

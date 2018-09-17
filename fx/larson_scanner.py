@@ -49,4 +49,4 @@ class LarsonScanner(Fx):
             color_points[0::3] = r * points * 255
             color_points[1::3] = g * points * 255
             color_points[2::3] = b * points * 255
-            self.video_buffer.merge(n1, n2, color_points)
+            self.video_buffer.merge(color_points, n1, n2)

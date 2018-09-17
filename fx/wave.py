@@ -56,5 +56,5 @@ class Wave(Fx):
         self.buffer[1::3] = g * self.rgb_arrays['r'].update()
         self.buffer[2::3] = b * self.rgb_arrays['r'].update()
 
-        self.video_buffer.merge(0, self.video_buffer.N, self.buffer)
+        self.video_buffer.merge(self.buffer)
 
