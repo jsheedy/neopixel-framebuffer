@@ -178,7 +178,7 @@ def main():
     websocket_server.serve(loop, video_buffer)
     serial_comms.init(loop, video_buffer)
     osc_server.serve()
-    asyncio.ensure_future(idle())
+    # asyncio.ensure_future(idle())
 
     # input_audio_stream(functools.partial(callback_video_buffer, video_buffer=video_buffer))
 

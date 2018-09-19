@@ -9,21 +9,19 @@ from .fx import Fx
 
 
 class ChannelArray():
-    def __init__(self, N, wavelength=8, brightness=255, freq=1):
-        self.N = N
+    def __init__(self, x, video_buffer, wavelength=8, brightness=255, freq=1):
         self.wavelength = wavelength
         self.freq = freq
         self.brightness = brightness
-        self.timestamp = datetime.now()
-        self.x = np.arange(self.N, dtype=np.float64)*(self.wavelength*np.pi/self.N)
+        w = self.wavelength * 2 * np.pi / len(x)
+        self.x = w * x
+        self.video_buffer = video_buffer
 
     def update(self):
-        new_timestamp = datetime.now()
-        delta_t = (new_timestamp - self.timestamp).total_seconds()
-        phase = delta_t / self.freq
+        phase = self.video_buffer.t * self.freq
         if random.random() > .95:
-            self.freq += 0.001*(random.random() - .5)
-        return np.sin(self.x + phase) * self.brightness
+            self.freq += np.clip(0.001*(random.random() - .5), -5, 5)
+        return np.sin(self.x + phase) / 2 + 0.5
 
 
 class Wave(Fx):
@@ -35,26 +33,23 @@ class Wave(Fx):
 
     def __init__(self, video_buffer, w=1, **kwargs):
         super().__init__(video_buffer, **kwargs)
-        self.N = self.video_buffer.N
         self.buffer = np.full(self.video_buffer.N*3, fill_value=0, dtype=np.float64)
 
         self.rgb_arrays = {
-            'r': ChannelArray(self.N, wavelength=10, brightness=100, freq=10),
-            # 'r': ChannelArray(self.N, wavelength=random.choice(self.wavelengths), brightness=random.randrange(200,256), freq=random.choice(self.freqs)),
-            'g': ChannelArray(self.N, wavelength=20, brightness=100, freq=5),
-            'b': ChannelArray(self.N, wavelength=30, brightness=100, freq=-8)
+            'r': ChannelArray(self.x, video_buffer, wavelength=10, freq=2),
+            'g': ChannelArray(self.x, video_buffer, wavelength=20, freq=1),
+            'b': ChannelArray(self.x, video_buffer, wavelength=30, freq=2),
+            's': ChannelArray(self.x, video_buffer, wavelength=40, freq=2),
+            'v': ChannelArray(self.x, video_buffer, wavelength=50, freq=2)
         }
 
     def _update(self):
 
         self.hue += self.hue_speed
-        if (self.hue >= 1.0):
-            self.hue = 0
-        r, g, b = colorsys.hsv_to_rgb(self.hue, 1, 1)
+        r, g, b = colorsys.hsv_to_rgb(self.hue % 1, 1, 1)
 
-        self.buffer[::3] = r * self.rgb_arrays['r'].update()
-        self.buffer[1::3] = g * self.rgb_arrays['r'].update()
-        self.buffer[2::3] = b * self.rgb_arrays['r'].update()
+        self.buffer[::3] = self.gamma_norm(r) * self.rgb_arrays['r'].update()
+        self.buffer[1::3] = self.gamma_norm(g) * self.rgb_arrays['g'].update()
+        self.buffer[2::3] = self.gamma_norm(b) * self.rgb_arrays['b'].update()
 
         self.video_buffer.merge(self.buffer)
-

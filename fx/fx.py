@@ -24,6 +24,13 @@ class Fx(object):
         return self.__class__.__name__
 
 
+    def gamma_norm(self, x):
+        """ return normalized value gamma corrected
+        in range 0-255"""
+
+        return self.gamma[int(255*x)]
+
+
     def update(self):
         if (not self.enabled) \
             or (not self.locked and self.video_buffer.locked):
