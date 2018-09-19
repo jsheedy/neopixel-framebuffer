@@ -17,19 +17,10 @@ class Fx(object):
         self.parameters = dict()
         self.N = video_buffer.N
         self.x = np.arange(self.N, dtype=np.float64)
-        self.gamma_exp = 2.8
-        self.gamma =(255*(np.arange(256,dtype=np.float64)/255) ** self.gamma_exp).astype(np.uint8)
+
 
     def __str__(self):
         return self.__class__.__name__
-
-
-    def gamma_norm(self, x):
-        """ return normalized value gamma corrected
-        in range 0-255"""
-
-        return self.gamma[int(255*x)]
-
 
     def update(self):
         if (not self.enabled) \

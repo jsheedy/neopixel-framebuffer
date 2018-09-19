@@ -11,3 +11,8 @@ class Brightness(Fx):
 
     def _update(self):
         self.video_buffer.buffer = np.multiply(self.video_buffer.buffer, self.level).astype(np.uint8)
+
+        # in-place range bounded addition with numexpr. Faster or slower?
+        # https://stackoverflow.com/questions/29611185/avoid-overflow-when-adding-numpy-arrays
+        # import numexpr
+        # numexpr.evaluate('where((a+b)>255, 255, a+b)', out=a, casting='unsafe')

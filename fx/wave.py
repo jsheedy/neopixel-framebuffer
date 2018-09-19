@@ -48,8 +48,8 @@ class Wave(Fx):
         self.hue += self.hue_speed
         r, g, b = colorsys.hsv_to_rgb(self.hue % 1, 1, 1)
 
-        self.buffer[::3] = self.gamma_norm(r) * self.rgb_arrays['r'].update()
-        self.buffer[1::3] = self.gamma_norm(g) * self.rgb_arrays['g'].update()
-        self.buffer[2::3] = self.gamma_norm(b) * self.rgb_arrays['b'].update()
+        self.buffer[::3] = 255 * r * self.rgb_arrays['r'].update()
+        self.buffer[1::3] = 255 * g * self.rgb_arrays['g'].update()
+        self.buffer[2::3] = 255 * b * self.rgb_arrays['b'].update()
 
         self.video_buffer.merge(self.buffer)

@@ -1,6 +1,7 @@
 from .background import BackGround
 from .brightness import Brightness
 from .fade import FadeBackGround
+from .gamma import Gamma
 from .larson_scanner import LarsonScanner
 from .convolution import Convolution
 from .midi_event import MidiEvent

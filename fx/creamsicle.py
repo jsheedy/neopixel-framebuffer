@@ -17,7 +17,7 @@ class Creamsicle(Fx):
         _rgb = []
         for s in range(256):
             rgb = colorsys.hsv_to_rgb(h,s/255,v)
-            _rgb.append([self.gamma[int(255*c)] for c in rgb])
+            _rgb.append([int(255*c) for c in rgb])
 
         self.rgb = np.array(_rgb, dtype=np.uint8)
 
