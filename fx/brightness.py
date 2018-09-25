@@ -9,6 +9,11 @@ class Brightness(Fx):
         super().__init__(video_buffer, **kwargs)
         self.level = level
 
+
+    def set(self, addr, value):
+        self.level = value
+
+
     def _update(self):
         self.video_buffer.buffer = np.multiply(self.video_buffer.buffer, self.level).astype(np.uint8)
 

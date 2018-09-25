@@ -152,7 +152,11 @@ def main():
         ('/metronome', video_buffer.effects['strobe'].metronome),
         ('/audio/envelope', video_buffer.effects['peak_meter'].envelope),
         ('/midi/note', midi_handler),
-        ('/midi/cc', video_buffer.effects['background'].set),
+        ('/color/r', functools.partial(video_buffer.effects['background'].set, color='r')),
+        ('/color/g', functools.partial(video_buffer.effects['background'].set, color='g')),
+        ('/color/b', functools.partial(video_buffer.effects['background'].set, color='b')),
+        ('/brightness', video_buffer.effects['brightness'].set),
+        ('/gamma', video_buffer.effects['gamma'].set),
         # ('/accxyz', functools.partial(accxyz, axis=0, point=effects['pointX'])),
     ]
 
@@ -176,7 +180,7 @@ def main():
         server_address = (args.ip, args.port)
     )
 
-    websocket_server.serve(loop, video_buffer)
+    # websocket_server.serve(loop, video_buffer)
     serial_comms.init(loop, video_buffer)
     osc_server.serve()
     asyncio.ensure_future(idle())

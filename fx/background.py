@@ -14,25 +14,14 @@ class BackGround(Fx):
         color = color or [255, 0, 0]
         self.parameters = {'r': color[0], 'g': color[1], 'b': color[2]}
 
-    def set(self, addr, cc, value, channel):
-        if cc == 22:  # K1 knob
-            self.parameters['r'] = value * 2
-        elif cc == 23:  # K2 knob
-            self.parameters['r'] = value * 2
-        elif cc == 24:  # K3 knob
-            self.parameters['r'] = value * 2
-        elif cc == 25:  # K4 knob
-            self.intensity = value / 127
-        elif cc == 34:  # breath
-            h = value / 127
-            s = 1.0
-            v = 1.0
-            # self.intensity = value / 127  # np.clip(value, 0, 1)
-            self.parameters['r'],self.parameters['g'],self.parameters['b'] = list(map(lambda x: x*255, colorsys.hsv_to_rgb(h,s,v)))
-            self.parameters['r'] = value * 2
+
+    def set(self, addr, value, color='r'):
+        self.parameters[color] = value * 255
+
 
     def clear(self, x):
         self.video_buffer.buffer[:] = 0
+
 
     def _update(self):
         p = self.parameters

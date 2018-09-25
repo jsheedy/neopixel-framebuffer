@@ -26,14 +26,13 @@ void bleed() {
 
 void setup() {
   FastLED.addLeds<WS2812B, DATA_PIN, GRB>(leds, NLEDS);
-  FastLED.setBrightness( 100);  
   Serial.setTimeout(SERIAL_TIMEOUT);
   Serial.begin(BAUD);
 }
 
 void loop() {
   bleed();
-  Serial.write(0); 
+  Serial.write(0);
   frame = frame+1;
   for (uint16_t i = 0; i < NLEDS; i++) {
     int bytesRead = Serial.readBytes(rgb, 3);
