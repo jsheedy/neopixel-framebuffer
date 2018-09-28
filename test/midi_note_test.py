@@ -10,7 +10,7 @@ from pythonosc import osc_message_builder
 from pythonosc import udp_client
 
 ip = "127.0.0.1"
-port = 37337
+port = 37340
 
 client = udp_client.UDPClient(ip, port)
 

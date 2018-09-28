@@ -29,6 +29,9 @@ IDLE_TIME = 1/30
 video_buffer = VideoBuffer(N)
 
 
+logger = logging.getLogger(__name__)
+
+
 def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument("--ip", default="0.0.0.0", help="The ip of the OSC server")
@@ -136,6 +139,16 @@ def main():
     video_buffer.add_effect('brightness', fx.Brightness, level=0.4, enabled=config.get('brightness', False))
     video_buffer.add_effect('gamma', fx.Gamma, enabled=config.get('gamma', False))
 
+
+    def toggle_fx(addr, state):
+        logger.info(f"toggling : {addr} : {state}")
+        x,y = map(lambda x: int(x)-1, addr.split('/')[2:])
+        i = x + 7*y
+        fx = list(video_buffer.effects.values())[i]
+        logger.info(fx)
+        fx.toggle()
+
+
     def midi_handler(*args):
         addr, note, velocity, channel = args
         key = f'midi_note{channel}'
@@ -157,6 +170,7 @@ def main():
         ('/color/b', functools.partial(video_buffer.effects['background'].set, color='b')),
         ('/brightness', video_buffer.effects['brightness'].set),
         ('/gamma', video_buffer.effects['gamma'].set),
+        ('/fx/*', toggle_fx),
         # ('/accxyz', functools.partial(accxyz, axis=0, point=effects['pointX'])),
     ]
 
