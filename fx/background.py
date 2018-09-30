@@ -11,21 +11,17 @@ class BackGround(Fx):
         super().__init__(video_buffer, **kwargs)
         self.intensity = intensity
         self.N = self.video_buffer.N
-        color = color or [255, 0, 0]
+        color = color or (1,0,0)
         self.parameters = {'r': color[0], 'g': color[1], 'b': color[2]}
 
 
     def set(self, addr, value, color='r'):
-        self.parameters[color] = value * 255
-
-
-    def clear(self, x):
-        self.video_buffer.buffer[:] = 0
+        self.parameters[color] = value
 
 
     def _update(self):
         p = self.parameters
         r,g,b = p['r'], p['g'], p['b']
-        self.video_buffer.buffer[0:self.N*3:3] = int(self.intensity*r)
-        self.video_buffer.buffer[1:self.N*3:3] = int(self.intensity*g)
-        self.video_buffer.buffer[2:self.N*3:3] = int(self.intensity*b)
+        self.video_buffer.buffer[:, 0] = self.intensity*r
+        self.video_buffer.buffer[:, 1] = self.intensity*g
+        self.video_buffer.buffer[:, 2] = self.intensity*b

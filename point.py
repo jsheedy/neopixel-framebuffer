@@ -7,14 +7,14 @@ class Point():
     in the normalized range (0.0, 1.0)
     """
 
-    def __init__(self, pos, N, width=1.0):
+    def __init__(self, pos, N, width=0.1):
         """ pos is in range (0,1) """
-        self.N = N
+        self.x = np.linspace(0,1,N)
         self.pos = pos
         self.width = width
-        self.hat = (0,1.0,0)
+        self.hat = (0,1,0)
 
     def get_points(self):
-        """returns numpy array of N points"""
-        relativePos = self.width + self.pos * (self.N - 2*self.width)
-        return np.interp(range(self.N), (relativePos - self.width,relativePos, relativePos + self.width), self.hat)
+        relativePos = self.pos # self.width + self.pos * ( - 2*self.width)
+
+        return np.interp(self.x, (relativePos - self.width,relativePos, relativePos + self.width), self.hat)

@@ -36,7 +36,7 @@ def serve(loop, video_buffer, server_address=('0.0.0.0', 8766)):
             else:
                 frame = video_buffer.update()
 
-            data = video_buffer.buffer.tobytes()
+            data = video_buffer.as_uint8()
             yield data
 
     async def router(websocket, path):

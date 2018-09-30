@@ -1,3 +1,4 @@
+import asyncio
 import glob
 import logging
 
@@ -14,10 +15,8 @@ SERIAL_DEVICE_PATTERN = '/dev/*.usbmodem*'
 globals = {
     'serial_f': None,
     'video_buffer': None,
-    'loop': None,
     'video_frame': 0
 }
-
 
 class SerialPortError(Exception): pass
 
@@ -44,7 +43,7 @@ def reset_to_top(serial_f):
                 serial_f.write(bytes((0,)))
     except Exception as e:
         logger.exception(e)
-        init(globals['loop'], globals['video_buffer'])
+        init(globals['video_buffer'])
 
 
 def write_serial():
@@ -58,13 +57,13 @@ def write_serial():
     else:
         globals['video_frame'] = video_buffer.update()
 
-    data = video_buffer.buffer.tobytes()
+    data = video_buffer.as_uint8()
     globals['serial_f'].write(data)
 
 
-def init(loop, video_buffer):
+def init(video_buffer):
+    loop = asyncio.get_event_loop()
     globals['video_buffer'] = video_buffer
-    globals['loop'] = loop
     try:
         globals['serial_f'] = open_serial()
         loop.add_reader(globals['serial_f'].fileno(), write_serial)

@@ -12,9 +12,11 @@ class LarsonScanner(Fx):
         super().__init__(video_buffer, **kwargs)
         self.scanners = scanners
         self.pos = 0.0
-        self.bpm = 120
+        self.bpm = 60
         self.count = 1
         self.timestamp = datetime.now()
+        self.color_points = np.zeros(shape=(self.N,3))
+
 
     def metronome(self, _, bpm, count):
         logging.debug("scanner setting bpm: {}".format(bpm))
@@ -22,10 +24,9 @@ class LarsonScanner(Fx):
         self.bpm = int(bpm)
         self.count = int(count)
 
+
     def _update(self):
-
         secs = (datetime.now() - self.timestamp).total_seconds()
-
         # if we haven't seen a metronome() call in 2 seconds, revert to autoscan
         delta_beat = secs / (60.0/self.bpm)
 
@@ -34,19 +35,20 @@ class LarsonScanner(Fx):
         else:
             self.pos =  1 - delta_beat
 
-        if delta_beat > 1.05 or delta_beat < -0.05:
+        if delta_beat > 1.00 or delta_beat < 0.0:
             delta_beat = np.clip(delta_beat, 0, 1)
             self.count = ((self.count) % 4) + 1
             self.timestamp = datetime.now()
 
         for scanner in self.scanners:
-            n1,n2 = scanner['n1'], scanner['n2']
+            p1,p2 = scanner['p1'], scanner['p2']
             r,g,b = scanner.get('color', (1,1,1))
-
-            point = Point(self.pos, n2 - n1, width=scanner.get('width', 2))
+            pos = p1 + self.pos*(p2-p1)
+            point = Point(pos, self.N, width=scanner.get('width',0.01))
             points = point.get_points()
-            color_points = np.full((n2-n1)*3, fill_value=0, dtype=np.uint8)
-            color_points[0::3] = r * points * 255
-            color_points[1::3] = g * points * 255
-            color_points[2::3] = b * points * 255
-            self.video_buffer.merge(color_points, n1, n2)
+
+            self.color_points[:,0] = r * points
+            self.color_points[:,1] = g * points
+            self.color_points[:,2] = b * points
+
+            self.video_buffer.buffer += self.color_points

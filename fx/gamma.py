@@ -13,9 +13,8 @@ class Gamma(Fx):
 
 
     def set(self, addr, gamma):
-        self.gamma =(255*(np.arange(256,dtype=np.float64)/255) ** gamma).astype(np.uint8)
+        self.gamma = float(gamma)
 
 
     def _update(self):
-
-        self.video_buffer.buffer[:] = self.gamma[self.video_buffer.buffer]
+        self.video_buffer.buffer = np.clip(self.video_buffer.buffer, 0, 1) ** self.gamma

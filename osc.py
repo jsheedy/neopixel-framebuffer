@@ -7,14 +7,12 @@ from pythonosc import osc_server
 
 class OSCServer():
 
-    def __init__(self, server_address, loop=None, maps=None, forward=()):
+    def __init__(self, server_address, maps=None, forward=()):
         """
-        loop - asyncio event loop
         maps - collection of (osc_address_string, handler) mappings
         forward - collection of methods to forward raw OSC datagrams to
         """
         self.maps = maps
-        self.loop = loop
         self.server_address = server_address
         self.forward = forward
 
@@ -37,9 +35,10 @@ class OSCServer():
                 for f in self.server.forward:
                     f(data)
 
-        listen = self.loop.create_datagram_endpoint(
+        loop = asyncio.get_event_loop()
+        listen = loop.create_datagram_endpoint(
             lambda: _OSCProtocolFactory(dsp, self),
             local_addr = self.server_address
         )
-        self.loop.run_until_complete(listen)
         logging.info("OSCServer listening on {}".format(self.server_address))
+        return listen

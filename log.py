@@ -1,26 +1,38 @@
 from asyncio import Queue
 import logging
+from logging.config import dictConfig
 from logging.handlers import QueueHandler
-
 
 queue = Queue()
 
 
-def configure_logging(level=None, detailed=True, queue_handler=False, color=False):
+def configure_logging(level=logging.INFO, queue_handler=False):
 
-    if detailed:
-        fmt = '[%(asctime)s (%(relativeCreated)dms) PID %(process)d] [%(pathname)s:%(lineno)d/%(funcName)s] %(levelname)s - %(message)s'
-    else:
-        fmt = '%(pathname)s:%(lineno)d %(levelname)s - %(message)s'
-
-    kwargs = {
-        'level': (level or logging.INFO),
-        'datefmt': '%Y-%m-%d %H:%M:%S',
-        'format': fmt
-    }
-    logging.basicConfig(**kwargs)
-    logger = logging.getLogger()
-    if queue_handler:
-        logger.handlers = []
-        logger.addHandler(QueueHandler(queue))
+    dictConfig({
+        'version': 1,
+        'formatters': {
+            'default': {
+                'format': '%(pathname)s:%(lineno)d %(levelname)s - %(message)s'
+            }
+        },
+        'handlers': {
+            'stream': {
+                'class': 'logging.StreamHandler',
+                'formatter': 'default'
+            },
+            'file': {
+                'class': 'logging.FileHandler',
+                'filename': 'neopixel-framebuffer.log',
+                'formatter': 'default'
+            },
+            'queue': {
+                'class': 'logging.handlers.QueueHandler',
+                'queue': queue
+            }
+        },
+        'root': {
+            'level': level,
+            'handlers': (queue_handler and ['queue', 'file'] or ['stream', 'file'])
+        }
+    })
 

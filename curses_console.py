@@ -35,11 +35,14 @@ urwid_loop = None
 
 SLEEP_TIME = 0.25
 
-lw = urwid.SimpleListWalker([])
+lw = urwid.SimpleFocusListWalker([])
+# lw = urwid.SimpleListWalker([])
 listbox = urwid.ListBox(lw)
 listbox = urwid.AttrWrap(listbox, 'listbox')
 
 osc_widget = None
+
+video_buffer = None
 
 
 @functools.lru_cache()
@@ -51,9 +54,10 @@ def get_attr(rgb):
     return {None: urwid.AttrSpec(foreground, entry, colors)}
 
 
-async def update_pixels(video_buffer):
+async def update_pixels():
+    buffer = _video_buffer.as_uint8()
     for i, pixel in enumerate(pixels):
-        rgb = tuple(video_buffer.buffer[i*3:i*3+3])
+        rgb = tuple(buffer[i*3:i*3+3])
         attr = get_attr(rgb)
         pixel.set_attr_map(attr)
 
@@ -195,15 +199,15 @@ def init_logs():
     return pile
 
 
-async def update_ui(video_buffer):
+
+async def update_ui():
 
     global SLEEP_TIME
 
     while True:
         await asyncio.sleep(SLEEP_TIME)
-        if not video_buffer.enabled:
+        if not _video_buffer.enabled:
             continue
-
         for param in params_widgets:
             widget, options = param.contents[1]
             text = param.update_function()
@@ -211,7 +215,7 @@ async def update_ui(video_buffer):
 
         if pixel_check_box.get_state():
             SLEEP_TIME = 0.05
-            await update_pixels(video_buffer)
+            await update_pixels()
         else:
             SLEEP_TIME = 0.5
 
@@ -257,8 +261,10 @@ async def log_handler():
             message += str(log_record.exc_info)
 
         lw.append(urwid.Text(message))
-        lw.append(urwid.Divider('-'))
         listbox.set_focus(len(lw) - 1, 'above')
+        # clear old
+        if len(lw) > 30:
+            lw.pop(0)
 
 
 def urwid_console(video_buffer):
@@ -307,26 +313,18 @@ def osc_recv(*args):
         osc_queue.put_nowait(args)
 
 
-def init(loop, video_buffer):
+def init(video_buffer):
     global _video_buffer
     global osc_queue
-    osc_queue = asyncio.Queue(loop=loop)
+    osc_queue = asyncio.Queue()
     _video_buffer = video_buffer
 
     global urwid_loop
+    loop = asyncio.get_event_loop()
     event_loop = urwid.AsyncioEventLoop(loop=loop)
     # slow down refresh
     event_loop._idle_emulation_delay = 1/10 # 1/18
     main_widget = urwid_console(video_buffer)
     urwid_loop = urwid.MainLoop(main_widget, palette, event_loop=event_loop, unhandled_input=input_handler)
-    asyncio.ensure_future(log_handler())
-    asyncio.ensure_future(osc_handler())
-    asyncio.ensure_future(update_ui(video_buffer))
     urwid_loop.start()
-
-
-if __name__ == "__main__":
-    loop = asyncio.get_event_loop()
-    from video_buffer import VideoBuffer
-
-    init(loop, VideoBuffer(N=420))
+    return (log_handler(), osc_handler(), update_ui())

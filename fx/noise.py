@@ -8,4 +8,4 @@ class Noise(Fx):
         super().__init__(video_buffer, **kwargs)
 
     def _update(self):
-        self.video_buffer.merge(np.random.random_integers(0,255,self.video_buffer.N*3))
+        self.video_buffer.merge(np.random.random_sample(size=self.video_buffer.N*3))
