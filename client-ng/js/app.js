@@ -74,7 +74,7 @@ firehoseSocket.onopen = function(event) {
     reader = new FileReader();
     reader.onloadend = function(e) {
       neopixel.draw(e.target.result);
-      firehoseSocket.send(0);
+      // firehoseSocket.send(0);
 
     }
     reader.readAsArrayBuffer(event.data);

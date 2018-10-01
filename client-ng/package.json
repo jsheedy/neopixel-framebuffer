@@ -9,10 +9,11 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "bower": "^1.7.2"
+    "bower": "^1.8.4",
+    "debowerify": "^1.5.0"
   },
   "devDependencies": {
-    "beefy": "^2.1.5",
-    "uglifyify": "^3.0.1"
+    "beefy": "^2.1.8",
+    "uglifyify": "^5.0.1"
   }
 }

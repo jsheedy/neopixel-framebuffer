@@ -174,17 +174,17 @@ def main():
         # ('/accxyz', functools.partial(accxyz, axis=0, point=effects['pointX'])),
     ]
 
-    loop = asyncio.get_event_loop()
-
     if args.no_console:
         maps.append(('/*', osc_logger))
         log.configure_logging(level=level)
         import uvloop
         asyncio.set_event_loop_policy(uvloop.EventLoopPolicy())
+        loop = asyncio.get_event_loop()
 
     else:
         maps.append(('/*', console.osc_recv))
         log.configure_logging(level=level, queue_handler=True)
+        loop = asyncio.get_event_loop()
         console.init(loop, video_buffer)
 
     osc_server = OSCServer(
@@ -194,7 +194,7 @@ def main():
         server_address = (args.ip, args.port)
     )
 
-    # websocket_server.serve(loop, video_buffer)
+    websocket_server.serve(loop, video_buffer)
     serial_comms.init(loop, video_buffer)
     osc_server.serve()
     asyncio.ensure_future(idle())

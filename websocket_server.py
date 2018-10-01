@@ -1,14 +1,10 @@
 import asyncio
 from datetime import datetime
-import json
 import logging
-import queue
-import random
-import time
 
 import websockets
 
-import logging
+
 logger = logging.getLogger('websockets.server')
 
 connections = {}
@@ -32,7 +28,7 @@ def serve(loop, video_buffer, server_address=('0.0.0.0', 8766)):
     FRAMERATE = 20
     TIMESLICE = 1/FRAMERATE
 
-    def firehose(timeout=1):
+    def firehose():
         frame = 0
         while True:
             if video_buffer.frame > frame:
@@ -43,23 +39,21 @@ def serve(loop, video_buffer, server_address=('0.0.0.0', 8766)):
             data = video_buffer.buffer.tobytes()
             yield data
 
-    @asyncio.coroutine
-    def router(websocket, path, timeout=1):
+    async def router(websocket, path):
         logger.info('new websocket connection: ' + str(id(websocket)))
         try:
             if path == "/firehose":
                 connections[id(websocket)] = False
                 t1 = datetime.now()
-                for data in firehose(websocket):
-                    msg = yield from websocket.send(data)
-                    status = yield from websocket.recv()
+                for data in firehose():
+                    msg = await websocket.send(data)
 
                     t2 = datetime.now()
                     dt = (t2-t1).total_seconds()
                     t1 = t2
 
                     if (dt < TIMESLICE):
-                        yield from asyncio.sleep(TIMESLICE-dt)
+                        await asyncio.sleep(TIMESLICE-dt)
 
             elif path == "/osc":
                 q = asyncio.Queue(maxsize=2, loop=loop) # , loop=loop)
@@ -67,8 +61,8 @@ def serve(loop, video_buffer, server_address=('0.0.0.0', 8766)):
 
                 while True:
                     try:
-                        data = yield from q.get()
-                        msg = yield from websocket.send(data)
+                        data = await q.get()
+                        msg = await websocket.send(data)
                     except asyncio.queues.QueueEmpty:
                         logger.info('queue empty')
             else:
