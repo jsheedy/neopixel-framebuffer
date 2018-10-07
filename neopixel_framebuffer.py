@@ -109,7 +109,7 @@ def main():
     config = load_config()
 
     video_buffer.add_effect('background', fx.BackGround, color=[0, 0, 0], enabled=config.get('background', False))
-    # video_buffer.add_effect('fade', fx.FadeBackGround, q=255, enabled=config.get('fade', False))
+    video_buffer.add_effect('fade', fx.FadeBackGround, q=0.01, enabled=config.get('fade', False))
 
     # video_buffer.add_effect('midi_note_spark_1', fx.MidiNoteSpark, nrange=(300,420), enabled=config.get('midi_note_spark_1', False))
     # video_buffer.add_effect('midi_note_spark_2', fx.MidiNoteSpark, nrange=(0,150), enabled=config.get('midi_note_spark_2', False))
@@ -183,6 +183,7 @@ def main():
     #     ('/metronome', video_buffer.effects['strobe'].metronome),
     #     ('/audio/envelope', video_buffer.effects['peak_meter'].envelope),
     #     ('/midi/note', midi_handler),
+        ('/q', video_buffer.effects['fade'].set), # /fade or /fader cause bugs in touchosc, awesome
         ('/color/r', functools.partial(video_buffer.effects['background'].set, color='r')),
         ('/color/g', functools.partial(video_buffer.effects['background'].set, color='g')),
         ('/color/b', functools.partial(video_buffer.effects['background'].set, color='b')),

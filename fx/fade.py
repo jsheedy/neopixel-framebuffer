@@ -8,5 +8,10 @@ class FadeBackGround(Fx):
         super().__init__(video_buffer, **kwargs)
         self.q = q
 
+
+    def set(self, addr, q):
+        self.q = q
+
+
     def _update(self):
-        self.video_buffer.buffer -= self.q
+        self.video_buffer.buffer = np.clip(self.video_buffer.buffer - self.q, 0, 1)
