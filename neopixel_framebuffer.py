@@ -116,7 +116,7 @@ def main():
     # video_buffer.add_effect('midi_note_spark_3', fx.MidiNoteSpark, nrange=(150,300), enabled=config.get('midi_note_spark_3', False))
 
     # video_buffer.add_effect('strobe', fx.Strobe, enabled=config.get('strobe', False))
-    # video_buffer.add_effect('noise', fx.Noise, enabled=config.get('noise', False))
+    video_buffer.add_effect('noise', fx.Noise, enabled=config.get('noise', False))
     video_buffer.add_effect('wave', fx.Wave, enabled=config.get('wave', False))
     video_buffer.add_effect('creamsicle', fx.Creamsicle, enabled=config.get('creamsicle', False))
 
