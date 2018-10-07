@@ -26,7 +26,7 @@ from audio_input import input_audio_stream, callback_video_buffer
 N = 420
 IDLE_TIME = 1/30
 
-video_buffer = VideoBuffer(N, resolution=20000)
+video_buffer = VideoBuffer(N, resolution=1000)
 
 logger = logging.getLogger(__name__)
 
@@ -118,7 +118,7 @@ def main():
     # video_buffer.add_effect('strobe', fx.Strobe, enabled=config.get('strobe', False))
     # video_buffer.add_effect('noise', fx.Noise, enabled=config.get('noise', False))
     # video_buffer.add_effect('wave', fx.Wave, enabled=config.get('wave', False))
-    # video_buffer.add_effect('creamsicle', fx.Creamsicle, enabled=config.get('creamsicle', False))
+    video_buffer.add_effect('creamsicle', fx.Creamsicle, enabled=config.get('creamsicle', False))
 
     # note_ranges = ((260,320), (300,340), (340,380), (380,420), (0,40),(40,80),(80,120),(120,160),)
     # note_ranges = ((340, 380), (340,420), (340,380), (380,420), (0,40),(40,80),(80,120),(120,160),)
