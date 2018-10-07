@@ -100,7 +100,7 @@ def init_params(video_buffer):
 
     for i in range(video_buffer.N):
         attr = get_attr((0,0,0))
-        text = urwid.Text("`")
+        text = urwid.Text("")
         pixel = urwid.AttrMap(text, attr)
         pixels.append(pixel)
     pixel_grid_flow = urwid.GridFlow(pixels, 1, 0, 0, 'center')
