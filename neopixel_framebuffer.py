@@ -153,7 +153,7 @@ def main():
     #     {'n1': 0, 'n2': 100, 'reverse': False, 'color': (1,.5,0)},
     # ))
     # video_buffer.add_effect('convolution', fx.Convolution, enabled=config.get('convolution', False))
-    # video_buffer.add_effect('yb&rgp', fx.YellowBlackAndRedGreenPurple, enabled=config.get('yb&rgp', False))
+    video_buffer.add_effect('yb&rgp', fx.YellowBlackAndRedGreenPurple, enabled=config.get('yb&rgp', False))
     video_buffer.add_effect('brightness', fx.Brightness, level=1.0, enabled=config.get('brightness', False))
     video_buffer.add_effect('gamma', fx.Gamma, enabled=config.get('gamma', False))
 
