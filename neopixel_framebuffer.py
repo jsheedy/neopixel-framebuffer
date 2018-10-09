@@ -88,23 +88,26 @@ async def idle():
         await asyncio.sleep(IDLE_TIME)
 
 
-async def main_loop(coros):
-
-    done, pending = await asyncio.wait(coros, return_when=asyncio.FIRST_EXCEPTION)
+def halt():
     console.stop()
-
-    for t in done:
+    for t in asyncio.Task.all_tasks():
+        t.cancel()
         e = t.exception()
         if e:
             raise e
 
-    for t in asyncio.Task.all_tasks():
-            t.cancel()
+
+async def main_loop(coros):
+
+    done, pending = await asyncio.wait(coros, return_when=asyncio.FIRST_EXCEPTION)
+    halt()
+
 
 def exception_handler(loop, ctx):
     # logging.critical(ctx['message'])
-    # logging.exception(ctx['exception'])
     print("\n¯\_(ツ)_/¯\n")
+    logging.exception(ctx['exception'])
+    halt()
 
 
 def main():
