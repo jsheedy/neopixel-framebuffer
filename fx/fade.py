@@ -1,10 +1,12 @@
+import logging
+
 import numpy as np
 
 from .fx import Fx
 
 class FadeBackGround(Fx):
 
-    def __init__(self, video_buffer, q=.01, **kwargs):
+    def __init__(self, video_buffer, q=.5, **kwargs):
         super().__init__(video_buffer, **kwargs)
         self.q = q
 
@@ -14,5 +16,5 @@ class FadeBackGround(Fx):
 
 
     def _update(self):
-        self.video_buffer.buffer -= self.q
-        self.video_buffer.buffer[self.video_buffer.buffer < 0] = 0
+        dq = self.q / 10
+        self.video_buffer.buffer[self.video_buffer.buffer >= dq] -= dq

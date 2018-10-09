@@ -41,10 +41,10 @@ def reset_to_top(serial_f):
                 arduino_status = ord(serial_f.read())
             else:
                 serial_f.write(bytes((0,)))
+
     except Exception as e:
         logger.exception(e)
         init(globals['video_buffer'])
-
 
 def write_serial():
     serial_f = globals['serial_f']

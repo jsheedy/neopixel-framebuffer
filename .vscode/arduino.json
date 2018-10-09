@@ -1,0 +1,5 @@
+{
+    "board": "arduino:avr:uno",
+    "sketch": "arduino/neopixel_framebuffer/neopixel_framebuffer.ino",
+    "port": "/dev/cu.usbmodem14221"
+}

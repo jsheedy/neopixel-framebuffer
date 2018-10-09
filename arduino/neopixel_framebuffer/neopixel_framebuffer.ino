@@ -4,7 +4,8 @@
 #define CLOCK_PIN 6
 #define NLEDS 420
 #define BAUD 460800
-#define SERIAL_TIMEOUT 200  // milliseconds before idle function called
+//#define BAUD 115200
+#define SERIAL_TIMEOUT 100  // milliseconds before idle function called
 
 CRGB leds[NLEDS];
 
@@ -12,7 +13,9 @@ byte rgb[3];
 int frame = 0;
 
 void idle() {
-  for (int i=0; i<40; i++) {
+//  for (int i=0; i<40; i++) {
+//  bleed()
+  while(Serial.available() == 0) {
     waves();
   }
 }
@@ -37,9 +40,9 @@ void loop() {
   for (uint16_t i = 0; i < NLEDS; i++) {
     int bytesRead = Serial.readBytes(rgb, 3);
     if (bytesRead == 3) {
-      leds[i] = CRGB(rgb[0], rgb[1], rgb[2]);
+      leds[i] = CRGB(rgb[0], rgb[1], rgb[2]);        
     } else {
-      idle();
+//      idle();
       break;
     }
   }

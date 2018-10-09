@@ -26,7 +26,7 @@ from audio_input import input_audio_stream, callback_video_buffer
 N = 420
 IDLE_TIME = 1/30
 
-video_buffer = VideoBuffer(N, resolution=1000)
+video_buffer = VideoBuffer(N, resolution=500)
 
 logger = logging.getLogger(__name__)
 
@@ -109,7 +109,7 @@ def main():
     config = load_config()
 
     video_buffer.add_effect('background', fx.BackGround, color=[0, 0, 0], enabled=config.get('background', False))
-    video_buffer.add_effect('fade', fx.FadeBackGround, q=0.01, enabled=config.get('fade', False))
+    video_buffer.add_effect('fade', fx.FadeBackGround, enabled=config.get('fade', False))
 
     # video_buffer.add_effect('midi_note_spark_1', fx.MidiNoteSpark, nrange=(300,420), enabled=config.get('midi_note_spark_1', False))
     # video_buffer.add_effect('midi_note_spark_2', fx.MidiNoteSpark, nrange=(0,150), enabled=config.get('midi_note_spark_2', False))
@@ -155,7 +155,6 @@ def main():
     # video_buffer.add_effect('convolution', fx.Convolution, enabled=config.get('convolution', False))
     video_buffer.add_effect('yb&rgp', fx.YellowBlackAndRedGreenPurple, enabled=config.get('yb&rgp', False))
     video_buffer.add_effect('brightness', fx.Brightness, level=1.0, enabled=config.get('brightness', False))
-    video_buffer.add_effect('gamma', fx.Gamma, enabled=config.get('gamma', False))
 
 
     def toggle_fx(addr, state):
@@ -188,7 +187,7 @@ def main():
         ('/color/g', functools.partial(video_buffer.effects['background'].set, color='g')),
         ('/color/b', functools.partial(video_buffer.effects['background'].set, color='b')),
         ('/brightness', video_buffer.effects['brightness'].set),
-        ('/gamma', video_buffer.effects['gamma'].set),
+        ('/gamma', video_buffer.set_gamma),
         ('/fx/*', toggle_fx),
         ('/*', osc_logger)
     ]

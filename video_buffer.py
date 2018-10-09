@@ -7,6 +7,7 @@ import numpy as np
 class VideoBuffer(object):
     frame = 0
 
+
     def __init__(self, N, resolution=None):
         if resolution is None:
             resolution = N
@@ -20,9 +21,15 @@ class VideoBuffer(object):
         self.enabled = True
         self.device_x = np.linspace(0, 1, N)
         self.buffer_x = np.linspace(0, 1, resolution)
+        self.gamma = 2.4
+
 
     def add_effect(self, name, fx, **kwargs):
         self.effects[name] = fx(self, **kwargs)
+
+
+    def set_gamma(self, addr, gamma):
+        self.gamma = float(gamma)
 
 
     def update(self):
@@ -33,11 +40,16 @@ class VideoBuffer(object):
         self.frame += 1
         return self.frame
 
+
     def as_uint8(self):
+
+        # gamma correction
+        buff = np.clip(self.buffer, 0, 1) ** self.gamma
+
         # interpolate from buffer resolution to device resolution
-        r = np.interp(self.device_x, self.buffer_x, self.buffer[:,0]) * 255
-        g = np.interp(self.device_x, self.buffer_x, self.buffer[:,1]) * 255
-        b = np.interp(self.device_x, self.buffer_x, self.buffer[:,2]) * 255
+        r = np.interp(self.device_x, self.buffer_x, buff[:,0]) * 255
+        g = np.interp(self.device_x, self.buffer_x, buff[:,1]) * 255
+        b = np.interp(self.device_x, self.buffer_x, buff[:,2]) * 255
 
         device_buffer = np.vstack((r,g,b)).T
         return device_buffer.astype(np.uint8).tobytes()
