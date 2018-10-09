@@ -6,14 +6,17 @@ A thread also listens for incoming OSC messages to control the buffer"""
 
 import argparse
 import asyncio
+from concurrent.futures import CancelledError
 import functools
 import json
 import logging
 import os
 import random
 
-import log
+from audio_input import input_audio_stream, callback_video_buffer
 import curses_console as console
+from exceptions import UserQuit, MainLoopError
+import log
 import fx
 from osc import OSCServer
 import serial_comms
@@ -21,14 +24,11 @@ import serial_comms
 from video_buffer import VideoBuffer
 import websocket_server
 
-from audio_input import input_audio_stream, callback_video_buffer
 
 N = 420
 IDLE_TIME = 1/30
 
 video_buffer = VideoBuffer(N, resolution=500)
-
-logger = logging.getLogger(__name__)
 
 
 def parse_args():
@@ -91,15 +91,20 @@ async def idle():
 async def main_loop(coros):
 
     done, pending = await asyncio.wait(coros, return_when=asyncio.FIRST_EXCEPTION)
-    for t in done:
-        if t.exception():
-            logger.exception(t.exception())
-            raise t.exception()
+    console.stop()
 
+    for t in done:
+        e = t.exception()
+        if e:
+            raise e
+
+    for t in asyncio.Task.all_tasks():
+            t.cancel()
 
 def exception_handler(loop, ctx):
-    logger.critical(ctx['message'])
-    logger.exception(ctx['exception'])
+    # logging.critical(ctx['message'])
+    # logging.exception(ctx['exception'])
+    print("\n¯\_(ツ)_/¯\n")
 
 
 def main():
@@ -158,11 +163,11 @@ def main():
 
 
     def toggle_fx(addr, state):
-        logger.info(f"toggling : {addr} : {state}")
+        logging.info(f"toggling : {addr} : {state}")
         x,y = map(lambda x: int(x)-1, addr.split('/')[2:])
         i = x + 7*y
         fx = list(video_buffer.effects.values())[i]
-        logger.info(fx)
+        logging.info(fx)
         fx.toggle()
 
 
@@ -222,8 +227,10 @@ def main():
         loop.set_exception_handler(exception_handler)
         loop.run_until_complete(main_loop(coros))
 
-    except KeyboardInterrupt:
-        logging.info("keyboard int")
+    except (KeyboardInterrupt, CancelledError, UserQuit) as e:
+        print("have a great day")
+    except MainLoopError as e:
+        print("whooops")
     finally:
         loop.close()
         save_config()

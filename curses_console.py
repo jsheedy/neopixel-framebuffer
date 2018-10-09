@@ -7,6 +7,7 @@ import sounddevice
 import urwid
 
 import audio_input
+from exceptions import UserQuit
 import log
 
 
@@ -292,6 +293,10 @@ def urwid_console(video_buffer):
     return frame
 
 
+def stop():
+    urwid_loop.stop()
+
+
 def input_handler(key):
 
     if key in ('p', 'P'):
@@ -302,11 +307,9 @@ def input_handler(key):
         play_pause_indicator_attr.set_attr(msg.lower())
 
     elif key in ('q', 'Q'):
-        for task in asyncio.Task.all_tasks():
-            task.cancel()
         urwid_loop.stop()
-        asyncio.get_event_loop().stop()
-
+        for t in asyncio.Task.all_tasks():
+            t.cancel()
 
 def osc_recv(*args):
     if osc_queue:
