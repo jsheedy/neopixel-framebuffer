@@ -311,6 +311,7 @@ def input_handler(key):
         for t in asyncio.Task.all_tasks():
             t.cancel()
 
+
 def osc_recv(*args):
     if osc_queue:
         osc_queue.put_nowait(args)
