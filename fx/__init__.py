@@ -10,7 +10,6 @@ from .midi_note_spark import MidiNoteSpark
 from .noise import Noise
 from .peak_meter import PeakMeter
 from .point import PointFx
-from .solid import Solid
 from .strobe import Strobe
 from .wave import Wave
 from .yellowblackandredgreenpurple import YellowBlackAndRedGreenPurple

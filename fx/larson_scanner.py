@@ -51,4 +51,4 @@ class LarsonScanner(Fx):
             self.color_points[:,1] = g * points
             self.color_points[:,2] = b * points
 
-            self.video_buffer.buffer += self.color_points
+            return self.color_points

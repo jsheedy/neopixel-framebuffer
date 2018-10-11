@@ -24,7 +24,7 @@ class Fx(object):
         if not self.enabled:
             return False
         else:
-            self._update()
+            return self._update()
 
 
     def toggle(self):

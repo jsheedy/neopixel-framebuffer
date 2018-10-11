@@ -49,4 +49,4 @@ class Wave(Fx):
         self.x[:,1] = g * self.rgb_arrays['g'].update()
         self.x[:,2] = b * self.rgb_arrays['b'].update()
 
-        self.video_buffer.buffer += self.x
+        return self.x

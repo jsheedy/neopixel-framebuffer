@@ -23,4 +23,4 @@ class Creamsicle(Fx):
         phase = self.video_buffer.t * 2
         wave = ((np.sin(self.x + phase) / 2 + 0.5)*(2**16-1)).astype(np.uint16)
         colors = self.rgb[wave]
-        self.video_buffer.buffer += colors
+        return colors

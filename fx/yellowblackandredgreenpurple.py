@@ -24,4 +24,6 @@ class YellowBlackAndRedGreenPurple(Fx):
 
     def _update(self):
         for slice, color in self._slice_colors:
-            self.video_buffer.buffer[slice,:] = color
+            self.x[slice,:] = color
+
+        return self.x

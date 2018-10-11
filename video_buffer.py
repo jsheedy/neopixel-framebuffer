@@ -1,5 +1,7 @@
 from collections import OrderedDict
 from datetime import datetime
+from functools import reduce
+
 
 import numpy as np
 
@@ -33,9 +35,19 @@ class VideoBuffer(object):
 
 
     def update(self):
+        layers = []
         for key, effect in self.effects.items():
             if effect.enabled:
-                effect.update()
+                layer = effect.update()
+                if layer is not None:
+                    layers.append(layer)
+
+        if layers:
+            # self.buffer += reduce(lambda x,y: x+y, layers)
+            # self.buffer += reduce(lambda x,y: x*y, layers)
+            # self.buffer += reduce(lambda x,y: x/y, layers)
+            # self.buffer += reduce(lambda x,y: x-y, layers)
+            self.buffer += reduce(lambda x,y: x**y, layers)
         self.t = (datetime.now() - self.t0).total_seconds()
         self.frame += 1
         return self.frame

@@ -16,5 +16,5 @@ class FadeBackGround(Fx):
 
 
     def _update(self):
-        dq = self.q / 10
+        dq = self.q / 100
         self.video_buffer.buffer[self.video_buffer.buffer >= dq] -= dq

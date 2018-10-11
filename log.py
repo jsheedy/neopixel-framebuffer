@@ -32,7 +32,7 @@ def configure_logging(level=logging.INFO, queue_handler=False):
         },
         'root': {
             'level': level,
-            'handlers': (queue_handler and ['queue', 'file','stream'] or ['stream', 'file'])
+            'handlers': (queue_handler and ['queue', 'file'] or ['stream', 'file'])
         }
     })
 
