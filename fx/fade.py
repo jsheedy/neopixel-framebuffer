@@ -6,7 +6,7 @@ from .fx import Fx
 
 class FadeBackGround(Fx):
 
-    def __init__(self, video_buffer, q=.5, **kwargs):
+    def __init__(self, video_buffer, q=.1, **kwargs):
         super().__init__(video_buffer, **kwargs)
         self.q = q
 
@@ -16,5 +16,5 @@ class FadeBackGround(Fx):
 
 
     def _update(self):
-        dq = self.q / 100
+        dq = self.q / 2
         self.video_buffer.buffer[self.video_buffer.buffer >= dq] -= dq

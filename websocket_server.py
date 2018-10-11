@@ -23,7 +23,7 @@ def osc_send(arguments):
     """ handler for outgoing OSC message """
     pass
 
-def serve(loop, video_buffer, server_address=('0.0.0.0', 8766)):
+def serve(video_buffer, server_address=('0.0.0.0', 8766)):
 
     FRAMERATE = 20
     TIMESLICE = 1/FRAMERATE
@@ -56,7 +56,7 @@ def serve(loop, video_buffer, server_address=('0.0.0.0', 8766)):
                         await asyncio.sleep(TIMESLICE-dt)
 
             elif path == "/osc":
-                q = asyncio.Queue(maxsize=2, loop=loop) # , loop=loop)
+                q = asyncio.Queue(maxsize=2)
                 connections[id(websocket)] = q
 
                 while True:
@@ -78,4 +78,4 @@ def serve(loop, video_buffer, server_address=('0.0.0.0', 8766)):
 
     logging.info("websockets serving on {}".format(server_address))
     server = websockets.serve(router, *server_address)
-    loop.run_until_complete(server)
+    return server

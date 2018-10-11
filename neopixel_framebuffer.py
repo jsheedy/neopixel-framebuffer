@@ -94,6 +94,7 @@ def halt():
         t.cancel()
         try:
             logging.exception(t.exception())
+            raise t.exception()
         except Exception as e:
             pass
 
@@ -101,11 +102,13 @@ def halt():
 async def main_loop(coros):
 
     done, pending = await asyncio.wait(coros, return_when=asyncio.FIRST_EXCEPTION)
+    for t in done:
+        if t.exception():
+            raise t.exception()
     halt()
 
 
 def exception_handler(loop, ctx):
-    # logging.critical(ctx['message'])
     print("\n¯\_(ツ)_/¯\n")
     logging.exception(ctx['exception'])
     halt()
@@ -187,16 +190,18 @@ def main():
         video_buffer.effects[key].set(*args)
 
     maps = [
-    #     ('/metronome', video_buffer.effects['scanner'].metronome),
-    #     ('/metronome', video_buffer.effects['strobe'].metronome),
-    #     ('/audio/envelope', video_buffer.effects['peak_meter'].envelope),
-    #     ('/midi/note', midi_handler),
+        # ('/metronome', video_buffer.effects['scanner'].metronome),
+        # ('/metronome', video_buffer.effects['strobe'].metronome),
+        # ('/audio/envelope', video_buffer.effects['peak_meter'].envelope),
+        # ('/midi/note', midi_handler),
         ('/q', video_buffer.effects['fade'].set), # /fade or /fader cause bugs in touchosc, awesome
         ('/color/r', functools.partial(video_buffer.effects['background'].set, color='r')),
         ('/color/g', functools.partial(video_buffer.effects['background'].set, color='g')),
         ('/color/b', functools.partial(video_buffer.effects['background'].set, color='b')),
+
         ('/brightness', video_buffer.effects['brightness'].set),
         ('/gamma', video_buffer.set_gamma),
+        ('/operator/*', video_buffer.set_operator),
         ('/fx/*', toggle_fx),
         ('/*', osc_logger)
     ]
@@ -221,8 +226,8 @@ def main():
     coros = (
         osc_server.serve(),
         idle(),
-        *console_coros
-        # websocket_server.serve(loop, video_buffer)
+        *console_coros,
+        websocket_server.serve(video_buffer)
         # input_audio_stream(functools.partial(callback_video_buffer, video_buffer=video_buffer))
     )
 

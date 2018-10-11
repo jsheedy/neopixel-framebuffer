@@ -1,6 +1,7 @@
 from collections import OrderedDict
 from datetime import datetime
 from functools import reduce
+import operator
 
 
 import numpy as np
@@ -24,6 +25,7 @@ class VideoBuffer(object):
         self.device_x = np.linspace(0, 1, N)
         self.buffer_x = np.linspace(0, 1, resolution)
         self.gamma = 2.4
+        self.operator = operator.add
 
 
     def add_effect(self, name, fx, **kwargs):
@@ -32,6 +34,19 @@ class VideoBuffer(object):
 
     def set_gamma(self, addr, gamma):
         self.gamma = float(gamma)
+
+
+    def set_operator(self, addr, on):
+        operator_map = {
+            'add': operator.add,
+            'subtract': operator.sub,
+            'multiply': operator.mul,
+            'divide': operator.truediv,
+            'power': operator.pow
+        }
+        if on == 1.0:
+            op = addr.split('/')[-1]
+            self.operator = operator_map[op]
 
 
     def update(self):
@@ -43,11 +58,7 @@ class VideoBuffer(object):
                     layers.append(layer)
 
         if layers:
-            # self.buffer += reduce(lambda x,y: x+y, layers)
-            # self.buffer += reduce(lambda x,y: x*y, layers)
-            # self.buffer += reduce(lambda x,y: x/y, layers)
-            # self.buffer += reduce(lambda x,y: x-y, layers)
-            self.buffer += reduce(lambda x,y: x**y, layers)
+            self.buffer += reduce(self.operator, layers)
         self.t = (datetime.now() - self.t0).total_seconds()
         self.frame += 1
         return self.frame
