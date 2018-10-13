@@ -1,6 +1,7 @@
-numpy==1.11.3
+numpy==1.15.2
 PyAudio==0.2.9
 pyserial==3.2.1
--e git+https://github.com/jsheedy/python-osc.git@61500b5fcc4180e6ab5418f89d88577bb7256ce3#egg=python_osc
+python-osc
 websockets==6.0
 uvloop==0.11.2
+urwid==2.0.1
