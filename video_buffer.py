@@ -25,6 +25,7 @@ class VideoBuffer(object):
         self.device_x = np.linspace(0, 1, N)
         self.buffer_x = np.linspace(0, 1, resolution)
         self.gamma = 2.4
+        self.brightness = 1.0
         self.operator = operator.add
 
 
@@ -34,6 +35,10 @@ class VideoBuffer(object):
 
     def set_gamma(self, addr, gamma):
         self.gamma = float(gamma)
+
+
+    def set_brightness(self, addr, brightness):
+        self.brightness = float(brightness)
 
 
     def set_operator(self, addr, on):
@@ -59,6 +64,10 @@ class VideoBuffer(object):
 
         if layers:
             self.buffer += reduce(self.operator, layers)
+
+        # brightness
+        self.buffer -= (1.0-self.brightness)
+
         self.t = (datetime.now() - self.t0).total_seconds()
         self.frame += 1
         return self.frame

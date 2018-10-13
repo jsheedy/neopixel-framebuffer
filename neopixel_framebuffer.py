@@ -166,7 +166,6 @@ def main():
     # ))
     # video_buffer.add_effect('convolution', fx.Convolution, enabled=config.get('convolution', False))
     video_buffer.add_effect('yb&rgp', fx.YellowBlackAndRedGreenPurple, enabled=config.get('yb&rgp', False))
-    video_buffer.add_effect('brightness', fx.Brightness, level=1.0, enabled=config.get('brightness', False))
 
 
     def toggle_fx(addr, state):
@@ -199,7 +198,7 @@ def main():
         ('/color/g', functools.partial(video_buffer.effects['background'].set, color='g')),
         ('/color/b', functools.partial(video_buffer.effects['background'].set, color='b')),
 
-        ('/brightness', video_buffer.effects['brightness'].set),
+        ('/brightness', video_buffer.set_brightness),
         ('/gamma', video_buffer.set_gamma),
         ('/operator/*', video_buffer.set_operator),
         ('/fx/*', toggle_fx),
