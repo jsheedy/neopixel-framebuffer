@@ -25,8 +25,6 @@ palette = [
 play_pause_indicator = urwid.Text('PLAYING', align='center', wrap='clip')
 play_pause_indicator_attr = urwid.AttrWrap(urwid.Padding(play_pause_indicator), 'playing')
 
-_video_buffer = None
-
 colors = 256
 params_widgets = []
 pixel_check_box = None
@@ -35,7 +33,7 @@ pixels = []
 urwid_loop = None
 
 SLEEP_TIME = 0.25
-
+fullscreen = False
 lw = urwid.SimpleFocusListWalker([])
 # lw = urwid.SimpleListWalker([])
 listbox = urwid.ListBox(lw)
@@ -45,6 +43,9 @@ osc_widget = None
 
 video_buffer = None
 
+t0 = datetime.now()
+epoch = datetime.now()
+f0 = 0
 
 @functools.lru_cache()
 def get_attr(rgb):
@@ -56,18 +57,14 @@ def get_attr(rgb):
 
 
 async def update_pixels():
-    buffer = _video_buffer.as_uint8()
+    buffer = video_buffer.as_uint8()
     for i, pixel in enumerate(pixels):
         rgb = tuple(buffer[i*3:i*3+3])
         attr = get_attr(rgb)
         pixel.set_attr_map(attr)
 
 
-t0 = datetime.now()
-epoch = datetime.now()
-f0 = 0
-
-def init_params(video_buffer):
+def init_params():
     def fps():
         global t0
         global f0
@@ -99,11 +96,6 @@ def init_params(video_buffer):
 
     divider = urwid.Divider('-')
 
-    for i in range(video_buffer.N):
-        attr = get_attr((0,0,0))
-        text = urwid.Text("")
-        pixel = urwid.AttrMap(text, attr)
-        pixels.append(pixel)
     pixel_grid_flow = urwid.GridFlow(pixels, 1, 0, 0, 'center')
 
     global pixel_check_box
@@ -128,13 +120,14 @@ def init_osc():
     global osc_widget
     header = column_header("OSC")
     text_widget = urwid.AttrWrap(urwid.Text("OSC"), 'listbox')
-    osc_widget = urwid.Pile([text_widget])
+    if osc_widget is None:
+        osc_widget = urwid.Pile([text_widget])
     widgets = [header, osc_widget]
     pile = urwid.Filler(urwid.Pile(widgets), valign='top')
     return pile
 
 
-def init_audio_source(video_buffer):
+def init_audio_source():
     header = column_header("audio source")
     widgets = [header,]
 
@@ -161,7 +154,7 @@ def init_audio_source(video_buffer):
     return pile
 
 
-def init_fx(video_buffer):
+def init_fx():
     header = column_header("f/x")
     widgets = [header,]
 
@@ -200,22 +193,22 @@ def init_logs():
     return pile
 
 
-
 async def update_ui():
 
     global SLEEP_TIME
 
     while True:
         await asyncio.sleep(SLEEP_TIME)
-        if not _video_buffer.enabled:
+        if not video_buffer.enabled:
             continue
+
         for param in params_widgets:
             widget, options = param.contents[1]
             text = param.update_function()
             widget.set_text(text)
 
         if pixel_check_box.get_state():
-            SLEEP_TIME = 0.05
+            SLEEP_TIME = 0.03
             await update_pixels()
         else:
             SLEEP_TIME = 0.5
@@ -268,7 +261,7 @@ async def log_handler():
             lw.pop(0)
 
 
-def urwid_console(video_buffer):
+def urwid_console():
 
     header = urwid.Text("NEOPIXEL FRAMEBUFFER", align='center')
     header = urwid.AttrWrap(header, 'header')
@@ -276,9 +269,9 @@ def urwid_console(video_buffer):
     footer = urwid.Text("keys: (q)uit, (p)ause/resume, (c)lear")
     footer = urwid.AttrWrap(footer, 'footer')
 
-    params = init_params(video_buffer)
-    audio = init_audio_source(video_buffer)
-    fx = init_fx(video_buffer)
+    params = init_params()
+    audio = init_audio_source()
+    fx = init_fx()
     osc = init_osc()
 
     body = urwid.Columns((
@@ -295,13 +288,15 @@ def urwid_console(video_buffer):
 
 def stop():
     urwid_loop.stop()
+    # raise urwid.ExitMainLoop
 
 
 def input_handler(key):
+    global urwid_loop
 
     if key in ('p', 'P'):
-        _video_buffer.enabled = not _video_buffer.enabled
-        msg = _video_buffer.enabled and "PLAYING" or "PAUSED"
+        video_buffer.enabled = not video_buffer.enabled
+        msg = video_buffer.enabled and "PLAYING" or "PAUSED"
         logger.info(msg)
         play_pause_indicator.set_text(msg)
         play_pause_indicator_attr.set_attr(msg.lower())
@@ -311,24 +306,44 @@ def input_handler(key):
         for t in asyncio.Task.all_tasks():
             t.cancel()
 
+    elif key in ('f', 'F'):
+        global fullscreen
+        fullscreen = not fullscreen
+        if fullscreen:
+            grid_flow = urwid.GridFlow(pixels, 3, 0, 0, 'center')
+            urwid_loop.widget = urwid.Filler(grid_flow)
+        else:
+            urwid_loop.widget = urwid_console()
+
 
 def osc_recv(*args):
     if osc_queue:
         osc_queue.put_nowait(args)
 
 
-def init(video_buffer):
-    global _video_buffer
+def init(_video_buffer):
+    global video_buffer
     global osc_queue
-    osc_queue = asyncio.Queue()
-    _video_buffer = video_buffer
-
     global urwid_loop
+
+    osc_queue = asyncio.Queue()
+    video_buffer = _video_buffer
+
+    for i in range(video_buffer.N):
+        attr = get_attr((0,0,0))
+        text = urwid.Text("")
+        pixel = urwid.AttrMap(text, attr)
+        pixels.append(pixel)
+
     loop = asyncio.get_event_loop()
     event_loop = urwid.AsyncioEventLoop(loop=loop)
     # slow down refresh
     event_loop._idle_emulation_delay = 1/10 # 1/18
-    main_widget = urwid_console(video_buffer)
-    urwid_loop = urwid.MainLoop(main_widget, palette, event_loop=event_loop, unhandled_input=input_handler)
+    main_widget = urwid_console()
+    urwid_loop = urwid.MainLoop(
+        main_widget,
+        palette,
+        event_loop=event_loop,
+        unhandled_input=input_handler)
     urwid_loop.start()
     return (log_handler(), osc_handler(), update_ui())

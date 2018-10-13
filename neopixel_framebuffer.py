@@ -26,7 +26,7 @@ import websocket_server
 
 
 N = 420
-IDLE_TIME = 1/30
+IDLE_TIME = 1/20
 
 video_buffer = VideoBuffer(N, resolution=500)
 
@@ -120,6 +120,7 @@ def main():
 
     config = load_config()
 
+    video_buffer.add_effect('clear', fx.Clear, enabled=config.get('clear', True))
     video_buffer.add_effect('background', fx.BackGround, color=[0, 0, 0], enabled=config.get('background', False))
     video_buffer.add_effect('fade', fx.FadeBackGround, enabled=config.get('fade', False))
 
