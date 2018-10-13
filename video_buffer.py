@@ -21,6 +21,7 @@ class VideoBuffer(object):
         self.effects = OrderedDict()
         self.t0 = datetime.now()
         self.t = 0.0
+        self.delta_time = 0.0
         self.enabled = True
         self.device_x = np.linspace(0, 1, N)
         self.buffer_x = np.linspace(0, 1, resolution)
@@ -68,7 +69,9 @@ class VideoBuffer(object):
         # brightness
         self.buffer -= (1.0-self.brightness)
 
-        self.t = (datetime.now() - self.t0).total_seconds()
+        t = (datetime.now() - self.t0).total_seconds()
+        self.delta_time = t - self.t
+        self.t = t
         self.frame += 1
         return self.frame
 
