@@ -1,28 +1,19 @@
-import colorsys
-
-import numpy as np
+from collections import OrderedDict
 
 from .fx import Fx
 
 
 class BackGround(Fx):
 
-    def __init__(self, video_buffer, color=None, intensity=1.0, **kwargs):
+    def __init__(self, video_buffer, color=(1,0,0), **kwargs):
         super().__init__(video_buffer, **kwargs)
-        self.intensity = intensity
-        self.N = self.video_buffer.N
-        color = color or (1,0,0)
-        self.parameters = {'r': color[0], 'g': color[1], 'b': color[2]}
+        self.rgb = OrderedDict(zip('rgb', color))
 
 
-    def set(self, addr, value, color='r'):
-        self.parameters[color] = value
+    def set(self, addr, value, color :str ='r'):
+        self.rgb[color] = value
 
 
     def _update(self):
-        p = self.parameters
-        r,g,b = p['r'], p['g'], p['b']
-        self.x[:, 0] = self.intensity*r
-        self.x[:, 1] = self.intensity*g
-        self.x[:, 2] = self.intensity*b
+        self.x[:] = tuple(self.rgb.values())
         return self.x
