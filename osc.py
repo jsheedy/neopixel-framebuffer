@@ -38,7 +38,9 @@ class OSCServer():
         loop = asyncio.get_event_loop()
         listen = loop.create_datagram_endpoint(
             lambda: _OSCProtocolFactory(dsp, self),
-            local_addr = self.server_address
+            local_addr = self.server_address,
+            reuse_address = True,
+            reuse_port = True
         )
         logging.info("OSCServer listening on {}".format(self.server_address))
         return listen

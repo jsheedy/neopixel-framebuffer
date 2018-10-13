@@ -20,7 +20,6 @@ import log
 import fx
 from osc import OSCServer
 import serial_comms
-# from touch_osc import accxyz
 from video_buffer import VideoBuffer
 import websocket_server
 
