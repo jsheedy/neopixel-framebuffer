@@ -22,6 +22,7 @@ class BackGround(Fx):
     def _update(self):
         p = self.parameters
         r,g,b = p['r'], p['g'], p['b']
-        self.video_buffer.buffer[:, 0] = self.intensity*r
-        self.video_buffer.buffer[:, 1] = self.intensity*g
-        self.video_buffer.buffer[:, 2] = self.intensity*b
+        self.x[:, 0] = self.intensity*r
+        self.x[:, 1] = self.intensity*g
+        self.x[:, 2] = self.intensity*b
+        return self.x

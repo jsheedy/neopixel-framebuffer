@@ -1,5 +1,6 @@
 from .background import BackGround
 from .brightness import Brightness
+from .clear import Clear
 from .convolution import Convolution
 from .creamsicle import Creamsicle
 from .fade import FadeBackGround
