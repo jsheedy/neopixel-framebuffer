@@ -19,15 +19,11 @@ class ChannelArray():
 
     def update(self):
         phase = self.video_buffer.t * self.freq
-        if random.random() > .95:
-            self.freq += np.clip(0.001*(random.random() - .5), -5, 5)
         return np.sin(self.x + phase) / 2 + 0.5
 
 
 class Wave(Fx):
 
-    freqs = list(range(-5, 5))
-    wavelengths = list(range(1, 20))
     hue_speed = .005
     hue = 0
 
@@ -35,18 +31,23 @@ class Wave(Fx):
         super().__init__(video_buffer, **kwargs)
 
         self.rgb_arrays = {
-            'r': ChannelArray(self.x[:,0], video_buffer, wavelength=10, freq=2),
+            'r': ChannelArray(self.x[:,0], video_buffer, wavelength=10, freq=-2),
             'g': ChannelArray(self.x[:,1], video_buffer, wavelength=20, freq=1),
-            'b': ChannelArray(self.x[:,2], video_buffer, wavelength=30, freq=2),
+            'b': ChannelArray(self.x[:,2], video_buffer, wavelength=30, freq=3),
         }
 
     def _update(self):
 
         self.hue += self.hue_speed
-        r,g,b = colorsys.hsv_to_rgb(self.hue % 1, 1, 1)
+        # r,g,b = colorsys.hsv_to_rgb(self.hue % 1, 1, 1)
+        r = g = b = 1
 
-        self.x[:,0] = r * self.rgb_arrays['r'].update()
-        self.x[:,1] = g * self.rgb_arrays['g'].update()
-        self.x[:,2] = b * self.rgb_arrays['b'].update()
+        r_a = self.rgb_arrays['r'].update()
+        g_a = self.rgb_arrays['g'].update()
+        b_a = self.rgb_arrays['b'].update()
+
+        self.x[:,0] = r * r_a * g_a
+        self.x[:,1] = g * g_a * b_a
+        self.x[:,2] = b * b_a * r_a
 
         return self.x

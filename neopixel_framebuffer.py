@@ -225,7 +225,7 @@ def main():
     serial_comms.init(video_buffer)
     coros = (
         osc_server.serve(),
-        idle(),
+        # idle(),
         *console_coros,
         websocket_server.serve(video_buffer)
         # input_audio_stream(functools.partial(callback_video_buffer, video_buffer=video_buffer))
