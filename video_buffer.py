@@ -28,6 +28,7 @@ class VideoBuffer(object):
         self.gamma = 2.4
         self.brightness = 1.0
         self.operator = operator.add
+        self.uint8 = self.as_uint8()
 
 
     def add_effect(self, name, fx, **kwargs):
@@ -57,7 +58,7 @@ class VideoBuffer(object):
 
     def update(self):
         layers = []
-        for key, effect in self.effects.items():
+        for _key, effect in self.effects.items():
             if effect.enabled:
                 layer = effect.update()
                 if layer is not None:
@@ -68,7 +69,7 @@ class VideoBuffer(object):
 
         # brightness
         self.buffer -= (1.0-self.brightness)
-
+        self.uint8 = self.as_uint8()
         t = (datetime.now() - self.t0).total_seconds()
         self.delta_time = t - self.t
         self.t = t

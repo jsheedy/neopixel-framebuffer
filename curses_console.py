@@ -57,7 +57,7 @@ def get_attr(rgb):
 
 
 async def update_pixels():
-    buffer = video_buffer.as_uint8()
+    buffer = video_buffer.uint8
     for i, pixel in enumerate(pixels):
         rgb = tuple(buffer[i*3:i*3+3])
         attr = get_attr(rgb)

@@ -31,13 +31,8 @@ def serve(video_buffer, server_address=('0.0.0.0', 8766)):
     def firehose():
         frame = 0
         while True:
-            if video_buffer.frame > frame:
-                frame = video_buffer.frame
-            else:
-                frame = video_buffer.update()
-
-            data = video_buffer.as_uint8()
-            yield data
+            frame = video_buffer.frame
+            yield video_buffer.uint8
 
     async def router(websocket, path):
         logger.info('new websocket connection: ' + str(id(websocket)))

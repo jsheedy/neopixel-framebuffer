@@ -25,7 +25,7 @@ import websocket_server
 
 
 N = 420
-IDLE_TIME = 1/20
+IDLE_TIME = 1/30
 
 video_buffer = VideoBuffer(N, resolution=500)
 
@@ -225,7 +225,7 @@ def main():
     serial_comms.init(video_buffer)
     coros = (
         osc_server.serve(),
-        # idle(),
+        idle(),
         *console_coros,
         websocket_server.serve(video_buffer)
         # input_audio_stream(functools.partial(callback_video_buffer, video_buffer=video_buffer))

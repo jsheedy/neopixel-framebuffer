@@ -41,24 +41,18 @@ def reset_to_top(serial_f):
                 arduino_status = ord(serial_f.read())
             else:
                 serial_f.write(bytes((0,)))
+                logger.info('byte')
 
     except Exception as e:
         logger.exception(e)
         init(globals['video_buffer'])
 
+
 def write_serial():
     serial_f = globals['serial_f']
     video_buffer = globals['video_buffer']
-
     reset_to_top(serial_f)
-
-    if video_buffer.frame > globals['video_frame']:
-        globals['video_frame'] = video_buffer.frame
-    else:
-        globals['video_frame'] = video_buffer.update()
-
-    data = video_buffer.as_uint8()
-    globals['serial_f'].write(data)
+    serial_f.write(video_buffer.uint8)
 
 
 def init(video_buffer):
