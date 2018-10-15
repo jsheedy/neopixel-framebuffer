@@ -1,7 +1,7 @@
 import asyncio
-from datetime import datetime
 import functools
 import logging
+import time
 
 import sounddevice
 import urwid
@@ -43,8 +43,7 @@ osc_widget = None
 
 video_buffer = None
 
-t0 = datetime.now()
-epoch = datetime.now()
+t0 = time.time()
 f0 = 0
 
 @functools.lru_cache()
@@ -68,9 +67,9 @@ def init_params():
     def fps():
         global t0
         global f0
-        t1 = datetime.now()
+        t1 = time.time()
         f1 = video_buffer.frame
-        dt = (t1-t0).total_seconds()
+        dt = t1-t0
         df = f1 - f0
         t0 = t1
         f0 = f1
@@ -84,7 +83,7 @@ def init_params():
         ("fps", "0", fps),
         ("runtime", "0", runtime)
     )
-
+    params_widgets.clear()
     for label, value, update_function in parameters:
 
         widget = urwid.Columns([
@@ -266,7 +265,7 @@ def urwid_console():
     header = urwid.Text("NEOPIXEL FRAMEBUFFER", align='center')
     header = urwid.AttrWrap(header, 'header')
 
-    footer = urwid.Text("keys: (q)uit, (p)ause/resume, (c)lear")
+    footer = urwid.Text("keys: (q)uit, (p)ause/resume, (f)ullscreen")
     footer = urwid.AttrWrap(footer, 'footer')
 
     params = init_params()
