@@ -40,14 +40,25 @@ class Wave(Fx):
 
         self.hue += self.hue_speed
         # r,g,b = colorsys.hsv_to_rgb(self.hue % 1, 1, 1)
-        r = g = b = 1
 
         r_a = self.rgb_arrays['r'].update()
         g_a = self.rgb_arrays['g'].update()
         b_a = self.rgb_arrays['b'].update()
 
-        self.x[:,0] = r * r_a * g_a
-        self.x[:,1] = g * g_a * b_a
-        self.x[:,2] = b * b_a * r_a
+        rr = .8
+        rg = .1
+        rb = .1
+
+        gr = .1
+        gg = .9
+        gb = .0
+
+        br = .3
+        bg = .3
+        bb = .4
+
+        self.x[:,0] = rr * r_a + rg * g_a  + rb * b_a
+        self.x[:,1] = gr * r_a + gg * g_a +  gb * b_a
+        self.x[:,2] = br * r_a + bg * g_a +  bb * b_a
 
         return self.x
