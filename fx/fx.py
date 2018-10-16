@@ -14,7 +14,7 @@ class Fx(object):
         self.N = video_buffer.resolution
         self.x = np.zeros(shape=(self.N,3))
         self.x[:] = np.expand_dims(np.arange(self.N),axis=0).T
-
+        self.logger = logging.getLogger(__name__)
 
     def __str__(self):
         return self.__class__.__name__

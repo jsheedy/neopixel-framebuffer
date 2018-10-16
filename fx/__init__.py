@@ -7,10 +7,9 @@ from .larson_scanner import LarsonScanner
 from .matrix import Matrix
 from .midi_event import MidiEvent
 from .midi_note import MidiNote
-from .midi_note_spark import MidiNoteSpark
+# from .midi_note_spark import MidiNoteSpark
 from .noise import Noise
 from .peak_meter import PeakMeter
-from .point import PointFx
 from .strobe import Strobe
 from .wave import Wave
 from .yellowblackandredgreenpurple import YellowBlackAndRedGreenPurple

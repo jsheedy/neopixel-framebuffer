@@ -140,6 +140,8 @@ def main():
     #     name = 'midi_note'+str(i)
     #     video_buffer.add_effect(name, fx.MidiNote, nrange=note_range, enabled=config.get(name, False))
 
+    video_buffer.add_effect('midi_note', fx.MidiNote, nrange=(.5,0.8), enabled=config.get('midi_note', False))
+
     # video_buffer.add_effect('pointX', fx.PointFx, nrange=(360,420), enabled=True)
     # video_buffer.add_effect('pointY', fx.PointFx, nrange=(360,420), enabled=True)
     # video_buffer.add_effect('pointZ', fx.PointFx, nrange=(360,420), enabled=True)
@@ -178,22 +180,11 @@ def main():
         fx.toggle()
 
 
-    def midi_handler(*args):
-        addr, note, velocity, channel = args
-        key = f'midi_note{channel}'
-        video_buffer.effects[key].set(*args)
-        key = f'midi_note_spark_1'
-        video_buffer.effects[key].set(*args)
-        key = f'midi_note_spark_2'
-        video_buffer.effects[key].set(*args)
-        key = f'midi_note_spark_3'
-        video_buffer.effects[key].set(*args)
-
     maps = [
         # ('/metronome', video_buffer.effects['scanner'].metronome),
         # ('/metronome', video_buffer.effects['strobe'].metronome),
         # ('/audio/envelope', video_buffer.effects['peak_meter'].envelope),
-        # ('/midi/note', midi_handler),
+        ('/midi/note', video_buffer.effects['midi_note'].set),
         ('/q', video_buffer.effects['fade'].set), # /fade or /fader cause bugs in touchosc, awesome
         ('/color/r', functools.partial(video_buffer.effects['background'].set, color='r')),
         ('/color/g', functools.partial(video_buffer.effects['background'].set, color='g')),

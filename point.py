@@ -16,5 +16,4 @@ class Point():
 
     def get_points(self):
         relativePos = self.pos # self.width + self.pos * ( - 2*self.width)
-
         return np.interp(self.x, (relativePos - self.width,relativePos, relativePos + self.width), self.hat)
