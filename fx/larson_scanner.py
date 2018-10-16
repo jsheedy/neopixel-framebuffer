@@ -40,6 +40,7 @@ class LarsonScanner(Fx):
             self.count = ((self.count) % 4) + 1
             self.timestamp = datetime.now()
 
+        self.color_points[:] = 0
         for scanner in self.scanners:
             p1,p2 = scanner['p1'], scanner['p2']
             r,g,b = scanner.get('color', (1,1,1))
@@ -47,8 +48,8 @@ class LarsonScanner(Fx):
             point = Point(pos, self.N, width=scanner.get('width',0.01))
             points = point.get_points()
 
-            self.color_points[:,0] = r * points
-            self.color_points[:,1] = g * points
-            self.color_points[:,2] = b * points
+            self.color_points[:,0] += r * points
+            self.color_points[:,1] += g * points
+            self.color_points[:,2] += b * points
 
-            return self.color_points
+        return self.color_points

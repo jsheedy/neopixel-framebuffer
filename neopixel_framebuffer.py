@@ -145,10 +145,10 @@ def main():
     # video_buffer.add_effect('pointZ', fx.PointFx, nrange=(360,420), enabled=True)
 
     video_buffer.add_effect('scanner', fx.LarsonScanner, enabled=config.get('scanner', True), scanners=[
-        {'p1': .9,'p2': .98, 'width': .025, 'color': (1,0,0)},
+        {'p1': .9,'p2': .98, 'width': .025, 'color': (.8,.1,0.05)},
+        {'p1': .6,'p2': .65, 'width': .015, 'color': (.1,.8,.05)},
+        {'p1': .3,'p2': .4, 'width': .015, 'color': (.04,.2,1)},
         {'p1': .02,'p2': .1, 'width': .015, 'color': (1,.8,0)},
-        {'p1': .5,'p2': .55, 'width': .015, 'color': (0,.2,1)},
-        {'p1': .6,'p2': .65, 'width': .015, 'color': (0,.8,0)},
         ])
     # video_buffer.add_effect('peak_meter', fx.PeakMeter, enabled=config.get('peak_meter', False), meters=(
 

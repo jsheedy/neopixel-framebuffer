@@ -31,9 +31,9 @@ class Wave(Fx):
         super().__init__(video_buffer, **kwargs)
 
         self.rgb_arrays = {
-            'r': ChannelArray(self.x[:,0], video_buffer, wavelength=10, freq=-2),
-            'g': ChannelArray(self.x[:,1], video_buffer, wavelength=20, freq=1),
-            'b': ChannelArray(self.x[:,2], video_buffer, wavelength=30, freq=3),
+            'r': ChannelArray(self.x[:,0], video_buffer, wavelength=3, freq=-2),
+            'g': ChannelArray(self.x[:,1], video_buffer, wavelength=2, freq=1),
+            'b': ChannelArray(self.x[:,2], video_buffer, wavelength=.5, freq=3),
         }
 
     def _update(self):
