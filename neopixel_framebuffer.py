@@ -11,6 +11,7 @@ import functools
 import json
 import logging
 import os
+import operator
 import random
 
 from audio_input import input_audio_stream, callback_video_buffer
@@ -25,9 +26,10 @@ import websocket_server
 
 
 N = 420
+
 IDLE_TIME = 1/30
 
-video_buffer = VideoBuffer(N, resolution=500)
+video_buffer = VideoBuffer(N, resolution=N*4, operator=operator.sub)
 
 
 def parse_args():
@@ -71,7 +73,6 @@ def save_config():
     obj = {}
     for name, effect in video_buffer.effects.items():
         obj[name] = effect.enabled
-
     with open(CONFIG_FILE, 'w') as f:
         return json.dump(obj, f)
 

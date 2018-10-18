@@ -11,7 +11,7 @@ class VideoBuffer(object):
     frame = 0
 
 
-    def __init__(self, N, resolution=None):
+    def __init__(self, N, resolution=None, operator=operator.add):
         if resolution is None:
             resolution = N
 
@@ -27,7 +27,7 @@ class VideoBuffer(object):
         self.buffer_x = np.linspace(0, 1, resolution)
         self.gamma = 2.4
         self.brightness = 1.0
-        self.operator = operator.add
+        self.operator = operator
         self.uint8 = self.as_uint8()
 
 
@@ -69,6 +69,11 @@ class VideoBuffer(object):
 
         # brightness
         self.buffer -= (1.0-self.brightness)
+
+        # time stretch
+        roll = int((np.sin(self.t) / 2 + 0.5) * 0.1 * self.resolution)
+        self.buffer = np.roll(self.buffer, roll, axis=0)
+
         self.uint8 = self.as_uint8()
         t = (datetime.now() - self.t0).total_seconds()
         self.delta_time = t - self.t
