@@ -158,14 +158,22 @@ def init_operator():
     group = []
 
     def callback(_radio_button, state, operator):
-        video_buffer.operator = operator
+        if state:
+            video_buffer.operator = operator
+            logging.warning(operator)
 
-    plus = urwid.RadioButton(group, "+", on_state_change=callback, user_data=operator.add)
-    minus = urwid.RadioButton(group, "-", on_state_change=callback, user_data=operator.sub)
-    times = urwid.RadioButton(group, "*", on_state_change=callback, user_data=operator.mul)
-    divide = urwid.RadioButton(group, "/", on_state_change=callback, user_data=operator.truediv)
+    ops = (
+        ('+', operator.add),
+        ('-', operator.sub),
+        ('*', operator.mul),
+        ('/', operator.truediv),
+        ('**', operator.pow),
+    )
+    widgets = [header]
+    for label,op in ops:
+        button = urwid.RadioButton(group, label, state=(op == video_buffer.operator), on_state_change=callback, user_data=op)
+        widgets.append(button)
 
-    widgets = [header, plus, minus, times, divide]
     component = urwid.Pile(widgets)
 
     return component
@@ -292,12 +300,12 @@ def urwid_console():
     fx = init_fx()
     osc = init_osc()
 
+    audio_osc = urwid.Pile([audio, osc, listbox])
+
     body = urwid.Columns((
         ('weight', 1, params),
-        ('weight', 1, osc),
-        ('weight', 1, audio),
         ('weight', 1, fx),
-        ('weight', 1, listbox),
+        ('weight', 1, audio_osc),
     ), dividechars=3)
 
     frame = urwid.Frame(body, header=header, footer=footer)
