@@ -1,6 +1,7 @@
 import asyncio
 import functools
 import logging
+import operator
 import time
 
 import sounddevice
@@ -152,10 +153,28 @@ def init_audio_source():
     pile = urwid.Filler(urwid.Pile(widgets), valign='top')
     return pile
 
+def init_operator():
+    header = column_header("operator")
+    group = []
+
+    def callback(_radio_button, state, operator):
+        video_buffer.operator = operator
+
+    plus = urwid.RadioButton(group, "+", on_state_change=callback, user_data=operator.add)
+    minus = urwid.RadioButton(group, "-", on_state_change=callback, user_data=operator.sub)
+    times = urwid.RadioButton(group, "*", on_state_change=callback, user_data=operator.mul)
+    divide = urwid.RadioButton(group, "/", on_state_change=callback, user_data=operator.truediv)
+
+    widgets = [header, plus, minus, times, divide]
+    component = urwid.Pile(widgets)
+
+    return component
+
 
 def init_fx():
-    header = column_header("f/x")
-    widgets = [header,]
+    fx_header = column_header("f/x")
+    operator = init_operator()
+    widgets = [operator, fx_header,]
 
     def callback(_check_box, state, fx):
         fx.enabled = state
