@@ -22,7 +22,7 @@ def configure_logging(level=logging.INFO, queue_handler=False):
             },
             'file': {
                 'class': 'logging.FileHandler',
-                'filename': 'neopixel-framebuffer.log',
+                'filename': 'npf.log',
                 'formatter': 'default'
             },
             'queue': {

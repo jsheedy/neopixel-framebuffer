@@ -160,7 +160,6 @@ def init_operator():
     def callback(_radio_button, state, operator):
         if state:
             video_buffer.operator = operator
-            logging.warning(operator)
 
     ops = (
         ('+', operator.add),
@@ -174,23 +173,20 @@ def init_operator():
         button = urwid.RadioButton(group, label, state=(op == video_buffer.operator), on_state_change=callback, user_data=op)
         widgets.append(button)
 
-    component = urwid.Pile(widgets)
+    component = urwid.Filler(urwid.Pile(widgets), height='pack', valign='top')
 
     return component
 
 
 def init_fx():
     fx_header = column_header("f/x")
-    operator = init_operator()
-    widgets = [operator, fx_header,]
+    widgets = [fx_header,]
 
     def callback(_check_box, state, fx):
         fx.enabled = state
 
     def text_callback(widget, value, user_data):
-        # raise Exception(value)
-        # console.warning(value)
-        # console.warning(user_data)
+
         fx = user_data['fx']
         logging.warning(fx)
         fx.parameters[user_data['key']] = int(value)
@@ -299,13 +295,16 @@ def urwid_console():
     audio = init_audio_source()
     fx = init_fx()
     osc = init_osc()
+    operator = init_operator()
 
-    audio_osc = urwid.Pile([audio, osc, listbox])
+    controls = urwid.Pile([ operator, fx])
+    # controls = urwid.Pile([ operator,audio, fx])
+    osc_logs = urwid.Pile([osc, listbox])
 
     body = urwid.Columns((
         ('weight', 1, params),
-        ('weight', 1, fx),
-        ('weight', 1, audio_osc),
+        ('weight', 1, controls),
+        ('weight', 1, osc_logs),
     ), dividechars=3)
 
     frame = urwid.Frame(body, header=header, footer=footer)
