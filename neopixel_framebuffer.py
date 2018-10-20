@@ -182,16 +182,14 @@ def main():
         fx.toggle()
 
 
-    maps = [
-        # ('/metronome', video_buffer.effects['scanner'].metronome),
-        # ('/metronome', video_buffer.effects['strobe'].metronome),
+    osc_maps = [
+        ('/metronome', video_buffer.effects['scanner'].metronome),
         # ('/audio/envelope', video_buffer.effects['peak_meter'].envelope),
         ('/midi/note', video_buffer.effects['midi_note'].set),
         ('/q', video_buffer.effects['fade'].set), # /fade or /fader cause bugs in touchosc, awesome
         ('/color/r', functools.partial(video_buffer.effects['background'].set, color='r')),
         ('/color/g', functools.partial(video_buffer.effects['background'].set, color='g')),
         ('/color/b', functools.partial(video_buffer.effects['background'].set, color='b')),
-
         ('/brightness', video_buffer.set_brightness),
         ('/gamma', video_buffer.set_gamma),
         ('/operator/*', video_buffer.set_operator),
@@ -206,12 +204,12 @@ def main():
         asyncio.set_event_loop_policy(uvloop.EventLoopPolicy())
 
     else:
-        maps.append(('/*', console.osc_recv))
+        osc_maps.append(('/*', console.osc_recv))
         log.configure_logging(level=level, queue_handler=True)
         console_coros = console.init(video_buffer)
 
     osc_server = OSCServer(
-        maps = maps,
+        maps = osc_maps,
         forward = (websocket_server.osc_recv, ),
         server_address = (args.ip, args.port)
     )
