@@ -59,7 +59,7 @@ class VideoBuffer(object):
     def update(self):
         layers = []
         for _key, effect in self.effects.items():
-            if effect.enabled:
+            if effect.enabled and (not effect.is_post_process):
                 layer = effect.update()
                 if layer is not None:
                     layers.append(layer)
@@ -70,9 +70,9 @@ class VideoBuffer(object):
         # brightness
         self.buffer -= (1.0-self.brightness)
 
-        # time stretch
-        roll = int((np.sin(self.t) / 2 + 0.5) * 0.1 * self.resolution)
-        self.buffer = np.roll(self.buffer, roll, axis=0)
+        for _key, effect in self.effects.items():
+            if effect.enabled and effect.is_post_process:
+                self.buffer = effect.update()
 
         self.uint8 = self.as_uint8()
         t = (datetime.now() - self.t0).total_seconds()

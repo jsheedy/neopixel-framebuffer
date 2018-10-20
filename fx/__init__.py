@@ -1,4 +1,5 @@
 from .background import BackGround
+from .camera_rot import CameraRot
 from .clear import Clear
 from .convolution import Convolution
 from .creamsicle import Creamsicle

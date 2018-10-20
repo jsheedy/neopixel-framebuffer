@@ -170,6 +170,7 @@ def main():
     # video_buffer.add_effect('convolution', fx.Convolution, enabled=config.get('convolution', False))
     video_buffer.add_effect('yb&rgp', fx.YellowBlackAndRedGreenPurple, enabled=config.get('yb&rgp', False))
     video_buffer.add_effect('matrix', fx.Matrix, enabled=config.get('matrix', False))
+    video_buffer.add_effect('camera_rot', fx.CameraRot, enabled=config.get('camera_rot', False))
 
 
     def toggle_fx(addr, state):

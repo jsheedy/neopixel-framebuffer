@@ -15,15 +15,14 @@ class Fx(object):
         self.x = np.zeros(shape=(self.N,3))
         self.x[:] = np.expand_dims(np.arange(self.N),axis=0).T
         self.logger = logging.getLogger(__name__)
+        self.is_post_process = False
 
     def __str__(self):
         return self.__class__.__name__
 
 
     def update(self):
-        if not self.enabled:
-            return False
-        else:
+        if self.enabled:
             return self._update()
 
 
