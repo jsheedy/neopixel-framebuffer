@@ -162,11 +162,11 @@ def init_operator():
             video_buffer.operator = operator
 
     ops = (
-        ('+', operator.add),
-        ('-', operator.sub),
-        ('*', operator.mul),
-        ('/', operator.truediv),
-        ('**', operator.pow),
+        ('+', 'add'),
+        ('-', 'subtract'),
+        ('*', 'multiply'),
+        ('/', 'divide'),
+        ('**', 'power'),
     )
     widgets = [header]
     for label,op in ops:

@@ -29,7 +29,7 @@ N = 420
 
 IDLE_TIME = 1/30
 
-video_buffer = VideoBuffer(N, resolution=N*4, operator=operator.sub)
+video_buffer = VideoBuffer(N, resolution=N*10, operator='sub')
 
 
 def parse_args():
@@ -73,6 +73,7 @@ def save_config():
     obj = {}
     for name, effect in video_buffer.effects.items():
         obj[name] = effect.enabled
+    obj['operator'] = video_buffer.operator
     with open(CONFIG_FILE, 'w') as f:
         return json.dump(obj, f)
 
@@ -120,6 +121,7 @@ def main():
 
     config = load_config()
 
+    video_buffer.operator = config.get('operator', 'add')
     video_buffer.add_effect('clear', fx.Clear, enabled=config.get('clear', True))
     video_buffer.add_effect('background', fx.BackGround, color=[0, 0, 0], enabled=config.get('background', False))
     video_buffer.add_effect('fade', fx.FadeBackGround, enabled=config.get('fade', False))
@@ -210,7 +212,6 @@ def main():
 
     osc_server = OSCServer(
         maps = osc_maps,
-        forward = (websocket_server.osc_recv, ),
         server_address = (args.ip, args.port)
     )
     serial_comms.init(video_buffer)

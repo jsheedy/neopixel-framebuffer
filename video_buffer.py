@@ -3,9 +3,16 @@ from datetime import datetime
 from functools import reduce
 import operator
 
-
 import numpy as np
 
+
+operator_map = {
+    'add': operator.add,
+    'subtract': operator.sub,
+    'multiply': operator.mul,
+    'divide': operator.truediv,
+    'power': operator.pow
+}
 
 class VideoBuffer(object):
     frame = 0
@@ -44,16 +51,10 @@ class VideoBuffer(object):
 
 
     def set_operator(self, addr, on):
-        operator_map = {
-            'add': operator.add,
-            'subtract': operator.sub,
-            'multiply': operator.mul,
-            'divide': operator.truediv,
-            'power': operator.pow
-        }
+
         if on == 1.0:
             op = addr.split('/')[-1]
-            self.operator = operator_map[op]
+            self.operator = op
 
 
     def update(self):
@@ -65,7 +66,8 @@ class VideoBuffer(object):
                     layers.append(layer)
 
         if layers:
-            self.buffer += reduce(self.operator, layers)
+            op = operator_map[self.operator]
+            self.buffer += reduce(op, layers)
 
         # brightness
         self.buffer -= (1.0-self.brightness)
