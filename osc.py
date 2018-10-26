@@ -17,7 +17,7 @@ class OSCServer():
         loop = asyncio.get_event_loop()
         dsp = dispatcher.Dispatcher()
         for map in self.maps:
-            dsp.map(map[0], map[1])
+            dsp.map(map[0], map[1], needs_reply_address=(len(map)==3))
         self.server = AsyncIOOSCUDPServer(server_address, dsp, loop)
 
     def serve(self):

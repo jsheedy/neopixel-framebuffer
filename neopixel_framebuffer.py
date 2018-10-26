@@ -194,7 +194,7 @@ def main():
         ('/color/b', functools.partial(video_buffer.effects['background'].set, color='b')),
         ('/brightness', video_buffer.set_brightness),
         ('/gamma', video_buffer.set_gamma),
-        ('/operator/*', video_buffer.set_operator),
+        ('/operator/*', video_buffer.set_operator, True),
         ('/fx/*', toggle_fx),
         ('/*', osc_logger)
     ]

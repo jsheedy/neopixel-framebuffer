@@ -1,10 +1,15 @@
 from collections import OrderedDict
 from datetime import datetime
 from functools import reduce
+import logging
 import operator
 
 import numpy as np
+from pythonosc import osc_message_builder
+from pythonosc import udp_client
 
+
+logger = logging.getLogger(__name__)
 
 operator_map = {
     'add': operator.add,
@@ -50,12 +55,20 @@ class VideoBuffer(object):
         self.brightness = float(brightness)
 
 
-    def set_operator(self, addr, on):
+    def set_operator(self, remote_addr, addr, on):
 
-        if on == 1.0:
-            op = addr.split('/')[-1]
-            self.operator = op
+        if on == 0.0:
+            return
 
+        _, base, op = addr.split('/')
+        self.operator = op
+
+        client = udp_client.SimpleUDPClient(*remote_addr)
+        for key in operator_map:
+            on = 1.0 if (op == key) else 0.0
+            addr = f"/{base}/{key}"
+            logging.info(f"{addr} {on}")
+            client.send_message(addr, on)
 
     def update(self):
         layers = []
